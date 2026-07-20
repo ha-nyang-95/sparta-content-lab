@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# 비밀값 (YouTube API 키 등)
+.env
+.env.*
+!.env.example
+config/master.key
+config/credentials/*.key
+
+# BMad 개인 설정 (팀 공유 대상 아님)
+_bmad/config.user.toml
+_bmad/custom/*.user.toml
+
+# Rails (본개발 시작 후 사용)
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/storage/*
+!/storage/.keep
+/public/assets
+/node_modules
+*.sqlite3
+*.sqlite3-*
