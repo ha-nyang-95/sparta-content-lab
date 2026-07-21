@@ -1,0 +1,440 @@
+- generic [ref=f10e2]:
+  - banner [ref=f10e4]:
+    - generic [ref=f10e6]:
+      - generic [ref=f10e7]:
+        - button "가이드" [ref=f10e9] [cursor=pointer]
+        - generic [ref=f10e13]:
+          - link "YouTube 홈" [ref=f10e14] [cursor=pointer]:
+            - /url: /
+          - generic [ref=f10e20]: KR
+        - button "탐색 건너뛰기" [ref=f10e24] [cursor=pointer]
+      - generic [ref=f10e28]:
+        - search [ref=f10e29]:
+          - generic [ref=f10e31]:
+            - generic [ref=f10e32]:
+              - combobox "검색" [expanded] [ref=f10e34]
+              - button [ref=f10e37] [cursor=pointer]
+            - button "Search" [ref=f10e38] [cursor=pointer]
+        - generic [ref=f10e43]:
+          - button "음성으로 검색" [ref=f10e45] [cursor=pointer]
+          - tooltip "tooltip"
+      - generic [ref=f10e50]:
+        - button "설정" [ref=f10e55] [cursor=pointer]
+        - link "로그인" [ref=f10e59] [cursor=pointer]:
+          - /url: https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Dko%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F%2540KankokugoBenkyo%252Fshorts&hl=ko&ec=65620
+  - navigation [ref=f10e63]:
+    - generic [ref=f10e64]:
+      - link "홈" [ref=f10e66] [cursor=pointer]:
+        - /url: /
+      - link "Shorts" [ref=f10e70] [cursor=pointer]:
+        - /url: /shorts/
+      - link "구독" [ref=f10e74] [cursor=pointer]:
+        - /url: /feed/subscriptions
+      - link "내 페이지" [ref=f10e78] [cursor=pointer]:
+        - /url: /feed/you
+  - generic [ref=f10e81]:
+    - main [ref=f10e82]:
+      - generic [ref=f10e89]:
+        - generic [ref=f10e105]:
+          - heading "スパルタ韓国語 l 楽しく独学" [level=1] [ref=f10e107]
+          - generic [ref=f10e108]:
+            - group [ref=f10e109]:
+              - generic [ref=f10e110]: "@KankokugoBenkyo"
+            - generic [ref=f10e111]: •
+            - group [ref=f10e112]:
+              - generic "구독자 1.02만명" [ref=f10e113]
+              - generic [ref=f10e114]: •
+              - generic [ref=f10e115]: 동영상 497개
+          - generic [ref=f10e117] [cursor=pointer]:
+            - generic [ref=f10e118]: スパルタ韓国語 ｜ 日本人のための韓国語 勉強チャンネル
+            - 'button "설명: スパルタ韓国語 ｜ 日本人のための韓国語 勉強チャンネル... 탭하여 자세히 알아보세요." [ref=f10e119]':
+              - generic [ref=f10e120]: ...더보기
+          - generic [ref=f10e121]:
+            - link [ref=f10e124] [cursor=pointer]:
+              - /url: https://www.youtube.com/redirect?event=channel_header&redir_token=QUM4Zm9rU0lZa28zRUtmWGlld1R2cnRoMlJrYXxBR3JiS2FrSzVPTmR0cVBnNHFDX3l1Ynl1X3d1UGxtcVlzM1I4VmVUc1hZQTI1NGJLRUZyXzF2REw3NHA3SzdkTV94S3BVTXp6c0tvNTZMc0t3UDR4UGhNdEdfNHJoT3N0WjN6&q=https%3A%2F%2Fbit.ly%2F4qLGPd5
+            - button "외 링크 2개" [ref=f10e129] [cursor=pointer]
+          - generic [ref=f10e130]:
+            - button "구독" [ref=f10e133] [cursor=pointer]
+            - button "이 채널 가입" [ref=f10e139] [cursor=pointer]:
+              - generic: 가입
+            - link "커뮤니티" [ref=f10e145] [cursor=pointer]:
+              - /url: /@KankokugoBenkyo/community
+        - tablist [ref=f10e152]:
+          - tablist [ref=f10e156]:
+            - tab "홈" [ref=f10e157] [cursor=pointer]
+            - tab "동영상" [ref=f10e159] [cursor=pointer]
+            - tab "Shorts" [selected] [ref=f10e161] [cursor=pointer]
+            - tab "라이브" [ref=f10e163] [cursor=pointer]
+            - tab "팟캐스트" [ref=f10e165] [cursor=pointer]
+            - tab "학습 프로그램" [ref=f10e167] [cursor=pointer]
+            - tab "재생목록" [ref=f10e169] [cursor=pointer]
+            - tab "게시물" [ref=f10e171] [cursor=pointer]
+            - button "검색" [ref=f10e176] [cursor=pointer]
+      - generic [ref=f10e185]:
+        - tablist [ref=f10e188]:
+          - combobox [ref=f10e191] [cursor=pointer]:
+            - generic [ref=f10e192]: 최신순
+          - tab "회원 전용" [ref=f10e200] [cursor=pointer]
+          - tab "공개" [ref=f10e208] [cursor=pointer]
+        - generic [ref=f10e214]:
+          - generic [ref=f10e218]:
+            - link [ref=f10e219] [cursor=pointer]:
+              - /url: /shorts/VdqZIfzgaio
+            - generic [ref=f10e223] [cursor=pointer]:
+              - 'link "韓国人は漢字をこう覚える！「칼 도・마음 심」って何？🇰🇷 #韓国語" [ref=f10e224]':
+                - /url: /shorts/VdqZIfzgaio
+              - generic [ref=f10e225]: 조회수 2.8천회
+            - button "추가 작업" [ref=f10e227] [cursor=pointer]
+          - generic [ref=f10e234]:
+            - link [ref=f10e235] [cursor=pointer]:
+              - /url: /shorts/eoZFAR1jdHc
+            - generic [ref=f10e239] [cursor=pointer]:
+              - link "「大丈夫」を韓国語読みしたら、まさかの意味に!？" [ref=f10e240]:
+                - /url: /shorts/eoZFAR1jdHc
+              - generic [ref=f10e241]: 조회수 2.7천회
+            - button "추가 작업" [ref=f10e243] [cursor=pointer]
+          - generic [ref=f10e250]:
+            - link [ref=f10e251] [cursor=pointer]:
+              - /url: /shorts/TAyw1YJEALM
+            - generic [ref=f10e255] [cursor=pointer]:
+              - link "韓国で現金使えない?!支払いのトラブル回避術" [ref=f10e256]:
+                - /url: /shorts/TAyw1YJEALM
+              - generic [ref=f10e257]: 조회수 2.1천회
+            - button "추가 작업" [ref=f10e259] [cursor=pointer]
+          - generic [ref=f10e266]:
+            - link [ref=f10e267] [cursor=pointer]:
+              - /url: /shorts/7mZ6KbQ9ROE
+            - generic [ref=f10e271] [cursor=pointer]:
+              - link "韓国語の発音｜안녕하세요を高く言いすぎていませんか？" [ref=f10e272]:
+                - /url: /shorts/7mZ6KbQ9ROE
+              - generic [ref=f10e273]: 조회수 2.1천회
+            - button "추가 작업" [ref=f10e275] [cursor=pointer]
+          - generic [ref=f10e282]:
+            - link [ref=f10e283] [cursor=pointer]:
+              - /url: /shorts/NWHxFy9LvhU
+            - generic [ref=f10e287] [cursor=pointer]:
+              - link "韓国語の発音、耳だけの問題じゃない" [ref=f10e288]:
+                - /url: /shorts/NWHxFy9LvhU
+              - generic [ref=f10e289]: 조회수 3.2천회
+            - button "추가 작업" [ref=f10e291] [cursor=pointer]
+          - generic [ref=f10e298]:
+            - link [ref=f10e299] [cursor=pointer]:
+              - /url: /shorts/59wWj0-B9cA
+            - generic [ref=f10e303] [cursor=pointer]:
+              - link "韓国語で「コツをつかむ」って言えますか？" [ref=f10e304]:
+                - /url: /shorts/59wWj0-B9cA
+              - generic [ref=f10e305]: 조회수 1.9천회
+            - button "추가 작업" [ref=f10e307] [cursor=pointer]
+          - generic [ref=f10e314]:
+            - link [ref=f10e315] [cursor=pointer]:
+              - /url: /shorts/MpgKJy4_O0Y
+            - generic [ref=f10e319] [cursor=pointer]:
+              - link "韓国語が聞き取れない理由は才能じゃない｜10分で変わる勉強法" [ref=f10e320]:
+                - /url: /shorts/MpgKJy4_O0Y
+              - generic [ref=f10e321]: 조회수 2.4천회
+            - button "추가 작업" [ref=f10e323] [cursor=pointer]
+          - generic [ref=f10e330]:
+            - link [ref=f10e331] [cursor=pointer]:
+              - /url: /shorts/yVtsQYliqc8
+            - generic [ref=f10e335] [cursor=pointer]:
+              - link "チゲ＝料理名だと思ってませんか？" [ref=f10e336]:
+                - /url: /shorts/yVtsQYliqc8
+              - generic [ref=f10e337]: 조회수 2천회
+            - button "추가 작업" [ref=f10e339] [cursor=pointer]
+          - generic [ref=f10e346]:
+            - link [ref=f10e347] [cursor=pointer]:
+              - /url: /shorts/CvOoUb4tJOE
+            - generic [ref=f10e351] [cursor=pointer]:
+              - link "【韓国語 韓国語丸暗記 初級2】韓国語丸暗記初級II作文" [ref=f10e352]:
+                - /url: /shorts/CvOoUb4tJOE
+              - generic [ref=f10e353]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e355] [cursor=pointer]
+          - generic [ref=f10e362]:
+            - link [ref=f10e363] [cursor=pointer]:
+              - /url: /shorts/K87mYI69Xe0
+            - generic [ref=f10e367] [cursor=pointer]:
+              - link "【韓国語 韓国語丸暗記 初級2】韓国語レッスン" [ref=f10e368]:
+                - /url: /shorts/K87mYI69Xe0
+              - generic [ref=f10e369]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e371] [cursor=pointer]
+          - generic [ref=f10e378]:
+            - link [ref=f10e379] [cursor=pointer]:
+              - /url: /shorts/Sh6ssr_iM8Y
+            - generic [ref=f10e383] [cursor=pointer]:
+              - link "【韓国語 韓国語丸暗記 初級2】韓国語レッスン (1)" [ref=f10e384]:
+                - /url: /shorts/Sh6ssr_iM8Y
+              - generic [ref=f10e385]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e387] [cursor=pointer]
+          - generic [ref=f10e394]:
+            - link [ref=f10e395] [cursor=pointer]:
+              - /url: /shorts/ZNByRwhJJhI
+            - generic [ref=f10e399] [cursor=pointer]:
+              - link "【韓国語 韓国語丸暗記 初級2】宿題チェックするわよ！" [ref=f10e400]:
+                - /url: /shorts/ZNByRwhJJhI
+              - generic [ref=f10e401]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e403] [cursor=pointer]
+          - generic [ref=f10e410]:
+            - link [ref=f10e411] [cursor=pointer]:
+              - /url: /shorts/jrQbHIubJcs
+            - generic [ref=f10e415] [cursor=pointer]:
+              - link "【韓国語 韓国語丸暗記 初級2】2025 10 07" [ref=f10e416]:
+                - /url: /shorts/jrQbHIubJcs
+              - generic [ref=f10e417]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e419] [cursor=pointer]
+          - generic [ref=f10e426]:
+            - link [ref=f10e427] [cursor=pointer]:
+              - /url: /shorts/aCTWYFQB2oM
+            - generic [ref=f10e431] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級2】Track 36: -던(回想) & -아/어지다｜18文章" [ref=f10e432]':
+                - /url: /shorts/aCTWYFQB2oM
+              - generic [ref=f10e433]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e435] [cursor=pointer]
+          - generic [ref=f10e442]:
+            - link [ref=f10e443] [cursor=pointer]:
+              - /url: /shorts/Pac5jil_Rtc
+            - generic [ref=f10e447] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級2】Track 32: -겠어요(意志・推量)｜19文章" [ref=f10e448]':
+                - /url: /shorts/Pac5jil_Rtc
+              - generic [ref=f10e449]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e451] [cursor=pointer]
+          - generic [ref=f10e458]:
+            - link [ref=f10e459] [cursor=pointer]:
+              - /url: /shorts/q_dUtNm-cjU
+            - generic [ref=f10e463] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級2】Track 09: ㄷ不規則活用①｜20文章" [ref=f10e464]':
+                - /url: /shorts/q_dUtNm-cjU
+              - generic [ref=f10e465]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e467] [cursor=pointer]
+          - generic [ref=f10e474]:
+            - link [ref=f10e475] [cursor=pointer]:
+              - /url: /shorts/caiolNI4CXQ
+            - generic [ref=f10e479] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級2】Track 06: -(으)ㄴ/는데②(前置き)｜Part2" [ref=f10e480]':
+                - /url: /shorts/caiolNI4CXQ
+              - generic [ref=f10e481]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e483] [cursor=pointer]
+          - generic [ref=f10e490]:
+            - link [ref=f10e491] [cursor=pointer]:
+              - /url: /shorts/xGPwARYFEzk
+            - generic [ref=f10e495] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級2】Track 01: -는(現在連体形)｜Part2" [ref=f10e496]':
+                - /url: /shorts/xGPwARYFEzk
+              - generic [ref=f10e497]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e499] [cursor=pointer]
+          - generic [ref=f10e506]:
+            - link [ref=f10e507] [cursor=pointer]:
+              - /url: /shorts/cD6KZ8UBwcw
+            - generic [ref=f10e511] [cursor=pointer]:
+              - link "5日住んだらフランス人？w 韓国語で「どこから来ましたか？」" [ref=f10e512]:
+                - /url: /shorts/cD6KZ8UBwcw
+              - generic [ref=f10e513]: 조회수 3천회
+            - button "추가 작업" [ref=f10e515] [cursor=pointer]
+          - generic [ref=f10e522]:
+            - link [ref=f10e523] [cursor=pointer]:
+              - /url: /shorts/oA5U3l4Oh98
+            - generic [ref=f10e527] [cursor=pointer]:
+              - 'link "CUTIE STREET韓国語歌詞③「타고난 재능이라고／온갖／진심 모드」リクエスト回 #shorts" [ref=f10e528]':
+                - /url: /shorts/oA5U3l4Oh98
+              - generic [ref=f10e529]: 조회수 1만회
+            - button "추가 작업" [ref=f10e531] [cursor=pointer]
+          - generic [ref=f10e538]:
+            - link [ref=f10e539] [cursor=pointer]:
+              - /url: /shorts/gibol6DhQ2k
+            - generic [ref=f10e543] [cursor=pointer]:
+              - 'link "【韓国語スラング】「껌이지」「볼래?」「막스」ネイティブの若者言葉3つを即復習 #shorts" [ref=f10e544]':
+                - /url: /shorts/gibol6DhQ2k
+              - generic [ref=f10e545]: 조회수 3.8천회
+            - button "추가 작업" [ref=f10e547] [cursor=pointer]
+          - generic [ref=f10e554]:
+            - link [ref=f10e555] [cursor=pointer]:
+              - /url: /shorts/iSxEds-xmWA
+            - generic [ref=f10e559] [cursor=pointer]:
+              - 'link "CUTIE STREET韓国語歌詞④「절대 안 알려줌」— 可愛さの秘密の文法を解剖 #shorts" [ref=f10e560]':
+                - /url: /shorts/iSxEds-xmWA
+              - generic [ref=f10e561]: 조회수 6.8천회
+            - button "추가 작업" [ref=f10e563] [cursor=pointer]
+          - generic [ref=f10e570]:
+            - link [ref=f10e571] [cursor=pointer]:
+              - /url: /shorts/RHP7hrpLTFk
+            - generic [ref=f10e575] [cursor=pointer]:
+              - 'link "CUTIE STREET韓国語歌詞②「귀여움의 지수가 떨어지잖아」株用語で歌う? #shorts" [ref=f10e576]':
+                - /url: /shorts/RHP7hrpLTFk
+              - generic [ref=f10e577]: 조회수 2.1천회
+            - button "추가 작업" [ref=f10e579] [cursor=pointer]
+          - generic [ref=f10e586]:
+            - link [ref=f10e587] [cursor=pointer]:
+              - /url: /shorts/n0Kk_PSxvDU
+            - generic [ref=f10e591] [cursor=pointer]:
+              - link "CUTIE STREET韓国語歌詞①「이 정도 미스면은 껌이지」余裕って意味?【リクエスト回】#shorts" [ref=f10e592]:
+                - /url: /shorts/n0Kk_PSxvDU
+              - generic [ref=f10e593]: 조회수 1.5천회
+            - button "추가 작업" [ref=f10e595] [cursor=pointer]
+          - generic [ref=f10e602]:
+            - link [ref=f10e603] [cursor=pointer]:
+              - /url: /shorts/BdAcjF2s6ZE
+            - generic [ref=f10e607] [cursor=pointer]:
+              - link "あなたの韓国語勉強、実は「見学」かも？" [ref=f10e608]:
+                - /url: /shorts/BdAcjF2s6ZE
+              - generic [ref=f10e609]: 조회수 3.8천회
+            - button "추가 작업" [ref=f10e611] [cursor=pointer]
+          - generic [ref=f10e618]:
+            - link [ref=f10e619] [cursor=pointer]:
+              - /url: /shorts/fe_CIW4bR30
+            - generic [ref=f10e623] [cursor=pointer]:
+              - 'link "30代の脳が10代より韓国語が伸びる理由 #韓国語勉強 #韓国語学習 #韓国語学習" [ref=f10e624]':
+                - /url: /shorts/fe_CIW4bR30
+              - generic [ref=f10e625]: 조회수 2.8천회
+            - button "추가 작업" [ref=f10e627] [cursor=pointer]
+          - generic [ref=f10e634]:
+            - link [ref=f10e635] [cursor=pointer]:
+              - /url: /shorts/cKlwLAxtbhw
+            - generic [ref=f10e639] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級1】Track 24: -아/어 주시겠어요(～していただけますか)｜Part3" [ref=f10e640]':
+                - /url: /shorts/cKlwLAxtbhw
+              - generic [ref=f10e641]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e643] [cursor=pointer]
+          - generic [ref=f10e650]:
+            - link [ref=f10e651] [cursor=pointer]:
+              - /url: /shorts/rG2G6XblMfQ
+            - generic [ref=f10e655] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級1】Track 24: -아/어 주시겠어요(～していただけますか)｜Part2" [ref=f10e656]':
+                - /url: /shorts/rG2G6XblMfQ
+              - generic [ref=f10e657]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e659] [cursor=pointer]
+          - generic [ref=f10e666]:
+            - link [ref=f10e667] [cursor=pointer]:
+              - /url: /shorts/uToHztvTxTo
+            - generic [ref=f10e671] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級1】Track 07: 否定文 & 부터~까지｜19文章" [ref=f10e672]':
+                - /url: /shorts/uToHztvTxTo
+              - generic [ref=f10e673]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e675] [cursor=pointer]
+          - generic [ref=f10e682]:
+            - link [ref=f10e683] [cursor=pointer]:
+              - /url: /shorts/DmfNBd6T6rE
+            - generic [ref=f10e687] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級1】Track 07: 否定文 & 부터~까지｜Part4" [ref=f10e688]':
+                - /url: /shorts/DmfNBd6T6rE
+              - generic [ref=f10e689]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e691] [cursor=pointer]
+          - generic [ref=f10e698]:
+            - link [ref=f10e699] [cursor=pointer]:
+              - /url: /shorts/6dCGNgiC01s
+            - generic [ref=f10e703] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級1】Track 01: 입니다(です)｜20文章" [ref=f10e704]':
+                - /url: /shorts/6dCGNgiC01s
+              - generic [ref=f10e705]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e707] [cursor=pointer]
+          - generic [ref=f10e714]:
+            - link [ref=f10e715] [cursor=pointer]:
+              - /url: /shorts/Nty8mmgTglY
+            - generic [ref=f10e719] [cursor=pointer]:
+              - link "韓国語は辞書より\"絵\"で覚えろ！科学が証明した記憶に6倍残る勉強法" [ref=f10e720]:
+                - /url: /shorts/Nty8mmgTglY
+              - generic [ref=f10e721]: 조회수 3.2천회
+            - button "추가 작업" [ref=f10e723] [cursor=pointer]
+          - generic [ref=f10e730]:
+            - link [ref=f10e731] [cursor=pointer]:
+              - /url: /shorts/3PoscyFGj0U
+            - generic [ref=f10e735] [cursor=pointer]:
+              - link "韓国語勉強の順番" [ref=f10e736]:
+                - /url: /shorts/3PoscyFGj0U
+              - generic [ref=f10e737]: 조회수 4.1천회
+            - button "추가 작업" [ref=f10e739] [cursor=pointer]
+          - generic [ref=f10e746]:
+            - link [ref=f10e747] [cursor=pointer]:
+              - /url: /shorts/WXvkqXjkZ1I
+            - generic [ref=f10e751] [cursor=pointer]:
+              - 'link "100個覚えるより、1つの原理で100個理解する｜想像学習法 #shorts" [ref=f10e752]':
+                - /url: /shorts/WXvkqXjkZ1I
+              - generic [ref=f10e753]: 조회수 3.2천회
+            - button "추가 작업" [ref=f10e755] [cursor=pointer]
+          - generic [ref=f10e762]:
+            - link [ref=f10e763] [cursor=pointer]:
+              - /url: /shorts/pcD-EkEChuw
+            - generic [ref=f10e767] [cursor=pointer]:
+              - link "韓国ドラマで感情移入！言葉が心に刻まれる" [ref=f10e768]:
+                - /url: /shorts/pcD-EkEChuw
+              - generic [ref=f10e769]: 조회수 1.1천회
+            - button "추가 작업" [ref=f10e771] [cursor=pointer]
+          - generic [ref=f10e778]:
+            - link [ref=f10e779] [cursor=pointer]:
+              - /url: /shorts/tFDUGhPk4U4
+            - generic [ref=f10e783] [cursor=pointer]:
+              - link "大人の脳は言語学習に最適な理由！" [ref=f10e784]:
+                - /url: /shorts/tFDUGhPk4U4
+              - generic [ref=f10e785]: 조회수 1.7천회
+            - button "추가 작업" [ref=f10e787] [cursor=pointer]
+          - generic [ref=f10e794]:
+            - link [ref=f10e795] [cursor=pointer]:
+              - /url: /shorts/vwoHPDB68-Y
+            - generic [ref=f10e799] [cursor=pointer]:
+              - link "韓国語の聞き流し、実は意味なかった…【脳科学で解説】" [ref=f10e800]:
+                - /url: /shorts/vwoHPDB68-Y
+              - generic [ref=f10e801]: 조회수 1천회
+            - button "추가 작업" [ref=f10e803] [cursor=pointer]
+          - generic [ref=f10e810]:
+            - link [ref=f10e811] [cursor=pointer]:
+              - /url: /shorts/GHzjHzaTX0c
+            - generic [ref=f10e815] [cursor=pointer]:
+              - 'link "【韓国語丸暗記 初級1】Track 01: 입니다(です)｜Part8" [ref=f10e816]':
+                - /url: /shorts/GHzjHzaTX0c
+              - generic [ref=f10e817]: ✪ 회원 전용
+            - button "추가 작업" [ref=f10e819] [cursor=pointer]
+          - generic [ref=f10e826]:
+            - link [ref=f10e827] [cursor=pointer]:
+              - /url: /shorts/D1fY0ScMiYs
+            - generic [ref=f10e831] [cursor=pointer]:
+              - link "たった1週間で韓国語が聞き取れる！スパルタ式倍速リスニング🔥" [ref=f10e832]:
+                - /url: /shorts/D1fY0ScMiYs
+              - generic [ref=f10e833]: 조회수 4.4천회
+            - button "추가 작업" [ref=f10e835] [cursor=pointer]
+          - generic [ref=f10e842]:
+            - link [ref=f10e843] [cursor=pointer]:
+              - /url: /shorts/vDAXISoc4-M
+            - generic [ref=f10e847] [cursor=pointer]:
+              - link "「사귀자」vs「사귀어요」🤔 間違えたら大変！告白の韓国語" [ref=f10e848]:
+                - /url: /shorts/vDAXISoc4-M
+              - generic [ref=f10e849]: 조회수 1.4천회
+            - button "추가 작업" [ref=f10e851] [cursor=pointer]
+          - generic [ref=f10e858]:
+            - link [ref=f10e859] [cursor=pointer]:
+              - /url: /shorts/69unEKU5geo
+            - generic [ref=f10e863] [cursor=pointer]:
+              - link "韓国人が恋人に一番送る言葉、知ってる？" [ref=f10e864]:
+                - /url: /shorts/69unEKU5geo
+              - generic [ref=f10e865]: 조회수 1.6천회
+            - button "추가 작업" [ref=f10e867] [cursor=pointer]
+          - generic [ref=f10e874]:
+            - link [ref=f10e875] [cursor=pointer]:
+              - /url: /shorts/d4in0ohTNZU
+            - generic [ref=f10e879] [cursor=pointer]:
+              - 'link "「ご飯食べた？」で韓国人の心つかむ方法 #恋愛 #韓国文化 #愛情" [ref=f10e880]':
+                - /url: /shorts/d4in0ohTNZU
+              - generic [ref=f10e881]: 조회수 1.8천회
+            - button "추가 작업" [ref=f10e883] [cursor=pointer]
+          - generic [ref=f10e890]:
+            - link [ref=f10e891] [cursor=pointer]:
+              - /url: /shorts/LIuuiNJI_iw
+            - generic [ref=f10e895] [cursor=pointer]:
+              - 'link "ㅂとㄱ、口の閉じ方が全然違う！ #韓国語 #ハングル #パッチム" [ref=f10e896]':
+                - /url: /shorts/LIuuiNJI_iw
+              - generic [ref=f10e897]: 조회수 1.2천회
+            - button "추가 작업" [ref=f10e899] [cursor=pointer]
+          - generic [ref=f10e906]:
+            - link [ref=f10e907] [cursor=pointer]:
+              - /url: /shorts/q0b50uevt2g
+            - generic [ref=f10e911] [cursor=pointer]:
+              - 'link "韓国語上級レベルの会話スキル #韓国語勉強 #上級 #カップル" [ref=f10e912]':
+                - /url: /shorts/q0b50uevt2g
+              - generic [ref=f10e913]: 조회수 2.6천회
+            - button "추가 작업" [ref=f10e915] [cursor=pointer]
+          - generic [ref=f10e922]:
+            - link [ref=f10e923] [cursor=pointer]:
+              - /url: /shorts/hlRsrY1h-xE
+            - generic [ref=f10e927] [cursor=pointer]:
+              - 'link "自己啓発 vs 現実逃避 あなたはどっち #選択 #人生 #恋愛 #夫婦" [ref=f10e928]':
+                - /url: /shorts/hlRsrY1h-xE
+              - generic [ref=f10e929]: 조회수 2.3천회
+            - button "추가 작업" [ref=f10e931] [cursor=pointer]
+    - text: •
