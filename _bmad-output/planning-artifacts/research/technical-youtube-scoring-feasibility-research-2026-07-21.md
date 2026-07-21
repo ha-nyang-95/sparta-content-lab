@@ -280,18 +280,40 @@ production:
 
 출처: [sqlite-vec GitHub](https://github.com/asg017/sqlite-vec), [sqlite-vec Ruby 문서](https://alexgarcia.xyz/sqlite-vec/ruby.html), [Rails PR #53827 extensions](https://github.com/rails/rails/pull/53827)
 
-### F-3. 비용 — 사실상 공짜
+### F-3. 로컬 vs API 정확도 — 이 규모엔 로컬로 충분
 
-100토큰/건 가정, OpenAI 3-small($0.02/1M) 기준.
-- 자사 500개 1회 시딩 = 5만 토큰 = **$0.001**
-- 경쟁 주 300개 재임베딩 = **$0.0006/주 ≈ $0.03/년**
-- 전체 주간 재임베딩(800개)도 **$0.08/년**. Voyage 무료한도면 문자 그대로 $0. **비용은 의사결정 요인이 아니다.**
+JA↔KO 교차언어에서 오픈모델(BGE-M3, mE5)이 MIRACL/MKQA 기준 유료 API와 대등하거나 앞선다. 유료 API가 가장 어려운 스플릿에서 몇 점 높지만, 우리 과제는 **짧은 제목 근접중복 탐지 + 사람이 튜닝하는 임계값**이라 1~3점 nDCG 차가 "이 주제 다뤘나?" 판정을 바꾸지 않는다. 유료 선택 이유는 정확도가 아니라 **무운영(모델 호스팅 불필요)** 이다. `OpenAI 3-small`은 값은 싸나 **한·일 혼재 짧은 제목에서 비라틴 스크립트가 약해 회피**한다.
 
-### F-4. 로컬 vs API 정확도 — 이 규모엔 로컬로 충분
+### F-4. 무료 티어 정정 — Gemini 무료는 축소 중, 프로덕션은 유료 전제
 
-JA↔KO 교차언어에서 오픈모델(BGE-M3, mE5)이 MIRACL/MKQA 기준 유료 API와 대등하거나 앞선다. 유료 API가 가장 어려운 스플릿에서 몇 점 높지만, 우리 과제는 **짧은 제목 근접중복 탐지 + 사람이 튜닝하는 임계값**이라 1~3점 nDCG 차가 "이 주제 다뤘나?" 판정을 바꾸지 않는다. 유료 선택 이유는 정확도가 아니라 **무운영(모델 호스팅 불필요)** 이고, 그마저 비용이 ~$0이라 사실상 공짜다.
+⚠️ **중요 정정.** 앞서 "무료 티어라 공짜"라고 단정했으나 부정확하다. Google이 **2026-04-01자로 무료 티어를 대폭 축소**했다. Pro 모델은 무료에서 제거되어 유료 전용이 됐고, Flash는 2025-12부터 무료 할당량이 50~80% 삭감됐다. 정식 체인지로그도 없었다.
 
-> **판정: 완전 가능.** 권장 = ①저장은 BLOB+Ruby 코사인(확장 불필요), ②임베딩은 **비라틴 강한 API 택1(Cohere embed-v4 / Gemini / Voyage), OpenAI 3-small은 이 혼재 과제엔 회피**, 또는 무의존을 원하면 BGE-M3 로컬. 임계값은 알려진 중복/비중복 제목 쌍으로 실측 튜닝(기본 0.8 신뢰 금지). E축 주제 묶기도 **같은 임베딩 재사용**으로 추가비용 없이 붙는다.
+- 단 **`gemini-embedding-001`은 공식 가격 페이지에 아직 Free Tier "Free of charge"로 남아 있다.** 임베딩은 이번 축소에서 예외였다.
+- 그러나 **Google이 체인지로그 없이 무료 티어를 계속 깎는 중**이라, 오래 운영할 도구를 무료 티어 위에 세우면 안 된다. **프로덕션은 유료($0.15/1M) 전제로 잡고 결제·지출상한을 연결**한다. 비용은 아래처럼 무시할 수준이라 이래도 손해가 없다.
+- "공짜 보장"이 정말 중요하면 **Voyage(200M 토큰 무료 한도 = rate limit이 아닌 실제 할당)** 가 Gemini 무료 티어보다 내구성이 높고, **BGE-M3 로컬**은 자기 서버라 진짜 영구 $0(단 파이썬/ONNX 런타임 부담).
+
+출처: [Gemini API 가격(임베딩 Free Tier 명시)](https://ai.google.dev/gemini-api/docs/pricing), [Google Ends Free Gemini Pro API Access(2026-04-01)](https://www.aipricing.guru/news/google-ends-free-gemini-pro-api-access/), [Voyage 가격](https://docs.voyageai.com/docs/pricing)
+
+### F-5. 월 운영 비용 추정 (Gemini 유료 정가 기준)
+
+임베딩은 **영상당 1회만** 생성(제목 불변)하므로, 매달 과금되는 건 **그 달 신규 발견 영상**뿐이다. 유사도 비교 자체는 Ruby 로컬 계산이라 $0.
+
+가정 — 추적 채널 ~50개, 월 신규 ~1,000영상, 영상당 ~150토큰, `gemini-embedding-001` $0.15/1M, 환율 ≈1,400원/달러.
+
+| 항목 | 계산 | 월 USD | 원화 |
+|---|---|---|---|
+| 신규 영상 임베딩 | 1,000×150 = 0.15M × $0.15 | **~$0.023** | ~₩32 |
+| 넉넉한 시나리오 | 2,000×200 = 0.4M × $0.15 | ~$0.06 | ~₩84 |
+| (선택) 추천문 생성 LLM | Flash로 주1회 배치 | $0.1~1 | ₩150~1,400 |
+| **합계** | — | **$1 미만(대개 수십 센트)** | **₩수백 원** |
+
+- **최초 1회 백필**(자사 500 + 경쟁 과거분 ~1.5만) ≈ **$0.3~0.5(₩450~700) 1회성**.
+- 추천 이유 문장을 데이터 템플릿으로 만들면 LLM 비용 $0, Gemini 생성모델로 쓰면 위 (선택) 행이 붙는다 — 그래도 사용자 2명·주1회 내부도구라 월 $1~2를 넘기 어렵다.
+- **진짜 월 고정비는 API가 아니라 상시 실행 서버 호스팅(소형 VPS 월 $5~10)** 이고, Gemini 비용은 그 옆에서 반올림 오차다.
+
+> **판정: 완전 가능.** 권장 = ①저장은 BLOB+Ruby 코사인(네이티브 확장 불필요, **DB는 SQLite 그대로**), ②임베딩은 **YouTube와 벤더를 Google로 통일하는 `gemini-embedding-001`을 유료 결제로 사용**(무료 티어 의존 금지). YouTube API와 **서로 다른 키**지만 같은 Google 계정·결제·콘솔로 묶인다. "공짜 확실"을 원하면 Voyage, "외부의존 제거"를 원하면 BGE-M3 로컬. 임계값은 알려진 중복/비중복 제목 쌍으로 실측 튜닝(기본 0.8 신뢰 금지). E축 주제 묶기도 **같은 임베딩 재사용**으로 추가비용 없이 붙는다.
+
+**sqlite-vec 전환 기준(참고)** — 벡터는 스냅샷과 달리 **매일 늘지 않고 영상 늘 때만** 증가한다(제목 불변, 영상당 1개). 벡터 수가 **약 5만 개를 넘거나** 유사도 검색을 웹 요청당 실시간으로 돌려야 할 때 sqlite-vec로 드롭인 업그레이드하면 되고, 그전까지는 Ruby 코사인이 용량·속도 모두 충분하다(768차원 = 영상당 ~3KB, 1만 영상 ~30MB).
 
 출처: [OpenAI 3-small 모델카드](https://developers.openai.com/api/docs/models/text-embedding-3-small), [Gemini API 가격](https://ai.google.dev/gemini-api/docs/pricing), [Cohere embed-v4 가격](https://embeddingcost.com/cohere), [Voyage 가격](https://docs.voyageai.com/docs/pricing), [BGE-M3](https://www.emergentmind.com/topics/bge-m3-embedding-model), [mE5 arXiv](https://arxiv.org/pdf/2402.05672), [MTEB leaderboard](https://huggingface.co/spaces/mteb/leaderboard)
 
@@ -359,8 +381,9 @@ vidIQ·Viewstats·1of10·OutlierKit 모두 **성과 배수를 히어로 지표�
 | 의존 | 용도 | 비용 | 난이도 | 권장 |
 |---|---|---|---|---|
 | YouTube Data API v3 | 조회수·메타·구독자 | 무료(쿼터내) | 낮음 | 필수 |
-| 임베딩 API | 유사영상·주제묶기 | ~$0/년 | 낮음(REST) | Cohere v4/Gemini/Voyage 택1 |
-| BGE-M3 로컬(대안) | 동상 | 무료(연산) | 중(런타임) | 무의존 원하면 |
+| 임베딩 API | 유사영상·주제묶기 | 유료 정가로도 월 수십 센트 | 낮음(REST) | **`gemini-embedding-001` 유료(YouTube와 벤더 통일)**. 무료 티어 의존 금지 |
+| Voyage(대안) | 동상 | 200M 토큰 무료 한도 | 낮음 | "공짜 확실" 원하면 |
+| BGE-M3 로컬(대안) | 동상 | 무료(연산) | 중(런타임) | 외부의존 제거 원하면 |
 | `/shorts/` HTTP 프로브 | 쇼츠 판별 보정 | 무료 | 낮으나 **차단위험** | 저속·캐시 필수 |
 | sqlite-vec | 벡터검색 | 무료 | 중 | **불채택(N=500엔 Ruby 코사인)** |
 
@@ -373,7 +396,7 @@ vidIQ·Viewstats·1of10·OutlierKit 모두 **성과 배수를 히어로 지표�
 5. **시점 정합 소급 불가** — 추적 이전 영상은 "영상 나이 t일 시점 조회수"를 못 만듦. MVP는 현재 누적 조회수 기준 + 오래된 영상 유리 편향을 UI 명시.
 6. **스택** — Solid Queue 반복작업(config/recurring.yml) + SQLite, Redis 불필요, 스케줄러 프로세스 상시 실행 필수. SQLite WAL(Rails 8 기본) + busy_timeout 5000ms, 단일 라이터(배치 트랜잭션 짧게), Solid Queue/Cache는 별도 DB 파일.
 7. **스냅샷 테이블** — `(video_id, date)` 유니크 인덱스, 90일 일단위 후 주단위 롤업+VACUUM. 행 수는 SQLite 한계 대비 무시 가능.
-8. **유사영상/주제묶기** — 임베딩(비라틴 강한 API 또는 BGE-M3), 저장은 BLOB+Ruby 코사인(N=500), 임계값 실측 튜닝. `relatedToVideoId` 폐기라 관련영상 API 없음.
+8. **유사영상/주제묶기** — 임베딩은 `gemini-embedding-001` **유료 결제**로 사용(무료 티어 축소 중이라 의존 금지, YouTube와 같은 Google 계정·다른 키). 월 비용 수십 센트(신규 영상만 과금, 영상당 1회). 저장은 **BLOB+Ruby 코사인(DB는 SQLite 그대로, 네이티브 확장 불필요)**, 벡터 5만 초과 시 sqlite-vec 전환. 임계값 실측 튜닝. `relatedToVideoId` 폐기라 관련영상 API 없음.
 9. **표시** — 기본 정렬=성과 배수, 구독자 밴드 티어링, raw 조회수 강등, 신뢰도 하한(최근 롱폼≥10)·절대조회수 하한·극단배수(>25x) 플래그.
 10. **레이트리밋** — 정식 API는 IP 차단 없이 쿼터/레이트로 실패(403 지수백오프). 운영자의 과거 스크래핑 차단(§9)은 API 채택으로 해소. 유일 예외 = `/shorts/` 프로브.
 
