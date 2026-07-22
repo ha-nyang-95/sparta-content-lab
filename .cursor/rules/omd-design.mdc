@@ -1,0 +1,25 @@
+<!-- omd:managed — DESIGN.md 토큰 shim (Cursor). DESIGN.md 변경 시 omd:sync로 갱신. 손으로 고치지 말 것. -->
+---
+description: SPARTA Content Lab 디자인 토큰 — 모든 UI 작업에 적용
+globs: ["**/*.erb","**/*.html","**/*.rb","**/*.css","**/*.js","**/*.jsx","**/*.tsx"]
+alwaysApply: true
+---
+
+# 디자인 규칙 (SPARTA Content Lab)
+
+모든 UI 작업은 프로젝트 루트 **`DESIGN.md`** 의 토큰을 단일 원천으로 쓴다. 아래는 요약이고 권위는 `DESIGN.md` 전문에 있다.
+
+- Primary `#1145DD` (`primary-600`) · Success `#159C49` (`success-600`).
+- 캔버스 `#FBFCFD` · 서피스 `#FFFFFF` · 보더 `#E5E7EB` · divider `#EEF1F5`.
+- 텍스트 strong `#111827` / body `#374151` / muted `#6B7280` / subtle `#9CA3AF`.
+- 뱃지 neutral `#F2F4F7`·`#4B5563` / caution `#FEF1E3`·`#F56B04` / danger `#FEEEEF`·`#C31334`.
+- Radius 카드 12 / 컨트롤 8 / 칩 6px. 카드 패딩 24, 그리드 gap 20px.
+- 폰트 `Pretendard, "Noto Sans KR", "Noto Sans JP", …` (한·일 커버), 숫자 `tabular-nums`.
+
+성과 배수 밴드 (PRD FR-8, 전 화면 동일): `<2배` 중립 / `2~5배` `#15803D` / `5~10배` `#0F7A38` / `>10배` solid `#159C49`(흰 텍스트). amber/red 금지.
+
+규칙:
+1. 원시 Tailwind 색 직접 사용 금지 — `DESIGN.md` §10 토큰만.
+2. "구독자 대비 조회수" → "성과 배수(채널 평소 대비)" (PRD §11 강제).
+3. 정직성 상태·다국어·반응형은 `DESIGN.md` §4.7 / §7 / §5 규칙을 따른다.
+4. 목업과 다르게 가려면 임의 변경 말고 운영자에게 묻는다.

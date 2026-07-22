@@ -1,0 +1,23 @@
+{
+  "reference_id": "Planning/목업 샘플.png",
+  "description": "확정 목업에서 디자인 토큰을 추출해 DESIGN.md로 고정. 레퍼런스 기업 추천 없이 목업이 유일한 시각 레퍼런스. SPARTA Content Lab — YouTube 콘텐츠 리서치 대시보드(Rails 8 + Tailwind), 화면 6개.",
+  "mode": "mockup-extraction",
+  "delta_set": {
+    "axes": {},
+    "voiceHints": ["정직·간결 한국어", "PRD Glossary 용어 고정", "불확실성 명시"],
+    "matchedKeywords": ["dashboard", "data-dense", "clean", "near-white"],
+    "warnings": [
+      "목업은 성과 배수를 단색 그린으로 표시하나 PRD FR-8은 4밴드를 요구 — 그린 순차 램프로 파생(DESIGN.md §1.5)",
+      "정직성 상태·다국어(한·일)·반응형은 목업에 없어 PRD에서 파생(DESIGN.md §4.7/§7/§5)"
+    ]
+  },
+  "extracted_tokens": {
+    "primary_600": "#1145DD",
+    "success_600": "#159C49",
+    "bg_app": "#FBFCFD",
+    "surface": "#FFFFFF",
+    "border_default": "#E5E7EB",
+    "sampling_method": "PIL pixel sampling of solid fills in Planning/목업 샘플.png (1536x1024)"
+  },
+  "bootstrapped_at": "2026-07-22"
+}
