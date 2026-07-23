@@ -1,0 +1,107 @@
+# generated: 2026-07-24
+# last_updated: 2026-07-24
+# project: Youtube-planning-helper
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; sprint-status surfaces open ones
+
+generated: 2026-07-24
+last_updated: 2026-07-24
+project: Youtube-planning-helper
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1: 기반 · 인증 · 디자인 토큰 (Foundation)
+  epic-1: backlog
+  1-1-rails-8-앱-부트스트랩-sqlite-멀티db-wal: backlog
+  1-2-인증-제너레이터-운영-2인-seed: backlog
+  1-3-tailwind-v3-핀-design-md-10-토큰-이관: backlog
+  1-4-앱-셸-좌측-내비-헤더: backlog
+  1-5-config-scoring-yml-튜닝값-자리-시크릿-격리: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: 데이터 수집 파이프라인 (Collection)
+  epic-2: backlog
+  2-1-channel-video-모델-시드-채널-로드: backlog
+  2-2-youtube-api-단일-클라이언트-경계-쿼터-원장: backlog
+  2-3-uploads-경유-영상-열거-is-short-불변-캐시: backlog
+  2-4-일별-스냅샷-축적-90일-롤업: backlog
+  2-5-dailycollectionjob-체인-골격-관측성-백업: backlog
+  2-6-weeklydiscoveryjob-주1회-신규-채널-영상-발굴: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: 성과 배수 스코어링 엔진 (Scoring)
+  epic-3: backlog
+  3-1-기준선-중앙값-계산-신뢰도-하한: backlog
+  3-2-성과-배수-계산-플루크-방어-축-분리: backlog
+  3-3-구독자-밴드-티어링-결정적-정렬키: backlog
+  3-4-에버그린-후보-판정-대리지표-1일차: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: 임베딩 · 자사 유사영상 · 콘텐츠 갭 (Similarity)
+  epic-4: backlog
+  4-1-임베딩-생성-저장-제목-변경-시만-재생성: backlog
+  4-2-자사-유사영상-판정-ownvideomatch: backlog
+  4-3-콘텐츠-갭-4구간-버킷: backlog
+  4-4-임베딩-기반-주제-자동-묶기-연결요소: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: 추천 주제 3개 · 기회 점수 (Recommendation)
+  epic-5: backlog
+  5-1-기회-점수-산출-4입력-정규화-가중합: backlog
+  5-2-추천-주제-3개-산출-정직성-결정적-동점: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: 대시보드 & 6화면 (Presentation)
+  epic-6: backlog
+  6-1-공유-표시-컴포넌트-배수-셀-정직성-상태-테이블-행-헬퍼: backlog
+  6-2-대시보드-홈-추천-3개-기간-탭-필터-바: backlog
+  6-3-인기-콘텐츠-급상승-영상-테이블-스파크라인: backlog
+  6-4-경쟁-채널-화면-동향-수동-등록-제외-구독자-증감: backlog
+  6-5-콘텐츠-갭-화면-도넛-분포: backlog
+  6-6-에버그린-탭-후보-표시-검증-수집-중: backlog
+  6-7-설정-화면-수집-상태-계정: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: 검색 · 필터 · 정렬 · 저장 (Explore & Save)
+  epic-7: backlog
+  7-1-검색-필터-정렬: backlog
+  7-2-영상-저장-저장한-영상-화면: backlog
+  epic-7-retrospective: optional
