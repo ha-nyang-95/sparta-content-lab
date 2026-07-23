@@ -25,8 +25,10 @@ Rails.application.configure do
   # resolves to the cache DB in tests (AD-12).
   config.cache_store = :solid_cache_store
 
-  # Active Job on Solid Queue, connected to the dedicated `queue` SQLite DB (AD-12).
-  config.active_job.queue_adapter = :solid_queue
+  # 테스트에서 Active Job은 표준 :test 어댑터를 쓴다 — 잡 enqueue 단언(assert_enqueued_*)이
+  # 동작해야 하기 때문(Rails 8 인증 제너레이터의 PasswordsController 테스트가 이를 전제한다).
+  # 큐 DB 격리(AD-12)는 아래 connects_to로 유지된다 — SolidQueue::Job 연결은 어댑터와 무관하다.
+  config.active_job.queue_adapter = :test
   config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
