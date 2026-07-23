@@ -1,0 +1,58 @@
+# SQLite 멀티DB: app(primary)·cache·queue 3파일 분리 + WAL·busy_timeout 프래그마(AD-12)
+# Versions 3.8.0 and up are supported.
+
+default: &default
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # busy_timeout은 아래 pragma 하나로만 설정한다. adapter의 timeout: 옵션을 함께 두면
+  # pragma가 나중에 실행되며 busy 핸들러를 덮어써 충돌한다(둘 다 5000이라 값은 같지만
+  # 한쪽만 바뀌면 조용히 어긋남). 단일 소유 — AD-12/NFR-2의 busy_timeout 5000ms.
+  pragmas:
+    journal_mode: WAL
+    busy_timeout: 5000
+    synchronous: NORMAL
+    foreign_keys: true
+
+development:
+  primary:
+    <<: *default
+    database: storage/development.sqlite3
+  cache:
+    <<: *default
+    database: storage/development_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: storage/development_queue.sqlite3
+    migrations_paths: db/queue_migrate
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  primary:
+    <<: *default
+    database: storage/test.sqlite3
+  cache:
+    <<: *default
+    database: storage/test_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: storage/test_queue.sqlite3
+    migrations_paths: db/queue_migrate
+
+# Store production database in the storage/ directory, which by default
+# is mounted as a persistent Docker volume in config/deploy.yml.
+production:
+  primary:
+    <<: *default
+    database: storage/production.sqlite3
+  cache:
+    <<: *default
+    database: storage/production_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: storage/production_queue.sqlite3
+    migrations_paths: db/queue_migrate
