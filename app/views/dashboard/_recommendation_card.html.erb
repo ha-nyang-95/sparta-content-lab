@@ -1,0 +1,68 @@
+<%# §4.2 추천 카드 — 번호 뱃지·제목·스탯 라인·기회 점수·근거 보기(펼침). 로컬: recommendation, rank, videos_by_rec. %>
+<% mult = recommendation_multiple(recommendation, videos_by_rec) %>
+<%# 실제 존재하는 참고 영상만 센다 — AD-10 스냅샷은 삭제 영상 id 가 댕글링될 수 있어 size 는 과대 계수. %>
+<% present_video_ids = recommendation.reference_video_ids.select { |id| videos_by_rec[id] } %>
+<% competitor_count = present_video_ids.size %>
+<% has_own = recommendation_has_own_match?(recommendation, videos_by_rec) %>
+<article class="flex flex-col gap-4 rounded-card border border-border bg-surface p-6 shadow-card transition hover:shadow-cardHover"
+         data-controller="disclosure">
+  <div class="flex items-start gap-3">
+    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-primary-600 font-bold text-white tabular-nums"><%= rank %></span>
+    <h3 class="min-w-0 break-keep line-clamp-2 text-h3 text-ink-strong" title="<%= recommendation.topic_label %>">
+      <%= recommendation.topic_label.presence || "제목 없음" %>
+    </h3>
+  </div>
+
+  <div class="flex items-start justify-between gap-4">
+    <ul class="flex min-w-0 flex-col gap-1.5 text-body text-ink-body">
+      <li class="flex items-center gap-1.5">
+        <span class="text-ink-subtle" aria-hidden="true">↗</span>
+        <span>경쟁 영상 <span class="tabular-nums"><%= competitor_count %></span>개 상승</span>
+      </li>
+      <li class="flex items-center gap-1.5" title="<%= performance_bias_note %>">
+        <span class="text-ink-subtle" aria-hidden="true">◉</span>
+        <span><%= performance_multiple_label %> <span class="tabular-nums"><%= mult.nil? ? "—" : format("%.1f×", mult) %></span></span>
+      </li>
+      <li class="flex items-center gap-1.5">
+        <span class="text-ink-subtle" aria-hidden="true">◎</span>
+        <span>자사 유사 영상 <%= has_own ? "있음" : "없음" %></span>
+      </li>
+    </ul>
+    <div class="shrink-0 text-right">
+      <span class="block text-label text-ink-muted">기회 점수</span>
+      <span class="text-score text-primary-600 tabular-nums"><%= recommendation.opportunity_score.nil? ? "—" : recommendation.opportunity_score.round %></span><span class="text-caption text-ink-muted">/100</span>
+    </div>
+  </div>
+
+  <button type="button"
+          data-action="disclosure#toggle"
+          data-disclosure-target="trigger"
+          aria-expanded="false"
+          class="inline-flex items-center justify-center gap-1 rounded-control border border-border bg-transparent px-3.5 py-2 text-body text-primary-600 transition hover:bg-primary-50">
+    근거 보기 <span aria-hidden="true">→</span>
+  </button>
+
+  <div data-disclosure-target="content" class="hidden">
+    <% if competitor_count.zero? %>
+      <p class="text-caption text-ink-muted">참고 영상이 없습니다.</p>
+    <% else %>
+      <ul class="flex flex-col gap-2 border-t border-border-subtle pt-3">
+        <% present_video_ids.each do |id| %>
+          <% video = videos_by_rec[id] %>
+          <li class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <span class="block min-w-0 break-keep truncate text-body text-ink-strong" title="<%= video&.title %>"><%= video&.title.presence || "영상 #{id}" %></span>
+              <span class="block truncate text-caption text-ink-muted" title="<%= video&.channel&.name %>"><%= video&.channel&.name.presence || "미상" %></span>
+            </div>
+            <div class="shrink-0">
+              <%= render "shared/performance_cell",
+                    multiple: video&.video_score&.performance_multiple,
+                    view_count: video&.view_count,
+                    needs_verification: video&.video_score&.needs_verification || false %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</article>

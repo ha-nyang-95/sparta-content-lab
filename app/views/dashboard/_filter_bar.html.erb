@@ -1,0 +1,34 @@
+<%# 카테고리·유형 드롭다운 + 밴드/평면 토글(§4.8) — 쿼리 파라미터 링크로 서버 렌더. 로컬: category, type, layout. %>
+<div class="flex flex-wrap items-center gap-2">
+  <% [[:category, category_options, category], [:type, type_options, type]].each do |param, options, current| %>
+    <% current_label = options.find { |k, _| k == current }&.last %>
+    <details class="group relative">
+      <summary class="flex cursor-pointer list-none items-center gap-2 rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body">
+        <span><%= current_label %></span>
+        <%= tag.svg viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round", "stroke-linejoin": "round", class: "h-4 w-4 text-ink-subtle" do %>
+          <polyline points="6 8 10 12 14 8"></polyline>
+        <% end %>
+      </summary>
+      <ul class="absolute right-0 z-10 mt-1 min-w-[10rem] rounded-control border border-border bg-surface py-1 shadow-dropdown">
+        <% options.each do |key, label| %>
+          <li>
+            <%= link_to label,
+                  root_path(request.query_parameters.merge(param.to_s => key)),
+                  class: "block px-3 py-1.5 text-body #{key == current ? 'text-primary-600' : 'text-ink-body hover:bg-primary-50'}" %>
+          </li>
+        <% end %>
+      </ul>
+    </details>
+  <% end %>
+
+  <%# 밴드 그룹핑 ↔ 평면 세그먼트 토글. %>
+  <div class="inline-flex rounded-control border border-border bg-surface p-0.5">
+    <% layout_options.each do |key, label| %>
+      <% active = key == layout %>
+      <%= link_to label,
+            root_path(request.query_parameters.merge("layout" => key)),
+            "aria-current": (active ? "true" : nil),
+            class: "rounded-control px-2.5 py-1 text-label transition #{active ? 'bg-primary-600 text-white' : 'bg-transparent text-ink-muted hover:bg-primary-50'}" %>
+    <% end %>
+  </div>
+</div>

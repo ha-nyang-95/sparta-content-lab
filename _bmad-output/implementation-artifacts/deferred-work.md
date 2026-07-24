@@ -57,3 +57,11 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-6-1-shared-display-components.md`
   summary: `_video_row` 제목 셀의 per-title 언어(lang) 힌트 — 현재 한·일 혼재라 단일 하드코딩 lang 은 절반을 오표시해 제거했다. 제목별 언어 감지 후 lang 을 정확히 부착하면 스크린리더 발음·CJK 폰트 선택이 개선된다(향후).
   evidence: FR-24/§7 다국어 방어는 폰트 폴백·break-keep·line-clamp·min-w-0·title 툴팁으로 충족되나, lang 속성은 언어 감지 없이는 정확히 못 준다. 제목 언어 감지(간이 스크립트 판별 등) 도입 시 lang 재부착.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-2-dashboard-home.md`
+  summary: 대시보드 기간 탭·카테고리/유형 필터·밴드 그룹핑↔평면 토글이 URL 상태·컨트롤까지만 — 실제 대상(급상승 비디오 테이블)이 6.2엔 없다. 6.3이 @period/@category/@type/@layout 을 테이블 쿼리·구독자 밴드 그룹핑 렌더링에 적용해야 필터가 눈에 보이게 동작한다.
+  evidence: 추천 카드는 배치 top-3라 기간·카테고리 미scope(주간 고정). 필터의 실 타깃은 급상승 영상 테이블(6.3). 6.2는 컨트롤·화이트리스트 파라미터·URL 상태를 제공(재클릭 시 파라미터 병합은 이번에 수정). 6.3 착수 시 파라미터를 Video 스코프·밴드 그룹핑에 적용.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-2-dashboard-home.md`
+  summary: 추천 카드 태그 칩(§4.2 목업의 문법/초급~중급 같은 장르·레벨 칩)이 데이터 소스 부재로 생략됐다.
+  evidence: Recommendation/TopicCluster에 장르·난이도 컬럼이 없어 칩을 날조하지 않고 생략했다(제목 위 슬롯 자리만). 향후 topic_label 에서 파생하거나 별 분류 소스를 두면 §4.2 칩 블록을 복원.

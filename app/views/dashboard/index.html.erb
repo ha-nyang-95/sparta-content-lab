@@ -1,4 +1,100 @@
-<%# 대시보드 placeholder — 후속 에픽이 위젯으로 채운다 (Story 1.4). %>
+<%# 대시보드 홈 — 기간 탭·필터·추천 3개 카드 + 시계열 위젯 콜드스타트 자리(6.3~6.6 실 콘텐츠). 읽기 전용(AD-3). %>
 <% content_for :title, "대시보드" %>
-<h2 class="text-h2 text-ink-strong">대시보드</h2>
-<p class="mt-2 text-caption text-ink-muted">준비 중 — 후속 에픽에서 구현</p>
+
+<%# 필터 행 — 기간 탭(좌) + 카테고리/유형/레이아웃(우), 모바일 세로 스택. %>
+<div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+  <%= render "dashboard/period_tabs", current: @period %>
+  <%= render "dashboard/filter_bar", category: @category, type: @type, layout: @layout %>
+</div>
+
+<%# 추천 섹션 헤더. %>
+<section class="mt-8">
+  <div class="flex flex-wrap items-baseline gap-2">
+    <h2 class="flex items-center gap-2 text-h2 text-ink-strong">
+      <span class="text-primary-600" aria-hidden="true">★</span>
+      이번 주 추천 콘텐츠 <span class="tabular-nums"><%= @max_recommendations %></span>개
+    </h2>
+    <p class="text-caption text-ink-muted">데이터 기반으로 선정한 이번 주 제작 우선순위입니다.</p>
+    <%# 헤더 확보 칩은 1..target-1 일 때만 — 0개는 아래 empty 카드가 안내하므로 중복 표시하지 않는다. %>
+    <% if @recommendations.any? && (note = recommendation_shortfall_note(@recommendations.size, @max_recommendations)) %>
+      <span class="inline-flex items-center rounded-chip bg-badge-neutralBg px-1.5 py-0.5 text-label text-badge-neutralFg"><%= note %></span>
+    <% end %>
+  </div>
+
+  <% if @recommendations.any? %>
+    <div class="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <% @recommendations.each_with_index do |recommendation, i| %>
+        <%= render "dashboard/recommendation_card", recommendation: recommendation, rank: i + 1, videos_by_rec: @videos_by_rec %>
+      <% end %>
+    </div>
+  <% else %>
+    <%# empty 상태 — 자격 미달이면 억지로 채우지 않고 확보 개수 + 수집 중 안내(AD-16). %>
+    <div class="mt-4 rounded-card border border-border bg-surface p-6 shadow-card">
+      <p class="text-body text-ink-body">이번 주 0개 확보 — 추천할 주제가 아직 없습니다.</p>
+      <div class="mt-3">
+        <%= render "shared/honesty_status", status: :collecting, detail: "추천 데이터 수집 중" %>
+      </div>
+    </div>
+  <% end %>
+</section>
+
+<%# 하단 시계열 위젯 — 실 콘텐츠는 6.3~6.6. 여기선 위젯별 콜드스타트 자리(AD-7, 전역 배너 금지). %>
+<section class="mt-8 grid gap-5 lg:grid-cols-3">
+  <%# 급상승 영상(6.3) — 스파크라인 시계열 의존. 테이블 영역만 가로 스크롤. %>
+  <div class="rounded-card border border-border bg-surface p-6 shadow-card lg:col-span-2">
+    <h3 class="text-h3 text-ink-strong">급상승 영상</h3>
+    <% if widget_collecting?(:sparkline) %>
+      <div class="mt-4">
+        <%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:sparkline) %>
+      </div>
+      <%# 로딩(스켈레톤) 예시 — §4.9/§6 pulse, 실제 레이아웃 치수 유지(시프트 방지). %>
+      <div class="mt-4 space-y-3" aria-hidden="true">
+        <% 3.times do %>
+          <div class="flex items-center gap-3">
+            <div class="h-[54px] w-24 shrink-0 animate-pulse rounded-control bg-surface-sunken"></div>
+            <div class="h-4 flex-1 animate-pulse rounded-control bg-surface-sunken"></div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <%# 6.3에서 급상승 테이블을 이 자리에 렌더(overflow-x-auto 컨테이너). %>
+      <div class="mt-4 overflow-x-auto"></div>
+    <% end %>
+  </div>
+
+  <%# 경쟁 채널 동향(6.4) + 콘텐츠 기회 도넛(6.5). %>
+  <div class="flex flex-col gap-5">
+    <div class="rounded-card border border-border bg-surface p-6 shadow-card">
+      <h3 class="text-h3 text-ink-strong">경쟁 채널 동향</h3>
+      <div class="mt-4">
+        <% if widget_collecting?(:subscriber_delta) %>
+          <%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:subscriber_delta) %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="rounded-card border border-border bg-surface p-6 shadow-card">
+      <h3 class="text-h3 text-ink-strong">콘텐츠 기회</h3>
+      <%# 도넛은 시계열 아님(6.5 임베딩 의존) — 준비 중 자리 유지. %>
+      <div class="mt-4">
+        <%= render "shared/honesty_status", status: :collecting, detail: "데이터 수집 중" %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# 에버그린 콘텐츠(6.6) — 후보는 1일차 표시, 검증 에버그린은 스냅샷 축적 후. %>
+<section class="mt-8">
+  <div class="rounded-card border border-border bg-surface p-6 shadow-card">
+    <h3 class="text-h3 text-ink-strong">에버그린 콘텐츠</h3>
+    <p class="mt-1 text-caption text-ink-muted">꾸준히 조회수가 유지되는 검증된 주제입니다.</p>
+    <div class="mt-4">
+      <% if widget_collecting?(:evergreen_validation) %>
+        <%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:evergreen_validation) %>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# NOTE: error 상태 — 컨트롤러가 던지면 Rails 기본 500/사용자 정의 에러 페이지가 처리. 위젯 단위 부분 실패는 각 위젯이
+    자체 collecting/empty 자리로 흡수한다(전역 실패 배너 없음). loading은 위 animate-pulse 스켈레톤 자리로 표현. %>

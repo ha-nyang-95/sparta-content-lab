@@ -1,0 +1,12 @@
+<%# 기간 세그먼트 탭(§4.8) — 활성 primary-600, 쿼리 파라미터 링크로 다른 필터 보존. 로컬: current(활성 키). %>
+<% current = local_assigns[:current] %>
+<nav aria-label="업로드 기간" class="inline-flex flex-wrap gap-1 rounded-control bg-surface p-1">
+  <% period_tabs.each do |key, label| %>
+    <% active = key == current %>
+    <%# string 키로 merge — query_parameters 는 string 키라 symbol 키를 넣으면 period=old&period=new 로 공존해 옛 값이 이긴다. %>
+    <%= link_to label,
+          root_path(request.query_parameters.merge("period" => key)),
+          "aria-current": (active ? "page" : nil),
+          class: "rounded-control px-3 py-1.5 text-caption transition #{active ? 'bg-primary-600 text-white' : 'bg-transparent text-ink-muted hover:bg-primary-50'}" %>
+  <% end %>
+</nav>
