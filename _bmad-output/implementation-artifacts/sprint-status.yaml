@@ -68,8 +68,8 @@ development_status:
   epic-2-retrospective: optional
 
   # Epic 3: 성과 배수 스코어링 엔진 (Scoring)
-  epic-3: backlog
-  3-1-기준선-중앙값-계산-신뢰도-하한: backlog
+  epic-3: in-progress
+  3-1-기준선-중앙값-계산-신뢰도-하한: done
   3-2-성과-배수-계산-플루크-방어-축-분리: backlog
   3-3-구독자-밴드-티어링-결정적-정렬키: backlog
   3-4-에버그린-후보-판정-대리지표-1일차: backlog

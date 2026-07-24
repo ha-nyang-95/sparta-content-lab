@@ -41,3 +41,11 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-2-6-weekly-discovery-job.md`
   summary: auto 발굴 채널의 name 이 search snippet.title 없을 때 channel_id(UC…) 폴백으로 생성되고, 이후 어떤 잡도 갱신하지 않아 UC id 가 화면 이름으로 영속한다.
   evidence: FetchChannelVideos(2.3)는 uploads·subscriber 만 갱신하고 name 은 안 건드린다. channels.list part 에 snippet 추가 후 name 을 snippet.title 로 보정하면 해소(Live-only·실 search 는 대개 title 존재라 희소).
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-3-1-baseline-median.md`
+  summary: is_short nil(미분류) 영상은 CalculateBaseline 표본에서 두 유형 모두 빠져, "데이터 수집 중/미분류" 채널이 low_confidence(저신뢰)로 오표시된다.
+  evidence: `where(is_short: bool)`가 SQL 3치 논리로 NULL을 short·long 양쪽에서 제외. 분류 전 채널은 표본 0→low_confidence. 데이터층 계산은 옳지만(유형 분리), 화면 정직성 상태(DESIGN.md §4.7)는 "미분류"와 "저신뢰"를 구분해야 한다 — Epic 6 표시에서 미분류 카운트를 별도 신호로 노출.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-3-1-baseline-median.md`
+  summary: CalculateBaseline 의 find_or_initialize_by+update! 는 동일 채널 동시 재계산 시 unique index(channel,video_type) 경합으로 RecordNotUnique 를 던진다.
+  evidence: 두 워커가 각각 미저장 레코드를 초기화 후 INSERT → 두 번째가 유니크 위반. 모델 uniqueness 검증은 read-then-write라 경합 방지 못함. 현재 recurring 잡은 reap_stale·직렬 실행이라 미도달이나, 잡 병렬화·수동 재계산 병행 시 upsert 또는 with_lock 필요.

@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100007) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100008) do
+  create_table "baselines", force: :cascade do |t|
+    t.integer "channel_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "low_confidence", default: true, null: false
+    t.float "median_view_count"
+    t.integer "sample_size", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.string "video_type", null: false
+    t.index ["channel_id", "video_type"], name: "index_baselines_on_channel_id_and_video_type", unique: true
+    t.index ["channel_id"], name: "index_baselines_on_channel_id"
+  end
+
   create_table "channel_daily_stats", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -95,6 +107,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100007) do
     t.index ["youtube_video_id"], name: "index_videos_on_youtube_video_id", unique: true
   end
 
+  add_foreign_key "baselines", "channels"
   add_foreign_key "channel_daily_stats", "channels"
   add_foreign_key "sessions", "users"
   add_foreign_key "video_daily_stats", "videos"
