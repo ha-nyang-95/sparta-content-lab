@@ -1,0 +1,21 @@
+<%# 수집 잡 실행 1행(§4.3) — 이름·상태 배지·시작/종료·처리·실패·재시도·쿼터·오류. local: job_run. nil 방어(AD-9). %>
+<% badge = job_status_badge(job_run.status) %>
+<tr class="border-b border-border-subtle text-body text-ink-body">
+  <td class="p-2"><%= job_run.job_name %></td>
+  <td class="p-2">
+    <span class="inline-flex items-center rounded-chip px-1.5 py-0.5 text-label <%= badge[:klass] %>"><%= badge[:label] %></span>
+  </td>
+  <td class="p-2 tabular-nums text-ink-muted"><%= format_job_time(job_run.started_at) %></td>
+  <td class="p-2 tabular-nums text-ink-muted"><%= format_job_time(job_run.finished_at) %></td>
+  <td class="p-2 tabular-nums"><%= "#{job_run.channels_processed} / #{job_run.channels_failed}" %></td>
+  <td class="p-2 tabular-nums"><%= job_run.retries %></td>
+  <td class="p-2 tabular-nums"><%= job_run.quota_used.nil? ? "—" : job_run.quota_used %></td>
+  <td class="p-2">
+    <% if job_run.error.present? %>
+      <% safe_error = redact_secrets(job_run.error) %>
+      <span class="block max-w-[16rem] truncate text-ink-muted" title="<%= safe_error %>"><%= safe_error %></span>
+    <% else %>
+      —
+    <% end %>
+  </td>
+</tr>

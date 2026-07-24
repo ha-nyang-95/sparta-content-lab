@@ -13,6 +13,11 @@ module Youtube
         ENV["YOUTUBE_API_KEY"].presence || credentials_api_key
       end
 
+      # 키 유무만 노출한다(값 반환 금지) — 설정 화면 등 경계 밖은 이 술어만 읽는다(AD-1).
+      def key_present?
+        api_key.present?
+      end
+
       # master key 부재 등으로 credentials 복호화가 안 되는 환경에서도 nil 로 폴백(예외 전파 방지).
       def credentials_api_key
         Rails.application.credentials.dig(:youtube, :api_key)

@@ -1,4 +1,97 @@
-<%# 설정 placeholder — 후속 에픽이 채운다 (Story 1.4). %>
+<%# 설정 — 수집 상태(신선도+JobRun 표) → API 연결 → 데이터 범위·백업 → 계정. 읽기 전용(AD-3), §10 토큰·§4.3·§4.7·§5·§7. %>
 <% content_for :title, "설정" %>
+
 <h2 class="text-h2 text-ink-strong">설정</h2>
-<p class="mt-2 text-caption text-ink-muted">준비 중 — 후속 에픽에서 구현</p>
+
+<%# (1) 수집 상태 — 신선도 + 최근 JobRun 표(§4.3). %>
+<section class="mt-6 rounded-card border border-border bg-surface p-6 shadow-card">
+  <h3 class="text-h3 text-ink-strong">수집 상태</h3>
+  <p class="mt-1 text-caption text-ink-muted">
+    <% if @last_success&.finished_at %>
+      마지막 성공 수집: <%= format_job_time(@last_success.finished_at) %>
+      <span class="text-ink-subtle">(<%= time_ago_in_words(@last_success.finished_at) %> 전)</span>
+    <% else %>
+      아직 수집 실행이 없습니다.
+    <% end %>
+  </p>
+
+  <% if @job_runs.any? %>
+    <p class="mt-1 text-label text-ink-subtle">최근 20건</p>
+    <%# 표 영역만 가로 스크롤(§5), 본문은 min-w 로 컬럼 유지. %>
+    <div class="mt-2 overflow-x-auto rounded-card border border-border">
+      <table class="w-full min-w-[720px]">
+        <thead>
+          <tr class="border-b border-border-subtle bg-surface-sunken text-left text-label text-ink-muted">
+            <th class="p-2 font-medium">잡</th>
+            <th class="p-2 font-medium">상태</th>
+            <th class="p-2 font-medium">시작</th>
+            <th class="p-2 font-medium">종료</th>
+            <th class="p-2 font-medium">처리·실패</th>
+            <th class="p-2 font-medium">재시도</th>
+            <th class="p-2 font-medium">쿼터</th>
+            <th class="p-2 font-medium">오류</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= render partial: "job_run_row", collection: @job_runs, as: :job_run %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="mt-4">
+      <%= render "shared/honesty_status", status: :collecting, detail: "수집 이력 없음" %>
+    </div>
+  <% end %>
+</section>
+
+<%# (2) API 연결 상태 — YouTube·Gemini 각각 모드 배지·키 유무. 키 값 노출 금지. %>
+<section class="mt-6 rounded-card border border-border bg-surface p-6 shadow-card">
+  <h3 class="text-h3 text-ink-strong">API 연결 상태</h3>
+  <div class="mt-4 grid gap-3 sm:grid-cols-2">
+    <% yt_mode = api_mode_badge(@youtube[:mode]) %>
+    <div class="rounded-card border border-border bg-surface-sunken p-4">
+      <div class="text-body font-medium text-ink-strong">YouTube Data API</div>
+      <div class="mt-2 flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center rounded-chip px-1.5 py-0.5 text-label <%= yt_mode[:klass] %>"><%= yt_mode[:label] %></span>
+        <span class="text-caption text-ink-muted"><%= api_key_presence(@youtube[:key]) %></span>
+      </div>
+    </div>
+    <% gm_mode = api_mode_badge(@embedding[:mode]) %>
+    <div class="rounded-card border border-border bg-surface-sunken p-4">
+      <div class="text-body font-medium text-ink-strong">Gemini Embedding</div>
+      <div class="mt-2 flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center rounded-chip px-1.5 py-0.5 text-label <%= gm_mode[:klass] %>"><%= gm_mode[:label] %></span>
+        <span class="text-caption text-ink-muted"><%= api_key_presence(@embedding[:key]) %></span>
+      </div>
+    </div>
+  </div>
+  <p class="mt-3 text-caption text-ink-subtle">
+    실사용(live) 전환에는 유효한 키와 (Gemini) 빌링 크레딧이 필요합니다. 키는 .env 로만 관리됩니다.
+  </p>
+</section>
+
+<%# (3) 데이터 범위·백업 — surface-sunken 박스(§4.2). 채널 카운트·백업 정책(AD-17)·최신 백업 시각. %>
+<section class="mt-6 rounded-card border border-border bg-surface p-6 shadow-card">
+  <h3 class="text-h3 text-ink-strong">데이터 범위 · 백업</h3>
+  <div class="mt-4 rounded-card bg-surface-sunken p-4">
+    <p class="text-body text-ink-body tabular-nums">
+      <%= "전체 #{@channel_counts[:total]} · 경쟁 #{@channel_counts[:competitor]} · 자사 #{@channel_counts[:own]}" %>
+    </p>
+    <p class="mt-2 text-caption text-ink-muted">
+      기본 DB 는 매일 백업됩니다(storage/backups).
+    </p>
+    <p class="mt-1 text-caption text-ink-muted">
+      최신 백업: <%= @backup_latest_at ? format_job_time(@backup_latest_at) : "백업 파일 없음" %>
+    </p>
+  </div>
+</section>
+
+<%# (4) 계정 — 로그인 이메일 + 로그아웃(DELETE session_path). %>
+<section class="mt-6 rounded-card border border-border bg-surface p-6 shadow-card">
+  <h3 class="text-h3 text-ink-strong">계정</h3>
+  <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+    <span class="min-w-0 truncate text-body text-ink-body" title="<%= @current_user&.email_address %>"><%= @current_user&.email_address || "—" %></span>
+    <%= button_to "로그아웃", session_path, method: :delete,
+          class: "rounded-control border border-border px-4 py-2 text-body font-medium text-primary-600 hover:bg-primary-50" %>
+  </div>
+</section>
