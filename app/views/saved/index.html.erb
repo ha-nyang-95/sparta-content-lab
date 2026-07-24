@@ -1,4 +1,35 @@
-<%# 저장한 영상 placeholder — 후속 에픽이 채운다 (Story 1.4). %>
+<%# 저장한 영상 — 현재 사용자 저장 목록을 §4.3 표(_video_row + saved_ids)로 재열람·해제. 읽기 전용(AD-3), empty·반응형(§5)·다국어(§7). %>
 <% content_for :title, "저장한 영상" %>
+
 <h2 class="text-h2 text-ink-strong">저장한 영상</h2>
-<p class="mt-2 text-caption text-ink-muted">준비 중 — 후속 에픽에서 구현</p>
+<p class="mt-1 text-caption text-ink-muted">저장한 참고 영상 목록입니다.</p>
+
+<% if @saved.any? %>
+  <%# 테이블 영역만 가로 스크롤(§5), 본문은 min-w 로 컬럼 유지. %>
+  <div class="mt-6 overflow-x-auto rounded-card border border-border bg-surface shadow-card">
+    <table class="w-full min-w-[720px]">
+      <thead>
+        <tr class="border-b border-border-subtle bg-surface-sunken text-left text-label text-ink-muted">
+          <th class="p-2 font-medium">영상</th>
+          <th class="p-2 font-medium">채널</th>
+          <th class="p-2 font-medium">업로드일</th>
+          <th class="p-2 font-medium">조회수</th>
+          <th class="p-2 font-medium">성과 배수</th>
+          <th class="p-2 font-medium">자사 유사영상</th>
+          <th class="p-2 font-medium">저장</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @saved.each do |sv| %>
+          <%= render "shared/video_row", video: sv.video, saved_ids: @saved_ids %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <%# empty — 콜드스타트가 아니라 진짜 저장 0건이므로 "데이터 수집 중"이 아닌 평서 문구. %>
+  <div class="mt-6 rounded-card border border-border bg-surface p-6 shadow-card">
+    <p class="text-body text-ink-body">저장한 영상이 없습니다.</p>
+    <p class="mt-1 text-caption text-ink-muted">인기 콘텐츠에서 참고할 영상을 저장해 보세요.</p>
+  </div>
+<% end %>

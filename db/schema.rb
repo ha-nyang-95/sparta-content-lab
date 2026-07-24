@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100018) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_162116) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -82,6 +82,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100018) do
     t.text "reference_video_ids"
     t.string "topic_label"
     t.datetime "updated_at", null: false
+  end
+
+  create_table "saved_videos", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.integer "video_id", null: false
+    t.index ["user_id", "video_id"], name: "index_saved_videos_on_user_id_and_video_id", unique: true
+    t.index ["user_id"], name: "index_saved_videos_on_user_id"
+    t.index ["video_id"], name: "index_saved_videos_on_video_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -156,6 +166,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100018) do
   add_foreign_key "channel_daily_stats", "channels"
   add_foreign_key "own_video_matches", "videos", column: "competitor_video_id"
   add_foreign_key "own_video_matches", "videos", column: "own_video_id"
+  add_foreign_key "saved_videos", "users"
+  add_foreign_key "saved_videos", "videos"
   add_foreign_key "sessions", "users"
   add_foreign_key "video_daily_stats", "videos"
   add_foreign_key "video_scores", "videos"

@@ -30,6 +30,9 @@ class PopularController < ApplicationController
 
     @scores = scope.includes(video: [:channel, :daily_stats]).to_a
 
+    # 저장 상태 — 현재 사용자의 저장 video_id 를 1회 pluck 한 Set(행별 쿼리 금지, N+1 방지).
+    @saved_ids = Current.user ? Current.user.saved_videos.pluck(:video_id).to_set : Set.new
+
     @grouped =
       if @layout == "band"
         # nil 밴드는 자기 그룹, 티어 0..3 → nil 순으로. 밴드 내 순서는 apply_sort(@sort) 결과 유지(기본 배수 desc).

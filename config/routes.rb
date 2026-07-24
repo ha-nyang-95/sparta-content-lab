@@ -19,6 +19,9 @@ Rails.application.routes.draw do
   patch "competitors/:id/exclusion" => "competitors#toggle_exclusion", as: :competitor_exclusion
   get "content-gap", to: "content_gap#index", as: :content_gap
   get "saved", to: "saved#index"
+  # 7.2 영상 저장 토글(쓰기) — create(POST)·destroy(DELETE) 모두 video_id 파라미터로 키. 읽기는 위 GET saved.
+  resources :saved_videos, only: [:create]
+  delete "saved_videos", to: "saved_videos#destroy", as: :destroy_saved_video
   get "settings", to: "settings#index"
 
   # Defines the root path route ("/")

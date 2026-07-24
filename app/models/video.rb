@@ -4,6 +4,7 @@ class Video < ApplicationRecord
   belongs_to :topic_cluster, optional: true
   has_one :video_score
   has_many :daily_stats, class_name: "VideoDailyStat", dependent: :destroy
+  has_many :saved_videos, dependent: :destroy
 
   validates :youtube_video_id, presence: true, uniqueness: true
 

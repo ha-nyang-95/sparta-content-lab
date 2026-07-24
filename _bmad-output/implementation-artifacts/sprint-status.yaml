@@ -101,7 +101,7 @@ development_status:
   epic-6-retrospective: optional
 
   # Epic 7: 검색 · 필터 · 정렬 · 저장 (Explore & Save)
-  epic-7: in-progress
+  epic-7: done
   7-1-검색-필터-정렬: done
-  7-2-영상-저장-저장한-영상-화면: backlog
+  7-2-영상-저장-저장한-영상-화면: done
   epic-7-retrospective: optional

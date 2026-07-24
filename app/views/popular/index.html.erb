@@ -28,6 +28,7 @@
           <th class="p-2 font-medium">성과 배수</th>
           <th class="p-2 font-medium">트렌드</th>
           <th class="p-2 font-medium">자사 유사영상</th>
+          <th class="p-2 font-medium">저장</th>
         </tr>
       </thead>
       <tbody>
@@ -35,18 +36,18 @@
           <%# 밴드 모드에선 순번을 밴드마다 1부터 리셋 — 각 밴드가 자기 리더보드다(전역 카운터는 밴드 간 순번이 성과 순위처럼 오독됨). %>
           <% @grouped.each do |band, scores| %>
             <tr class="bg-surface-sunken">
-              <td colspan="8" class="px-2 py-1.5 text-label text-ink-muted">
+              <td colspan="9" class="px-2 py-1.5 text-label text-ink-muted">
                 <%= (scores.first && subscriber_band_label(scores.first.video.channel)) || "구독자 미상" %>
               </td>
             </tr>
             <% scores.each_with_index do |score, idx| %>
-              <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true, evergreen: (@period == "evergreen") %>
+              <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true, evergreen: (@period == "evergreen"), saved_ids: @saved_ids %>
             <% end %>
           <% end %>
         <% else %>
           <%# 평면 모드 — 성과 배수 desc 전역 순위. %>
           <% @scores.each_with_index do |score, idx| %>
-            <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true, evergreen: (@period == "evergreen") %>
+            <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true, evergreen: (@period == "evergreen"), saved_ids: @saved_ids %>
           <% end %>
         <% end %>
       </tbody>
