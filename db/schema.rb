@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100008) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100009) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -90,6 +90,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100008) do
     t.index ["video_id"], name: "index_video_daily_stats_on_video_id"
   end
 
+  create_table "video_scores", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "needs_verification", default: false, null: false
+    t.float "performance_multiple"
+    t.boolean "rank_eligible", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.integer "video_id", null: false
+    t.index ["video_id"], name: "index_video_scores_on_video_id", unique: true
+  end
+
   create_table "videos", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.integer "comment_count"
@@ -111,5 +121,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100008) do
   add_foreign_key "channel_daily_stats", "channels"
   add_foreign_key "sessions", "users"
   add_foreign_key "video_daily_stats", "videos"
+  add_foreign_key "video_scores", "videos"
   add_foreign_key "videos", "channels"
 end

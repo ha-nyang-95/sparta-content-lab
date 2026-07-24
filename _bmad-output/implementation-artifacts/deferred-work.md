@@ -49,3 +49,7 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-3-1-baseline-median.md`
   summary: CalculateBaseline 의 find_or_initialize_by+update! 는 동일 채널 동시 재계산 시 unique index(channel,video_type) 경합으로 RecordNotUnique 를 던진다.
   evidence: 두 워커가 각각 미저장 레코드를 초기화 후 INSERT → 두 번째가 유니크 위반. 모델 uniqueness 검증은 read-then-write라 경합 방지 못함. 현재 recurring 잡은 reap_stale·직렬 실행이라 미도달이나, 잡 병렬화·수동 재계산 병행 시 upsert 또는 with_lock 필요.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-3-2-performance-multiple.md`
+  summary: CalculatePerformance 의 find_or_initialize_by(video:)+update! 는 동일 채널 동시 재계산 시 video_scores unique(video_id) 경합으로 RecordNotUnique 를 던진다(3.1 CalculateBaseline 과 동일 클래스).
+  evidence: 두 워커가 각각 미저장 VideoScore 를 초기화 후 INSERT → 두 번째가 유니크 위반. 모델 uniqueness 검증은 read-then-write라 경합 방지 못함. 현재 recurring 잡은 직렬 실행이라 미도달이나, 잡 병렬화·수동 재계산 병행 시 스코어링 서비스 전반에 upsert_all(unique_by) 또는 with_lock 도입 필요.
