@@ -87,6 +87,19 @@ class DailyCollectionJobTest < ActiveSupport::TestCase
     assert_equal 0, run.channels_processed
   end
 
+  test "Epic 4 스테이지 append: 스코어링 뒤 임베딩이 물질화되고 런은 succeeded" do
+    make_channel(name: "a", youtube_channel_id: "UCe4a")
+    make_channel(name: "b", youtube_channel_id: "UCe4b")
+
+    DailyCollectionJob.perform_now
+
+    run = JobRun.last
+    assert_equal "succeeded", run.status
+    # 임베딩 스테이지가 스코어링 뒤 append 실행됐다는 신호 — 제목 있는 영상에 임베딩이 물질화됨.
+    assert Video.where.not(embedding: nil).count > 0,
+      "Epic 4 임베딩 스테이지가 에버그린 뒤 append 실행돼야 한다"
+  end
+
   test "retry_on 은 일시 인프라 오류(Deadlocked)만 대상이고 YouTube RateLimited 는 아니다" do
     handled = DailyCollectionJob.rescue_handlers.map(&:first)
     assert_includes handled, "ActiveRecord::Deadlocked", "일시 DB 오류는 잡 단위 재시도"

@@ -49,6 +49,7 @@ class DailyCollectionJob < ApplicationJob
                   quota_used: ledger.spent(:shared),
                   channels_processed: processed, channels_failed: failed)
       else
+        run_similarity_stages # 스코어링 정상 시 Epic 4 전역 스테이지를 에버그린 뒤 append.
         finalize(run, processed, failed, ledger.spent(:shared))
       end
     rescue => e
@@ -60,6 +61,21 @@ class DailyCollectionJob < ApplicationJob
   end
 
   private
+
+  # Epic 4 스테이지 — 전역 배치, 에버그린 뒤. 임베딩→OwnVideoMatch→콘텐츠 갭→주제 클러스터(AD-11). 스테이지별 rescue.
+  def run_similarity_stages
+    stages = {
+      "임베딩" => -> { Embedding::UpsertVectors.new.call },
+      "OwnVideoMatch" => -> { Similarity::MatchOwnVideos.new.call },
+      "콘텐츠 갭" => -> { Similarity::ClassifyContentGap.new.call },
+      "주제 클러스터" => -> { Similarity::BuildTopicClusters.new.call },
+    }
+    stages.each do |name, stage|
+      stage.call
+    rescue => e
+      Rails.logger.error("[DailyCollectionJob] 유사도 스테이지 실패(스킵): #{name} — #{e.class}: #{e.message}")
+    end
+  end
 
   # 전 채널이 실패하면 체계적 문제로 보고 succeeded 로 위장하지 않는다(정직성). 부분 실패는 succeeded + 실패 수 기록.
   def finalize(run, processed, failed, quota_used)

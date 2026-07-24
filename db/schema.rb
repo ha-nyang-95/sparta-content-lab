@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100015) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100016) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -84,6 +84,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100015) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "topic_clusters", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "size"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
@@ -127,10 +133,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100015) do
     t.datetime "published_at"
     t.string "thumbnail"
     t.string "title"
+    t.integer "topic_cluster_id"
     t.datetime "updated_at", null: false
     t.integer "view_count"
     t.string "youtube_video_id", null: false
     t.index ["channel_id"], name: "index_videos_on_channel_id"
+    t.index ["topic_cluster_id"], name: "index_videos_on_topic_cluster_id"
     t.index ["youtube_video_id"], name: "index_videos_on_youtube_video_id", unique: true
   end
 
@@ -142,4 +150,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100015) do
   add_foreign_key "video_daily_stats", "videos"
   add_foreign_key "video_scores", "videos"
   add_foreign_key "videos", "channels"
+  add_foreign_key "videos", "topic_clusters"
 end
