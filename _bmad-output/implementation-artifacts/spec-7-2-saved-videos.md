@@ -13,7 +13,7 @@ context:
   - '{project-root}/DESIGN.md'
 warnings: []
 baseline_revision: '9e5898c58604a0fa99d189a83c87aaa6ec960764'
-final_revision: ''
+final_revision: '75e3869f641f67d323650c17534dff55e687239d'
 ---
 
 <intent-contract>
