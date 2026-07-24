@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100005) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100007) do
   create_table "channel_daily_stats", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -34,6 +34,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100005) do
     t.string "youtube_channel_id"
     t.index ["handle"], name: "index_channels_on_handle_not_null", unique: true, where: "handle IS NOT NULL"
     t.index ["youtube_channel_id"], name: "index_channels_on_youtube_channel_id", unique: true
+  end
+
+  create_table "job_runs", force: :cascade do |t|
+    t.integer "channels_failed", default: 0, null: false
+    t.integer "channels_processed", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.text "error"
+    t.datetime "finished_at"
+    t.string "job_name", null: false
+    t.integer "quota_used"
+    t.integer "retries", default: 0, null: false
+    t.datetime "started_at"
+    t.string "status", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_name", "created_at"], name: "index_job_runs_on_job_name_and_created_at"
   end
 
   create_table "sessions", force: :cascade do |t|
