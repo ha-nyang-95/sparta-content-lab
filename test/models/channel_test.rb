@@ -56,4 +56,14 @@ class ChannelTest < ActiveSupport::TestCase
     video = channel.videos.create!(youtube_video_id: "vid_assoc_1", title: "t")
     assert_includes channel.videos, video
   end
+
+  test "subscriber_band는 subscriber_count를 티어로 위임한다" do
+    channel = Channel.new(valid_attrs(subscriber_count: 50_000))
+    assert_equal 1, channel.subscriber_band
+  end
+
+  test "subscriber_band는 subscriber_count nil이면 nil이다(밴드 미상)" do
+    channel = Channel.new(valid_attrs(subscriber_count: nil))
+    assert_nil channel.subscriber_band
+  end
 end

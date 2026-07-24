@@ -19,4 +19,9 @@ class Channel < ApplicationRecord
 
   # excluded 채널은 이후 수집·표시에서 제외한다
   scope :not_excluded, -> { where(excluded: false) }
+
+  # 구독자 밴드 티어(0..3, nil이면 미상)를 Scoring::SubscriberBand에 위임한다 — 파생 컬럼 없이 계산.
+  def subscriber_band
+    Scoring::SubscriberBand.tier(subscriber_count)
+  end
 end

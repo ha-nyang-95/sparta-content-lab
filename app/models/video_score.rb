@@ -3,4 +3,8 @@ class VideoScore < ApplicationRecord
   belongs_to :video
 
   validates :video_id, uniqueness: true
+
+  # 기본 정렬키 — 성과 배수 내림차순 + video_id 오름차순 결정적 타이브레이크, rank_eligible=false 제외(raw 조회수 정렬 금지).
+  # performance_multiple nil 도 명시 제외 — 3.2 불변식(nil 배수→rank_eligible false)에만 의존하지 않는 방어(NULL 정렬 회피).
+  scope :ranked, -> { where(rank_eligible: true).where.not(performance_multiple: nil).order(performance_multiple: :desc, video_id: :asc) }
 end
