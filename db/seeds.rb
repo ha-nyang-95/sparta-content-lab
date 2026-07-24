@@ -92,3 +92,17 @@ seed_channels.each do |attrs|
     c.excluded = false
   end
 end
+
+# --- 자사 채널 (is_own: true) — 경쟁 시드와 분리한다 (4.2 자사/경쟁 파티션) ---
+#
+# 실제 자사 채널 @KankokugoBenkyo. is_own:true 로 자사 집합을 표시한다.
+# category(4분류)는 순수 필터 축이라 자사도 도메인 category(직접경쟁)를 보유한다.
+# name 으로 find_or_create_by! — 재실행해도 중복되지 않는다. 자사 채널은 정의상 is_own:true 여야 하므로,
+# 이미 존재하는 행(예: 발굴·수동 등록으로 is_own:false 생성)의 플래그도 복구한다(생성 블록은 create 시에만 실행되므로).
+own_channel = Channel.find_or_create_by!(name: "スパルタ韓国語 l 楽しく独学") do |c|
+  c.category = "직접경쟁"
+  c.source = "seed"
+  c.is_own = true
+  c.handle = "@KankokugoBenkyo"
+end
+own_channel.update!(is_own: true) unless own_channel.is_own

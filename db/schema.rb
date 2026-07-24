@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100011) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100013) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -38,6 +38,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100011) do
     t.datetime "created_at", null: false
     t.boolean "excluded", default: false, null: false
     t.string "handle"
+    t.boolean "is_own", default: false, null: false
     t.string "name", null: false
     t.string "source", null: false
     t.integer "subscriber_count"
@@ -61,6 +62,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100011) do
     t.string "status", null: false
     t.datetime "updated_at", null: false
     t.index ["job_name", "created_at"], name: "index_job_runs_on_job_name_and_created_at"
+  end
+
+  create_table "own_video_matches", force: :cascade do |t|
+    t.integer "competitor_video_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "own_video_id", null: false
+    t.float "similarity", null: false
+    t.datetime "updated_at", null: false
+    t.index ["competitor_video_id", "own_video_id"], name: "idx_on_competitor_video_id_own_video_id_4c98b9fe5a", unique: true
+    t.index ["competitor_video_id"], name: "index_own_video_matches_on_competitor_video_id"
+    t.index ["own_video_id"], name: "index_own_video_matches_on_own_video_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -122,6 +134,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100011) do
 
   add_foreign_key "baselines", "channels"
   add_foreign_key "channel_daily_stats", "channels"
+  add_foreign_key "own_video_matches", "videos", column: "competitor_video_id"
+  add_foreign_key "own_video_matches", "videos", column: "own_video_id"
   add_foreign_key "sessions", "users"
   add_foreign_key "video_daily_stats", "videos"
   add_foreign_key "video_scores", "videos"
