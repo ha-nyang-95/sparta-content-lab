@@ -21,7 +21,15 @@ opportunity_score:
     competitor_commonality: 0.25
     content_gap: 0.25
     recency: 0.25
-  normalization: {}          # 각 입력 [0,1] 정규화 매핑 자리 (본개발 확정)
+  normalization:             # 각 입력 [0,1] 정규화 매핑 (FR-21 구조 고정, 값은 본개발 실측 확정)
+    performance_divisor: 10  # 성과 배수 → min(배수/divisor, 1) (본개발 실측 튜닝)
+    commonality_cap: 5       # 경쟁 공통성 → min(경쟁 채널 수/cap, 1) (본개발 실측 튜닝)
+    recency_full_decay_days: 90  # 최신성 선형 감쇠 → 경과일 이 값 이상이면 0 (본개발 실측 튜닝)
+    content_gap_values:      # 콘텐츠 갭 버킷 → [0,1] (미제작=최대 기회) (본개발 실측 튜닝)
+      not_made: 1.0
+      one: 0.66
+      few: 0.33
+      saturated: 0.0
 subscriber_bands: [10000, 100000, 500000]  # <1만 / 1만~10만 / 10만~50만 / 50만+ (본개발 실측 튜닝)
 cold_start_snapshots:        # 위젯별 "수집 중"→표시 전환 스냅샷 수 (본개발 실측 튜닝)
   sparkline: 7
