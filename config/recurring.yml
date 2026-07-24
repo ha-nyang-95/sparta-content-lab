@@ -16,3 +16,6 @@ production:
   daily_collection:
     class: DailyCollectionJob
     schedule: "at 4am every day"
+  weekly_discovery:
+    class: WeeklyDiscoveryJob
+    schedule: "every monday at 3am"

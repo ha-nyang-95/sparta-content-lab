@@ -33,3 +33,11 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-2-4-daily-snapshots-rollup.md`
   summary: VideoDailyStat/ChannelDailyStat 에 `has_many :daily_stats, dependent: :destroy` — channel.destroy 시 channel→videos→daily_stats 까지 cascade 삭제돼 AD-17 "소급 재구성 불가·백업 필수" 시계열이 영구 소실될 수 있다.
   evidence: 설계는 은퇴를 excluded(soft)로 처리하지만 destroy 경로에 가드가 없다. 채널 삭제 흐름이 생기면 dependent 를 restrict_with_exception 등으로 바꿔 exclude-not-delete 를 강제하거나 백업-선행 계약을 둬야 한다. MVP엔 destroy 경로 없음(2.1 Video dependent:destroy defer 의 확장).
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-2-6-weekly-discovery-job.md`
+  summary: WeeklyDiscoveryJob 의 auto 채널 dedup 이 youtube_channel_id 만 봐서, handle-only 시드 채널(youtube_channel_id nil)과 같은 실채널을 중복 auto 행으로 만든다. Live 발굴 시 2.2/2.3 handle→UC id 해결이 이 중복과 유니크 인덱스 충돌.
+  evidence: 시드 대부분이 handle-only(youtube_channel_id nil). 발굴은 UC id 를 주므로 exists?(youtube_channel_id:)가 시드를 못 찾아 중복 생성. 2.1/2.2 handle→id 해결 deferred 를 auto 채널 merge/reconcile 까지 확장해야 한다(키 도착·Live 시). 현재 stub 은 합성 UC 라 미도달.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-2-6-weekly-discovery-job.md`
+  summary: auto 발굴 채널의 name 이 search snippet.title 없을 때 channel_id(UC…) 폴백으로 생성되고, 이후 어떤 잡도 갱신하지 않아 UC id 가 화면 이름으로 영속한다.
+  evidence: FetchChannelVideos(2.3)는 uploads·subscriber 만 갱신하고 name 은 안 건드린다. channels.list part 에 snippet 추가 후 name 을 snippet.title 로 보정하면 해소(Live-only·실 search 는 대개 title 존재라 희소).
