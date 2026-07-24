@@ -32,7 +32,26 @@ module Youtube
         if endpoint == :playlist_items_list && params[:pageToken].present?
           data = data.except("nextPageToken")
         end
+
+        # channels.list는 실 API처럼 요청한 id 를 그대로 반환한다(1채널당 1 item).
+        # 정적 fixture의 첫 채널을 템플릿으로 삼아 요청 id 별 item 을 만든다(다채널·id 매칭 정합).
+        if endpoint == :channels_list && params[:id].present?
+          data = echo_channel_ids(data, params[:id])
+        end
         data
+      end
+
+      private
+
+      # 요청 id(콤마 구분)마다 fixture 템플릿을 복제하고 id 를 요청값으로 덮어 반환한다.
+      def echo_channel_ids(data, id_param)
+        template = data["items"]&.first
+        return data if template.nil?
+
+        items = id_param.to_s.split(",").map do |id|
+          template.merge("id" => id)
+        end
+        data.merge("items" => items)
       end
     end
   end
