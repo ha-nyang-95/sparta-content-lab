@@ -6,6 +6,12 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # 테스트는 절대 실 API(YouTube·Gemini)를 타지 않는다 — dotenv 가 .env 의 live 키/모드를 로드해도
+  # stub 를 강제한다(spec-1-5 deferred 해소). 모드별 분기 테스트는 어댑터를 직접 주입하거나 이 값을
+  # 테스트 안에서 일시적으로 덮어쓴다. 우발적 live 경로 → 실 API 호출·쿼터 소진·과금을 원천 차단.
+  ENV["YOUTUBE_API_MODE"] = "stub"
+  ENV["EMBEDDING_MODE"] = "stub"
+
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false
 
