@@ -11,6 +11,13 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # 앱 셸 6개 화면 placeholder 라우트 (Story 1.4) — 후속 에픽이 각 index 를 채운다.
+  get "popular", to: "popular#index"
+  get "competitors", to: "competitors#index"
+  get "content-gap", to: "content_gap#index", as: :content_gap
+  get "saved", to: "saved#index"
+  get "settings", to: "settings#index"
+
   # Defines the root path route ("/")
-  root "home#index"
+  root "dashboard#index"
 end

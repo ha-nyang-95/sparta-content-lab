@@ -1,0 +1,35 @@
+<%# 앱 셸 좌측 내비 — SPARTA 로고·6항목·데이터 범위 안내 (Story 1.4, DESIGN.md §4.1). %>
+<%# 모바일(<md)에서는 fixed 오버레이 드로어(-translate-x-full), md+ 에서는 상시 표시(static). %>
+<aside id="app-sidebar" data-sidebar-target="panel"
+       class="fixed inset-y-0 left-0 z-40 flex w-[180px] -translate-x-full flex-col border-r border-border bg-surface transition-transform duration-150 md:static md:translate-x-0">
+  <div class="px-4 py-5">
+    <div class="text-h3 font-bold leading-none text-primary-600">SPARTA</div>
+    <div class="mt-1 text-label tracking-wide text-ink-muted">CONTENT LAB</div>
+  </div>
+
+  <nav class="flex-1 space-y-1 px-3">
+    <% nav_items.each do |item| %>
+      <%= link_to public_send(item.path_name),
+            class: nav_item_classes(item),
+            aria: { current: (nav_active?(item) ? "page" : nil) },
+            data: { nav_label: item.label } do %>
+        <span class="shrink-0"><%= nav_icon(item.icon) %></span>
+        <span class="min-w-0 truncate"><%= item.label %></span>
+      <% end %>
+    <% end %>
+  </nav>
+
+  <div class="p-3">
+    <div class="rounded-card bg-surface-sunken p-3">
+      <p class="text-label font-semibold text-ink-body">데이터 범위</p>
+      <p class="mt-1 text-label text-ink-muted">YouTube 전체 (한국어 + 일본어 시장)</p>
+      <%# 데이터 범위 상세는 후속 에픽이 배선 — 지금은 비내비게이션 placeholder. %>
+      <button type="button" class="mt-2 inline-block text-label text-primary-600 hover:underline">자세히 보기 →</button>
+    </div>
+  </div>
+</aside>
+
+<%# 모바일 드로어 오픈 시 배경 오버레이 — 클릭하면 닫힌다. %>
+<div data-sidebar-target="backdrop"
+     data-action="click->sidebar#close"
+     class="fixed inset-0 z-30 hidden bg-ink-strong/40 md:hidden"></div>
