@@ -42,6 +42,12 @@ class CompetitorsHelperTest < ActionView::TestCase
     assert_equal :collecting, state[:state]
   end
 
+  test "latest 가 nil 이면 collecting(가짜 −100% 붕괴 방어, AD-9)" do
+    # 마지막 스냅샷 구독자 숨김 → 0 강압하면 −100% 로 오표시되던 버그.
+    state = subscriber_delta_state(channel_with_stats([100_000, 100_000, 100_000, 100_000, 100_000, 100_000, nil]))
+    assert_equal :collecting, state[:state]
+  end
+
   test "subscriber_delta_bar_width 는 0..100 으로 클램프한다" do
     assert_equal 100, subscriber_delta_bar_width(20.0) # bar_full_pct 5.0 초과 → 100
     assert_equal 60, subscriber_delta_bar_width(3.0)   # 3/5*100

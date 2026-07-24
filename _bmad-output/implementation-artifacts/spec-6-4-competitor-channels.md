@@ -2,8 +2,8 @@
 title: 'Story 6.4: 경쟁 채널 화면 — 동향 + 수동 등록/제외 + 구독자 증감'
 type: 'feature'
 created: '2026-07-24'
-status: 'in-progress'
-review_loop_iteration: 0
+status: 'done'
+review_loop_iteration: 1
 followup_review_recommended: false
 context:
   - '{project-root}/_bmad-output/project-context.md'
@@ -109,6 +109,30 @@ final_revision: ''
 
 ## Review Triage Log
 
+이중 적대 리뷰(Blind Hunter + Edge Case Hunter). 두 리뷰어가 test DB에 실제 쿼리·러너를 돌려 실증했고, 핵심 발견에서 수렴했다.
+
+**패치(적용)**
+1. **[High·정직성] latest 스냅샷 nil → 가짜 −100% 붕괴** — earliest 만 nil/0 방어하고 `latest.subscriber_count.to_i` 는 nil 을 0 으로 강압 → 건강한 채널이 −100% material decline 으로 오표시(§4.7/AD-9 위반). → 양 끝점 중 하나라도 nil 이면 `:collecting`. 회귀 테스트 추가.
+2. **[Med·정직성] 감소 증감에 그린 진행 바** — `:material :down` 이 `bg-success-600`(성장색) 바를 렌더 → 구독자 하락이 성장으로 오독. → 증가만 success-600, 감소는 중립 `bg-ink-subtle`.
+3. **[Med] UC-id 정규식 무경계 오탐** — `/UC[\w-]{22}/` 가 "MUCH…" 단어 중간 매칭·23자↑ 과길이 ID 를 조용히 절단. → 앞뒤 경계 lookaround `(?<![\w-])(UC[\w-]{22})(?![\w-])`. 회귀 테스트 추가.
+4. **[Med·UX] 중복 등록 영문 메시지 노출** — 모델 유니크 검증이 먼저 `RecordInvalid`(영문 기본 메시지) 발생 → 한국어 `RecordNotUnique` 분기가 死코드. → `errors.of_kind?(:youtube_channel_id, :taken)` 로 한국어 안내, RecordNotUnique 는 경합 안전망 유지. 테스트를 메시지 문자열까지 강화.
+5. **[Low] toggle_exclusion 미처리 404** — 자사·삭제·오래된 id → `RecordNotFound` 그대로 404. → `rescue` 친절한 리다이렉트.
+6. **[Low] @excluded 불필요 daily_stats 프리로드** — 제외 행은 증감 위젯 없음 → 죽은 I/O 제거.
+7. **[Low·드리프트] 측정한계 칩 인라인 복제** — `shared/_honesty_status`의 `:measurement_limit` 와 바이트 동일 → 공유 파셜 재사용으로 §4.7 단일 원천 유지.
+
+**실증으로 기각(오탐)**
+- **N+1·읽기전용** — `includes(:daily_stats)` + `channel.daily_stats.sort_by(&:date)`(Ruby Enumerable, SQL ORDER 미부착) → 행 루프 **0 쿼리**, index 는 SELECT 2 + preload, 쓰기·API 호출 없음(AD-3 준수).
+- **`Arel.sql("subscriber_count DESC NULLS LAST")`** — 번들 SQLite 3.51.0 는 NULLS LAST(3.30+) 지원, 리터럴이라 주입 없음, nil 실제 마지막 정렬 확인.
+- **인증·CSRF** — ApplicationController `include Authentication`(`require_authentication`) 상속 + Rails 8 기본 위조 방지 + form_with/button_to 토큰. create/toggle 보호됨.
+- **XSS·중복/카테고리 tamper·빈 이름·빈 리스트·bar_width 클램프** — 모두 안전/의도대로 실증.
+
+**Defer(문서화)**
+- **F4 "7일 창" vs "최근 7 스냅샷"** — `stats.last(7)` 은 스냅샷 수 기준. 일별 수집(daily_collection_job)이 정상이면 스냅샷≈일수이며, 렌더 UI 는 "7일"을 직접 주장하지 않고 콜드는 정확한 "D+n" 표기. MVP 수용, 라이브 갭 발생 시 재검토.
+- **F6 avatar_initial 코드포인트 단위** — ZWJ/이모지 첫 글자만 표시될 수 있으나 `aria-hidden` 순수 장식. 변경 없음.
+- **toggle 비원자성** — 단일 운영자 어드민, 이중 제출 경합 수용.
+
+**추가 테스트(회귀 방지)** — 헬퍼 1건(latest nil → collecting), 컨트롤러 2건(중복 한국어 메시지·정규식 경계 오탐). 전 스위트 410 runs 0 failures.
+
 ## Verification
 
 **Commands:**
@@ -116,3 +140,12 @@ final_revision: ''
 - `bin/rails test` -- expected: 전부 통과(회귀 없음)
 - `grep -rn "구독자 대비 조회수" app/views/competitors app/helpers/competitors_helper.rb` -- expected: 결과 없음
 - `grep -rniE "text-(blue|green|red|amber|gray|slate)-[0-9]|bg-(blue|green|red|amber|gray|slate)-[0-9]" app/views/competitors` -- expected: 원시 색 없음
+
+## Auto Run Result
+
+Status: done
+
+- **구현**: 읽기 전용 CompetitorsController#index(경쟁 채널 동향 §4.5 — 아바타·채널명·구독자·구독자 증감 3상태) + 수동 등록(Youtube::RegisterChannel, 스텁 경계·실 호출 보류) + 제외 토글. 구독자 증감은 ChannelDailyStat 7-스냅샷 창 읽기(AD-3), 정직성 3상태(데이터 수집 중 / 측정한계=증감폭 상대비율 / 진행 바). 측정한계 기준은 운영자 결정(증감폭 상대비율, scoring.yml subscriber_delta.min_material_pct) — [[subscriber-delta-materiality]].
+- **리뷰**: 이중 적대 리뷰 7건 패치(latest-nil 정직성·감소 그린 바·정규식 경계·중복 한국어·404·죽은 프리로드·측정한계 파셜 재사용), 3건 defer. N+1·읽기전용·SQLite NULLS LAST·인증/CSRF·XSS 는 실증 기각.
+- **테스트**: `bin/rails test` — **410 runs, 1424 assertions, 0 failures, 0 errors, 0 skips**(회귀 +2). grep — 금지 라벨·원시 팔레트 색 부재.
+- **주의**: 초기 서브에이전트 커밋이 루트 proposal.html 을 포함해 amend 로 제거(추적 해제, 파일 보존).

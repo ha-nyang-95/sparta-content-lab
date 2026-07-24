@@ -4,13 +4,16 @@
 <% when :collecting %>
   <%= render "shared/honesty_status", status: :collecting, detail: "D+#{state[:days]} · 데이터 수집 중" %>
 <% when :immaterial %>
-  <span class="inline-flex items-center rounded-chip bg-badge-neutralBg px-1.5 py-0.5 text-label text-badge-neutralFg">측정한계</span>
+  <%# §4.7 단일 원천 재사용(측정한계 칩) — 인라인 복제 금지로 드리프트 방지. %>
+  <%= render "shared/honesty_status", status: :measurement_limit %>
 <% when :material %>
+  <%# 증가는 §4.5 success-600 채움, 감소는 중립(ink-subtle) — 감소에 그린 바는 성장으로 오독(§4.7). %>
+  <% up = state[:direction] == :up %>
   <div class="flex items-center gap-2">
     <div class="h-1.5 w-20 overflow-hidden rounded-chip border border-border-subtle bg-surface-sunken">
-      <div class="h-full rounded-chip bg-success-600" style="width: <%= subscriber_delta_bar_width(state[:pct]) %>%"></div>
+      <div class="h-full rounded-chip <%= up ? "bg-success-600" : "bg-ink-subtle" %>" style="width: <%= subscriber_delta_bar_width(state[:pct]) %>%"></div>
     </div>
-    <% if state[:direction] == :up %>
+    <% if up %>
       <span class="text-label tabular-nums text-success-600">+<%= format("%.1f", state[:pct].abs) %>%</span>
     <% else %>
       <span class="text-label tabular-nums text-ink-muted">↓<%= format("%.1f", state[:pct].abs) %>%</span>

@@ -55,12 +55,22 @@ class CompetitorsControllerTest < ActionDispatch::IntegrationTest
       post competitors_path, params: { channel_url: STUB_ID, channel_name: "중복 시도", category: "직접경쟁" }
     end
     assert_redirected_to competitors_path
-    assert flash[:alert].present?
+    assert_equal "이미 등록된 채널입니다.", flash[:alert], "중복은 영문 기본 메시지가 아니라 한국어로"
   end
 
   test "POST create 잘못된 URL(UC id 없음)은 생성하지 않고 flash 오류" do
     assert_no_difference "Channel.count" do
       post competitors_path, params: { channel_url: "그냥 텍스트", channel_name: "잘못됨", category: "직접경쟁" }
+    end
+    assert_redirected_to competitors_path
+    assert flash[:alert].present?
+  end
+
+  test "POST create UC 가 단어 중간(MUCH…)이면 오매칭하지 않고 flash 오류" do
+    # 'UC' 가 MUCH 안에 있으나 독립 UC…22 경계가 아니므로 파싱 실패해야 한다(정규식 앞뒤 경계).
+    bogus = "MUCH#{'a' * 24}"
+    assert_no_difference "Channel.count" do
+      post competitors_path, params: { channel_url: bogus, channel_name: "오매칭", category: "직접경쟁" }
     end
     assert_redirected_to competitors_path
     assert flash[:alert].present?

@@ -1,8 +1,9 @@
 # 경쟁 채널 수동 등록 쓰기 경계 — URL/ID 파싱 + 스텁 메타 조회 후 Channel(source:manual) 생성(실 호출 보류·키 대기)
 module Youtube
   class RegisterChannel
-    # UC 로 시작하는 22자 채널 ID(`/channel/UC…` URL 또는 raw). MVP 범위 — @handle 해석은 라이브 시 확장.
-    CHANNEL_ID_PATTERN = /UC[\w-]{22}/
+    # UC 로 시작하는 22자 채널 ID(`/channel/UC…` URL 또는 raw). 앞뒤 경계(lookaround)로
+    # "MUCH…" 같은 단어 중간 오매칭·23자 이상 과길이 ID 오탐을 막는다. MVP — @handle 해석은 라이브 시 확장.
+    CHANNEL_ID_PATTERN = /(?<![\w-])(UC[\w-]{22})(?![\w-])/
 
     def initialize(client: Youtube::Client.new)
       @client = client
@@ -38,7 +39,7 @@ module Youtube
       match = CHANNEL_ID_PATTERN.match(url_or_id.to_s)
       raise ArgumentError, "채널 ID(UC…) 를 찾을 수 없음: #{url_or_id.inspect}" if match.nil?
 
-      match[0]
+      match[1]
     end
   end
 end

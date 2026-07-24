@@ -16,14 +16,14 @@ module CompetitorsHelper
     return { state: :collecting, days: stats.size } if stats.size < threshold
 
     window = stats.last(threshold)
-    earliest = window.first
-    latest = window.last
-    e = earliest.subscriber_count
+    e = window.first.subscriber_count
+    l = window.last.subscriber_count
 
-    # earliest 가 nil/0 이면 퍼센트를 낼 수 없다(0 나눗셈·기준 없음) — 자리 유지하며 수집 중으로(AD-9).
-    return { state: :collecting, days: stats.size } if e.nil? || e.zero?
+    # 양 끝점 중 하나라도 nil/0(회원 전용·구독자 숨김)이면 퍼센트 기준이 없다 — 자리 유지하며 수집 중으로(AD-9).
+    # 특히 latest nil 을 0 으로 강압하면 건강한 채널이 −100% 붕괴로 오표시된다(정직성 §4.7).
+    return { state: :collecting, days: stats.size } if e.nil? || e.zero? || l.nil?
 
-    pct = (latest.subscriber_count.to_i - e).to_f / e * 100
+    pct = (l - e).to_f / e * 100
 
     return { state: :immaterial } if pct.abs < Scoring::Config.fetch(:subscriber_delta, :min_material_pct)
 
