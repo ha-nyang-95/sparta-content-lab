@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100003) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100005) do
+  create_table "channel_daily_stats", force: :cascade do |t|
+    t.integer "channel_id", null: false
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.integer "subscriber_count"
+    t.datetime "updated_at", null: false
+    t.index ["channel_id", "date"], name: "index_channel_daily_stats_on_channel_id_and_date", unique: true
+    t.index ["channel_id"], name: "index_channel_daily_stats_on_channel_id"
+  end
+
   create_table "channels", force: :cascade do |t|
     t.string "category", null: false
     t.datetime "created_at", null: false
@@ -43,6 +53,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100003) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  create_table "video_daily_stats", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.datetime "updated_at", null: false
+    t.integer "video_id", null: false
+    t.integer "view_count"
+    t.index ["video_id", "date"], name: "index_video_daily_stats_on_video_id_and_date", unique: true
+    t.index ["video_id"], name: "index_video_daily_stats_on_video_id"
+  end
+
   create_table "videos", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.integer "comment_count"
@@ -60,6 +80,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100003) do
     t.index ["youtube_video_id"], name: "index_videos_on_youtube_video_id", unique: true
   end
 
+  add_foreign_key "channel_daily_stats", "channels"
   add_foreign_key "sessions", "users"
+  add_foreign_key "video_daily_stats", "videos"
   add_foreign_key "videos", "channels"
 end

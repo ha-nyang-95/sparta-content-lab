@@ -40,7 +40,11 @@ module YoutubePlanningHelper
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # 스냅샷 날짜 경계는 Asia/Tokyo 로 고정한다(AD-5, project-context §5).
+    # Time.zone.today 가 Tokyo 날짜를 반환한다. datetime 저장은 UTC 유지
+    # (active_record.default_timezone 은 손대지 않음).
+    config.time_zone = ENV.fetch("APP_TIME_ZONE", "Asia/Tokyo")
   end
 end

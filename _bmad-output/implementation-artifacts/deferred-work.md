@@ -29,3 +29,7 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-2-2-youtube-boundary-quota.md`
   summary: Youtube::Client#batched_items 는 배치 중 하나가 실패(재시도 소진 RateLimited/QuotaExceeded)하면 완료된 배치 items 를 버리고 예외를 올린다(all-or-nothing). 쿼터는 이미 소비된 상태다.
   evidence: 20채널 일일 수집에서 중간 채널이 쿼터 상한에 걸리면 앞 채널 데이터가 유실되고 다음 주기에 재페치(쿼터 재소비)한다. 2.3/2.5 잡이 채널/배치별로 증분 저장(부분 진행 커밋)하도록 설계해 재페치 낭비를 막아야 한다.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-2-4-daily-snapshots-rollup.md`
+  summary: VideoDailyStat/ChannelDailyStat 에 `has_many :daily_stats, dependent: :destroy` — channel.destroy 시 channel→videos→daily_stats 까지 cascade 삭제돼 AD-17 "소급 재구성 불가·백업 필수" 시계열이 영구 소실될 수 있다.
+  evidence: 설계는 은퇴를 excluded(soft)로 처리하지만 destroy 경로에 가드가 없다. 채널 삭제 흐름이 생기면 dependent 를 restrict_with_exception 등으로 바꿔 exclude-not-delete 를 강제하거나 백업-선행 계약을 둬야 한다. MVP엔 destroy 경로 없음(2.1 Video dependent:destroy defer 의 확장).

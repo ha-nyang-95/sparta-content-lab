@@ -4,6 +4,7 @@ class Channel < ApplicationRecord
   SOURCES = %w[seed auto manual].freeze
 
   has_many :videos, dependent: :destroy
+  has_many :daily_stats, class_name: "ChannelDailyStat", dependent: :destroy
 
   # 빈 문자열은 nil 로 정규화한다 — "" 는 유니크 인덱스에서 NULL 이 아니라 충돌하므로(AD-9 nil 방어 정합).
   normalizes :youtube_channel_id, with: ->(v) { v.presence }
