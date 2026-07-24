@@ -1,0 +1,28 @@
+<%# §4.6 콘텐츠 기회 도넛 — 물질화 버킷 분포를 SVG 세그먼트로 표시(재계산 없음). 콜드면 도넛 자리 유지(AD-16). %>
+<% total = @distribution.values.sum %>
+<% if total > 0 %>
+  <% circumference = 2 * Math::PI * 52 %>
+  <div class="relative h-40 w-40 shrink-0">
+    <svg viewBox="0 0 120 120" class="h-full w-full" role="img" aria-label="콘텐츠 기회 <%= content_gap_opportunity_pct(@distribution) %>%">
+      <%# -90° 회전으로 12시 시작 — 세그먼트는 offset(누적 -길이)으로 연결. %>
+      <g transform="rotate(-90 60 60)">
+        <circle cx="60" cy="60" r="52" fill="none" stroke-width="16" class="stroke-border" />
+        <% content_gap_segments(@distribution, circumference: circumference).each do |seg| %>
+          <circle cx="60" cy="60" r="52" fill="none" stroke-width="16"
+                  class="<%= seg[:stroke_class] %>"
+                  stroke-dasharray="<%= seg[:dash] %> <%= seg[:gap] %>"
+                  stroke-dashoffset="<%= seg[:offset] %>" />
+        <% end %>
+      </g>
+    </svg>
+    <div class="absolute inset-0 flex flex-col items-center justify-center">
+      <span class="text-score text-primary-600 tabular-nums"><%= content_gap_opportunity_pct(@distribution) %>%</span>
+      <span class="text-label text-ink-muted">콘텐츠 기회</span>
+    </div>
+  </div>
+<% else %>
+  <%# 콜드스타트 — 분류된 경쟁 스코어 0(임베딩/분류 미완). 위젯 숨김 금지, 자리 유지. %>
+  <div class="w-40 shrink-0">
+    <%= render "shared/honesty_status", status: :collecting, detail: "데이터 수집 중" %>
+  </div>
+<% end %>

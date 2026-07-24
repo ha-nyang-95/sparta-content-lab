@@ -1,0 +1,15 @@
+<%# §4.6 범례 — 4구간 dot+라벨+건수, ?bucket 링크(선택 강조). string 키 병합으로 기존 쿼리 보존(6.3 방식). %>
+<ul class="flex flex-col gap-1">
+  <% ContentGapHelper::BUCKET_ORDER.each do |key| %>
+    <% active = key == @bucket %>
+    <li>
+      <%= link_to "#{content_gap_path}?#{request.query_parameters.merge('bucket' => key).to_query}",
+            class: "flex items-center gap-2 rounded-control px-2 py-1.5 text-body transition #{active ? 'bg-primary-50 font-semibold text-ink-strong' : 'text-ink-body hover:bg-surface-sunken'}",
+            "aria-current": (active ? "true" : nil) do %>
+        <span class="h-2.5 w-2.5 shrink-0 rounded-full <%= ContentGapHelper::BUCKET_DOT[key] %>" aria-hidden="true"></span>
+        <span class="min-w-0 flex-1"><%= content_gap_bucket_label(key) %></span>
+        <span class="tabular-nums text-ink-muted"><%= @distribution.fetch(key, 0) %></span>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
