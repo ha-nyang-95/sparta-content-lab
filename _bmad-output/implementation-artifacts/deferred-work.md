@@ -2,6 +2,16 @@
 
 작업 중 리뷰가 부수적으로 발견한, 현재 스토리 소관이 아닌 실제 이슈들을 모은다. 나중에 집중해서 다룬다.
 
+## 키 도착 후 Live 검증 결과 (2026-07-25)
+
+`.env` 에 YOUTUBE_API_KEY·GEMINI_API_KEY 공급됨. Live 어댑터를 최소 실호출로 검증했다(모드는 .env 에서 stub 유지 — 아래 Gemini 빌링 블로커 때문).
+
+- **YouTube Live: ✅ 검증 완료.** `Youtube::Adapters::Live` 로 실 channels.list(공개 채널 1건) 라운드트립 성공. 응답 형태가 녹화 fixture(`lib/youtube/stubs/channels_list.json`)와 일치 — `id`·`statistics.subscriberCount`·`contentDetails.relatedPlaylists.uploads`. spec-2-2 "보류(키 대기)" 중 실호출·형태 대조 부분 해소. (403 분기·페이지네이션 종료의 실 API 재검증은 실제 쿼터 소진 상황이 필요해 미수행 — 저위험.)
+- **Gemini Live: ⚠️ 코드는 정상, 계정 빌링 블로커.** `Embedding::Adapters::Live` 가 요청을 올바로 구성·전송했고 실 API 가 응답했으나 `HTTP 429 RESOURCE_EXHAUSTED — "Your prepayment credits are depleted"`. 즉 **GEMINI_API_KEY 계정에 선불 크레딧이 없다**(코드 문제 아님). **사용자 조치 필요**: ai.studio(https://ai.studio/projects)에서 빌링 충전. 충전 전까지 EMBEDDING_MODE 는 stub 유지 — live 로 바꾸면 임베딩 의존 파이프라인(Epic 4 OwnVideoMatch·콘텐츠 갭·주제 클러스터, Epic 5 추천)이 429 로 실패한다. 반쪽 실데이터(실 영상 제목 + 가짜 해시 임베딩)는 정직성 위반이라 회피.
+- **모드 전환 정책**: Gemini 빌링 충전 완료 후 YOUTUBE_API_MODE·EMBEDDING_MODE 를 함께 live 로 전환하고 일일 수집 체인을 1회 실행해 실데이터 물질화. 그 전까지는 일관된 stub 파이프라인 유지(혼합 상태 금지).
+
+## 리뷰 발견 항목 (MVP 무관·미래 스케일)
+
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-1-rails-bootstrap-multidb.md`
   summary: 큐 DB 커넥션 pool(`RAILS_MAX_THREADS`||5)이 Solid Queue 워커 동시성(processes × threads + dispatcher + recurring)보다 작을 수 있어 프로덕션 부하 시 `ConnectionTimeoutError` 여지가 있다.
   evidence: `config/database.yml`의 pool은 웹 스레드 기준 기본값인데 `config/queue.yml`의 워커 스레드/프로세스와 분리 튜닝되지 않는다. MVP(내부 2인·주1회, NFR-5 저동시성)에선 무해하나 프로덕션 스케일에서 재검토 필요.
