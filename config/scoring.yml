@@ -31,6 +31,9 @@ opportunity_score:
       few: 0.33
       saturated: 0.0
 subscriber_bands: [10000, 100000, 500000]  # <1만 / 1만~10만 / 10만~50만 / 50만+ (본개발 실측 튜닝)
+subscriber_delta:            # 경쟁 채널 구독자 증감(6.4) 정직성 임계
+  min_material_pct: 0.5      # |7일 증감%| 이 값 미만이면 "측정한계"(§4.7) — YouTube 반올림 노이즈 컷 (본개발 실측 튜닝)
+  bar_full_pct: 5.0          # 미니 진행 바 100% 기준 증감%(표시 스케일, 데이터 아님) (본개발 실측 튜닝)
 cold_start_snapshots:        # 위젯별 "수집 중"→표시 전환 스냅샷 수 (본개발 실측 튜닝)
   sparkline: 7
   vpd: 2

@@ -1,0 +1,18 @@
+<%# 경쟁 채널 동향 행(§4.5) — 아바타·채널명·구독자·구독자 증감 + 제외 버튼. 로컬: channel(컬렉션 as: :channel). %>
+<%# 대표 영상/성과 컬럼 없음(§4.5 미정의). nil 방어 AD-9·다국어 §7(truncate·min-w-0·break-keep·title). %>
+<div class="flex items-center gap-3 border-b border-border-subtle p-3">
+  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-label font-semibold <%= avatar_style(channel.name) %>" aria-hidden="true">
+    <%= avatar_initial(channel.name) %>
+  </span>
+  <div class="min-w-0 flex-1">
+    <span class="block min-w-0 truncate break-keep text-body text-ink-body" title="<%= channel.name %>"><%= channel.name %></span>
+    <span class="block text-label tabular-nums text-ink-muted">
+      <%= channel.subscriber_count.nil? ? "미상" : number_with_delimiter(channel.subscriber_count) %>
+    </span>
+  </div>
+  <div class="shrink-0">
+    <%= render "competitors/subscriber_delta", channel: channel %>
+  </div>
+  <%= button_to "제외", competitor_exclusion_path(channel), method: :patch,
+        class: "shrink-0 rounded-control bg-badge-neutralBg px-3 py-1.5 text-label text-badge-neutralFg hover:bg-badge-cautionBg hover:text-badge-cautionFg" %>
+</div>

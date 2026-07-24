@@ -1,4 +1,76 @@
-<%# 경쟁 채널 placeholder — 후속 에픽이 채운다 (Story 1.4). %>
+<%# 경쟁 채널(6.4) — 수동 등록 폼 + §4.5 동향 리스트(활성) + "제외된 채널" 접기 섹션. 읽기 전용 index(AD-3). %>
 <% content_for :title, "경쟁 채널" %>
+
 <h2 class="text-h2 text-ink-strong">경쟁 채널</h2>
-<p class="mt-2 text-caption text-ink-muted">준비 중 — 후속 에픽에서 구현</p>
+<p class="mt-1 text-caption text-ink-muted">경쟁 채널의 구독자 동향입니다.</p>
+
+<%# flash — 레이아웃이 렌더하지 않으므로 화면에서 자리 유지(§4.7 정직성 톤). %>
+<% if notice.present? %>
+  <div class="mt-4 rounded-control border border-success-100 bg-success-50 px-3 py-2 text-caption text-success-700"><%= notice %></div>
+<% end %>
+<% if alert.present? %>
+  <div class="mt-4 rounded-control border border-warning-500 bg-warning-50 px-3 py-2 text-caption text-warning-600"><%= alert %></div>
+<% end %>
+
+<%# 등록 폼(쓰기, §4.8) — 채널 URL/ID + 채널명 + 카테고리 select. 모바일 스택·데스크톱 행(§5). %>
+<div class="mt-6 rounded-card border border-border bg-surface p-6 shadow-card">
+  <h3 class="text-h3 text-ink-strong">경쟁 채널 등록</h3>
+  <%= form_with url: competitors_path, method: :post, class: "mt-4 flex flex-col gap-3 lg:flex-row lg:items-end" do |f| %>
+    <div class="flex min-w-0 flex-1 flex-col gap-1">
+      <%= f.label :channel_url, "채널 URL / ID", class: "text-label text-ink-muted" %>
+      <%= f.text_field :channel_url, placeholder: "https://youtube.com/channel/UC…",
+            class: "rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body" %>
+    </div>
+    <div class="flex min-w-0 flex-1 flex-col gap-1">
+      <%= f.label :channel_name, "채널명", class: "text-label text-ink-muted" %>
+      <%= f.text_field :channel_name,
+            class: "rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body" %>
+    </div>
+    <div class="flex flex-col gap-1">
+      <%= f.label :category, "카테고리", class: "text-label text-ink-muted" %>
+      <%= f.select :category, Channel::CATEGORIES,
+            {}, class: "rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body" %>
+    </div>
+    <%= f.submit "등록", class: "shrink-0 rounded-control bg-primary-600 px-3.5 py-2 text-body font-semibold text-white hover:bg-primary-700" %>
+  <% end %>
+</div>
+
+<%# 활성 동향 리스트(§4.5). empty(경쟁 0)면 정직성 자리 유지(AD-16). %>
+<div class="mt-6 rounded-card border border-border bg-surface shadow-card">
+  <% if @active.any? %>
+    <%= render partial: "competitors/channel_row", collection: @active, as: :channel %>
+  <% else %>
+    <div class="p-6">
+      <p class="text-body text-ink-body">등록된 경쟁 채널이 아직 없습니다.</p>
+      <div class="mt-3">
+        <%= render "shared/honesty_status", status: :collecting, detail: "데이터 수집 중" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%# 제외된 채널 — 접기 섹션(disclosure). 각 행에서 복원(patch) 가능. %>
+<% if @excluded.any? %>
+  <div class="mt-6 rounded-card border border-border bg-surface shadow-card" data-controller="disclosure">
+    <button type="button" data-action="disclosure#toggle" data-disclosure-target="trigger"
+            aria-expanded="false"
+            class="flex w-full items-center justify-between p-4 text-body text-ink-body">
+      <span>제외된 채널 (<%= @excluded.size %>)</span>
+      <%= tag.svg viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round", "stroke-linejoin": "round", class: "h-4 w-4 text-ink-subtle" do %>
+        <polyline points="6 8 10 12 14 8"></polyline>
+      <% end %>
+    </button>
+    <div class="hidden border-t border-border-subtle" data-disclosure-target="content">
+      <% @excluded.each do |ch| %>
+        <div class="flex items-center gap-3 border-b border-border-subtle p-3">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-label font-semibold <%= avatar_style(ch.name) %>" aria-hidden="true">
+            <%= avatar_initial(ch.name) %>
+          </span>
+          <span class="min-w-0 flex-1 truncate break-keep text-body text-ink-muted" title="<%= ch.name %>"><%= ch.name %></span>
+          <%= button_to "복원", competitor_exclusion_path(ch), method: :patch,
+                class: "shrink-0 rounded-control border border-border bg-surface px-3 py-1.5 text-label text-primary-600 hover:bg-primary-50" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

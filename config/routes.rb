@@ -14,6 +14,9 @@ Rails.application.routes.draw do
   # 앱 셸 6개 화면 placeholder 라우트 (Story 1.4) — 후속 에픽이 각 index 를 채운다.
   get "popular", to: "popular#index"
   get "competitors", to: "competitors#index"
+  # 6.4 경쟁 채널 쓰기 액션 — 수동 등록(create)·제외 토글(toggle_exclusion). index 는 위 GET.
+  post "competitors" => "competitors#create"
+  patch "competitors/:id/exclusion" => "competitors#toggle_exclusion", as: :competitor_exclusion
   get "content-gap", to: "content_gap#index", as: :content_gap
   get "saved", to: "saved#index"
   get "settings", to: "settings#index"

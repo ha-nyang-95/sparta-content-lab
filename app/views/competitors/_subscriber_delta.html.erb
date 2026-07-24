@@ -1,0 +1,19 @@
+<%# 구독자 증감 3상태 위젯(§4.5·§4.7) — 로컬: channel. 저장 스냅샷 읽기만(AD-3), 값 없어도 자리 유지. %>
+<% state = subscriber_delta_state(channel) %>
+<% case state[:state] %>
+<% when :collecting %>
+  <%= render "shared/honesty_status", status: :collecting, detail: "D+#{state[:days]} · 데이터 수집 중" %>
+<% when :immaterial %>
+  <span class="inline-flex items-center rounded-chip bg-badge-neutralBg px-1.5 py-0.5 text-label text-badge-neutralFg">측정한계</span>
+<% when :material %>
+  <div class="flex items-center gap-2">
+    <div class="h-1.5 w-20 overflow-hidden rounded-chip border border-border-subtle bg-surface-sunken">
+      <div class="h-full rounded-chip bg-success-600" style="width: <%= subscriber_delta_bar_width(state[:pct]) %>%"></div>
+    </div>
+    <% if state[:direction] == :up %>
+      <span class="text-label tabular-nums text-success-600">+<%= format("%.1f", state[:pct].abs) %>%</span>
+    <% else %>
+      <span class="text-label tabular-nums text-ink-muted">↓<%= format("%.1f", state[:pct].abs) %>%</span>
+    <% end %>
+  </div>
+<% end %>
