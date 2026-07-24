@@ -1,0 +1,48 @@
+<%# 인기 콘텐츠 검색바(§4.8) + 추가 필터/정렬 드롭다운(7.1). 로컬: q, channel, min_multiple, band, sort, period, category, type, layout, channels. GET 폼은 다른 활성 필터를 hidden 으로 보존(검색이 리셋하지 않음). %>
+<div class="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+  <%# 키워드 검색 — 좌측 돋보기, placeholder text-subtle. 다른 필터는 hidden 으로 보존. %>
+  <%= form_with url: popular_path, method: :get, class: "flex w-full max-w-md items-center gap-2" do %>
+    <% { "period" => period, "category" => category, "type" => type, "layout" => layout,
+         "sort" => sort, "channel" => channel, "min_multiple" => min_multiple, "band" => band }.each do |name, value| %>
+      <%= hidden_field_tag name, value %>
+    <% end %>
+    <div class="relative flex-1">
+      <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink-subtle">
+        <%= tag.svg viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round", "stroke-linejoin": "round", class: "h-4 w-4" do %>
+          <circle cx="9" cy="9" r="6"></circle>
+          <line x1="14" y1="14" x2="18" y2="18"></line>
+        <% end %>
+      </span>
+      <%= text_field_tag "q", q, placeholder: "제목 검색",
+            class: "w-full rounded-control border border-border bg-surface py-1.5 pl-9 pr-3 text-body text-ink-body placeholder:text-ink-subtle" %>
+    </div>
+    <%= submit_tag "검색",
+          class: "rounded-control bg-primary-600 px-3.5 py-1.5 text-body font-medium text-white transition hover:bg-primary-700" %>
+  <% end %>
+
+  <%# 추가 필터·정렬 — 채널/배수/밴드/정렬. string 키 병합(6.2 규약)으로 다른 필터 보존. %>
+  <div class="flex flex-wrap items-center gap-2">
+    <% channel_options = [["", "전체"]] + channels.map { |c| [c.id.to_s, c.name] } %>
+    <% [["channel", channel_options, channel], ["min_multiple", multiple_options, min_multiple],
+        ["band", band_options, band], ["sort", sort_options, sort]].each do |param, options, current| %>
+      <% current_label = options.find { |k, _| k == current }&.last %>
+      <details class="group relative">
+        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body">
+          <span class="min-w-0 max-w-[10rem] truncate" title="<%= current_label %>"><%= current_label %></span>
+          <%= tag.svg viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round", "stroke-linejoin": "round", class: "h-4 w-4 shrink-0 text-ink-subtle" do %>
+            <polyline points="6 8 10 12 14 8"></polyline>
+          <% end %>
+        </summary>
+        <ul class="absolute right-0 z-10 mt-1 min-w-[10rem] max-w-[16rem] rounded-control border border-border bg-surface py-1 shadow-dropdown">
+          <% options.each do |key, label| %>
+            <li>
+              <%= link_to "#{popular_path}?#{request.query_parameters.merge(param => key).to_query}",
+                    title: label,
+                    class: "block truncate px-3 py-1.5 text-body #{key == current ? 'text-primary-600' : 'text-ink-body hover:bg-primary-50'}" do %><%= label %><% end %>
+            </li>
+          <% end %>
+        </ul>
+      </details>
+    <% end %>
+  </div>
+</div>

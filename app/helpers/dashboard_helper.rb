@@ -8,6 +8,8 @@ module DashboardHelper
   TYPES = [%w[all 전체], %w[long 롱폼], %w[short 쇼츠]].freeze
   # 레이아웃 토글 화이트리스트(구독자 밴드 그룹핑 ↔ 평면).
   LAYOUTS = [%w[band 밴드\ 그룹핑], %w[flat 평면]].freeze
+  # 정렬 화이트리스트(7.1) — 배수(기본·6.3 보존)/조회수/최신. 결정적 타이브레이크는 컨트롤러가 video_id asc 로.
+  SORTS = [%w[multiple 배수\ 높은순], %w[views 조회수\ 높은순], %w[recent 최신순]].freeze
 
   def period_tabs
     PERIODS
@@ -25,6 +27,20 @@ module DashboardHelper
     LAYOUTS
   end
 
+  def sort_options
+    SORTS
+  end
+
+  # 성과 배수 프리셋 드롭다운(7.1) — scoring.yml multiple_presets[2,3,5,10,25] + "전체". 값은 문자열 키.
+  def multiple_options
+    [["all", "전체"]] + Scoring::Config.fetch(:performance, :multiple_presets).map { |m| [m.to_s, "#{m}배+"] }
+  end
+
+  # 구독자 밴드 드롭다운(7.1) — 티어 0..3(SubscriberBand 경계와 동일) + "전체".
+  def band_options
+    [["all", "전체"], ["0", "1만 미만"], ["1", "1만~10만"], ["2", "10만~50만"], ["3", "50만+"]]
+  end
+
   # params 값이 화이트리스트에 없으면 기본값으로 안전 폴백(오입력 방어).
   def permitted_period(params)
     whitelist_param(params[:period], PERIODS, "1w")
@@ -40,6 +56,23 @@ module DashboardHelper
 
   def permitted_layout(params)
     whitelist_param(params[:layout], LAYOUTS, "band")
+  end
+
+  def permitted_sort(params)
+    whitelist_param(params[:sort], SORTS, "multiple")
+  end
+
+  def permitted_min_multiple(params)
+    whitelist_param(params[:min_multiple], multiple_options, "all")
+  end
+
+  def permitted_band(params)
+    whitelist_param(params[:band], band_options, "all")
+  end
+
+  # 키워드 검색어 정규화(7.1) — strip + 100자 상한. nil 도 "" 로(nil 방어 AD-9).
+  def search_query(params)
+    params[:q].to_s.strip[0, 100]
   end
 
   # 위젯별 준비도(AD-7) — 실제 스냅샷 일수 < cold_start_snapshots 임계면 "수집 중".
