@@ -38,3 +38,5 @@ cold_start_snapshots:        # 위젯별 "수집 중"→표시 전환 스냅샷 
   subscriber_delta: 7
 is_short:
   max_duration_seconds: 180  # duration 휴리스틱 임계(ClassifyShort 1회 판정). 본개발 확정
+recommendation:
+  max_count: 3               # 추천 주제 최대 수(FR-19 "3개"). 자격 주제 부족 시 그 수만 생성(정직성 AD-16)

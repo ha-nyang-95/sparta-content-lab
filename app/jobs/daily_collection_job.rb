@@ -62,13 +62,15 @@ class DailyCollectionJob < ApplicationJob
 
   private
 
-  # Epic 4 스테이지 — 전역 배치, 에버그린 뒤. 임베딩→OwnVideoMatch→콘텐츠 갭→주제 클러스터(AD-11). 스테이지별 rescue.
+  # Epic 4 유사도 + Epic 5 추천 스테이지 — 전역 배치, 에버그린 뒤. 임베딩→OwnVideoMatch→콘텐츠 갭→주제 클러스터→기회 점수→추천(AD-11). 스테이지별 rescue.
   def run_similarity_stages
     stages = {
       "임베딩" => -> { Embedding::UpsertVectors.new.call },
       "OwnVideoMatch" => -> { Similarity::MatchOwnVideos.new.call },
       "콘텐츠 갭" => -> { Similarity::ClassifyContentGap.new.call },
       "주제 클러스터" => -> { Similarity::BuildTopicClusters.new.call },
+      "기회 점수" => -> { Scoring::CalculateOpportunityScore.new.call },
+      "추천" => -> { Scoring::GenerateRecommendations.new.call },
     }
     stages.each do |name, stage|
       stage.call

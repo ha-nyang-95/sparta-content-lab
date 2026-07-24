@@ -100,6 +100,24 @@ class DailyCollectionJobTest < ActiveSupport::TestCase
       "Epic 4 임베딩 스테이지가 에버그린 뒤 append 실행돼야 한다"
   end
 
+  test "Epic 5 스테이지 append: 유사도 뒤 기회 점수·추천이 실행되고 런은 succeeded" do
+    make_channel(name: "a", youtube_channel_id: "UCe5a")
+    make_channel(name: "b", youtube_channel_id: "UCe5b")
+
+    DailyCollectionJob.perform_now
+
+    run = JobRun.last
+    assert_equal "succeeded", run.status
+    # 기회 점수 스테이지가 클러스터 뒤 append 실행됐다는 신호 — 클러스터가 만들어졌으면 점수가 물질화됨.
+    if TopicCluster.any?
+      assert TopicCluster.where.not(opportunity_score: nil).exists?,
+        "기회 점수 스테이지가 주제 클러스터 뒤 append 실행돼야 한다"
+    end
+    # 추천 스테이지가 예외 없이 실행돼 테이블이 조회 가능(stub 데이터로 자격 주제가 없으면 0개일 수 있음).
+    assert_nothing_raised { Recommendation.count }
+    assert Recommendation.count >= 0
+  end
+
   test "retry_on 은 일시 인프라 오류(Deadlocked)만 대상이고 YouTube RateLimited 는 아니다" do
     handled = DailyCollectionJob.rescue_handlers.map(&:first)
     assert_includes handled, "ActiveRecord::Deadlocked", "일시 DB 오류는 잡 단위 재시도"

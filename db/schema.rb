@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100017) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100018) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -73,6 +73,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100017) do
     t.index ["competitor_video_id", "own_video_id"], name: "idx_on_competitor_video_id_own_video_id_4c98b9fe5a", unique: true
     t.index ["competitor_video_id"], name: "index_own_video_matches_on_competitor_video_id"
     t.index ["own_video_id"], name: "index_own_video_matches_on_own_video_id"
+  end
+
+  create_table "recommendations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.float "opportunity_score"
+    t.integer "rank"
+    t.text "reference_video_ids"
+    t.string "topic_label"
+    t.datetime "updated_at", null: false
   end
 
   create_table "sessions", force: :cascade do |t|

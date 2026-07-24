@@ -84,9 +84,9 @@ development_status:
   epic-4-retrospective: optional
 
   # Epic 5: 추천 주제 3개 · 기회 점수 (Recommendation)
-  epic-5: in-progress
+  epic-5: done
   5-1-기회-점수-산출-4입력-정규화-가중합: done
-  5-2-추천-주제-3개-산출-정직성-결정적-동점: backlog
+  5-2-추천-주제-3개-산출-정직성-결정적-동점: done
   epic-5-retrospective: optional
 
   # Epic 6: 대시보드 & 6화면 (Presentation)
