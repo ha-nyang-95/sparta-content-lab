@@ -79,7 +79,7 @@ development_status:
   epic-4: in-progress
   4-1-임베딩-생성-저장-제목-변경-시만-재생성: done
   4-2-자사-유사영상-판정-ownvideomatch: done
-  4-3-콘텐츠-갭-4구간-버킷: backlog
+  4-3-콘텐츠-갭-4구간-버킷: done
   4-4-임베딩-기반-주제-자동-묶기-연결요소: backlog
   epic-4-retrospective: optional
 

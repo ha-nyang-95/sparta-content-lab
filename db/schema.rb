@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100013) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100015) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -103,9 +103,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100013) do
   end
 
   create_table "video_scores", force: :cascade do |t|
+    t.string "content_gap_bucket"
     t.datetime "created_at", null: false
     t.boolean "evergreen_candidate", default: false, null: false
     t.boolean "needs_verification", default: false, null: false
+    t.integer "own_match_count"
     t.float "performance_multiple"
     t.boolean "rank_eligible", default: false, null: false
     t.datetime "updated_at", null: false

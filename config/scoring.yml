@@ -13,6 +13,8 @@ evergreen:
   min_multiple: 2            # (본개발 실측 튜닝)
 similarity:
   tau: 0.8                   # 코사인 임계(FR-17, 주제 묶기 재사용). 고정 0.8 맹신 금지 (본개발 실측 튜닝)
+content_gap:
+  saturation_min: 3          # OwnVideoMatch 이 수 이상이면 '포화'. 2~(this-1)=유사영상 2개+, 1=유사영상 1개, 0=미제작 (본개발 실측 튜닝)
 opportunity_score:
   weights:                   # 4입력 가중합(투명). 초기 등가, 피드백으로 조정 (본개발 실측 튜닝)
     performance_signal: 0.25
