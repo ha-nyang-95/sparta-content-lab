@@ -60,7 +60,7 @@ development_status:
   # Epic 2: 데이터 수집 파이프라인 (Collection)
   epic-2: in-progress
   2-1-channel-video-모델-시드-채널-로드: done
-  2-2-youtube-api-단일-클라이언트-경계-쿼터-원장: backlog
+  2-2-youtube-api-단일-클라이언트-경계-쿼터-원장: done  # 경계·스텁·쿼터·백오프 완결. Live 실호출 검증은 보류(키 대기) — deferred-work.md
   2-3-uploads-경유-영상-열거-is-short-불변-캐시: backlog
   2-4-일별-스냅샷-축적-90일-롤업: backlog
   2-5-dailycollectionjob-체인-골격-관측성-백업: backlog

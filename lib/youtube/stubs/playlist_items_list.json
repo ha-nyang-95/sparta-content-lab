@@ -1,0 +1,9 @@
+{
+  "kind": "youtube#playlistItemListResponse",
+  "items": [
+    { "kind": "youtube#playlistItem", "contentDetails": { "videoId": "vid_stub_0001" } },
+    { "kind": "youtube#playlistItem", "contentDetails": { "videoId": "vid_stub_0002" } },
+    { "kind": "youtube#playlistItem", "contentDetails": { "videoId": "vid_stub_0003" } }
+  ],
+  "nextPageToken": "CDIQAA"
+}

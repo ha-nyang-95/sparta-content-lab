@@ -1,0 +1,33 @@
+{
+  "kind": "youtube#channelListResponse",
+  "items": [
+    {
+      "kind": "youtube#channel",
+      "id": "UC_stub_trilingual_tomi",
+      "statistics": {
+        "viewCount": "48213977",
+        "subscriberCount": "210000",
+        "videoCount": "512"
+      },
+      "contentDetails": {
+        "relatedPlaylists": {
+          "uploads": "UU_stub_trilingual_tomi"
+        }
+      }
+    },
+    {
+      "kind": "youtube#channel",
+      "id": "UC_stub_joo",
+      "statistics": {
+        "viewCount": "10233110",
+        "subscriberCount": "88000",
+        "videoCount": "301"
+      },
+      "contentDetails": {
+        "relatedPlaylists": {
+          "uploads": "UU_stub_joo"
+        }
+      }
+    }
+  ]
+}

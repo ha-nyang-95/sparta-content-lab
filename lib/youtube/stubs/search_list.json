@@ -1,0 +1,8 @@
+{
+  "kind": "youtube#searchListResponse",
+  "items": [
+    { "kind": "youtube#searchResult", "id": { "kind": "youtube#channel", "channelId": "UC_stub_discovered_channel" } },
+    { "kind": "youtube#searchResult", "id": { "kind": "youtube#video", "videoId": "vid_stub_discovered" } }
+  ],
+  "nextPageToken": "CDIQAA"
+}

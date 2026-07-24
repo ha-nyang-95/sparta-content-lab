@@ -21,3 +21,11 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-2-1-channel-video-models.md`
   summary: Channel `has_many :videos, dependent: :destroy` 는 채널 destroy 시 수집된 영상·(향후)스냅샷 이력을 cascade 삭제한다. 설계는 은퇴를 excluded 불리언으로 처리하지만 destroy를 막지 않는다.
   evidence: AD-17은 스냅샷 이력을 소급 재구성 불가·일일 백업 필수로 규정. 채널 삭제 흐름이 도입되면 dependent 전략을 restrict_with_exception 등으로 재검토해 이력 유실을 막아야 한다. MVP엔 destroy 경로 없음.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-2-2-youtube-boundary-quota.md`
+  summary: [보류(키 대기)] Youtube::Adapters::Live 의 실 YouTube 응답 검증은 API 키가 있어야 가능하다. HTTP 골격·엔드포인트·403 reason 분기(quotaExceeded↔rateLimit)·타임아웃·JSON 파싱은 완성됐으나 실 라운드트립은 미검증. 키 도착 시 YOUTUBE_API_MODE=live + YOUTUBE_API_KEY 설정 후, 녹화 fixture(lib/youtube/stubs/*.json)를 실응답과 대조해 형태 일치를 확인하고, 403 분기·페이지네이션 종료를 실 API로 재검증한다.
+  evidence: Story 2.2는 경계·쿼터·백오프·배치·스텁을 스텁에 대고 완결·테스트했다(87 runs). Live 경로만 네트워크·키 부재로 단위 error-path만 검증됨.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-2-2-youtube-boundary-quota.md`
+  summary: Youtube::Client#batched_items 는 배치 중 하나가 실패(재시도 소진 RateLimited/QuotaExceeded)하면 완료된 배치 items 를 버리고 예외를 올린다(all-or-nothing). 쿼터는 이미 소비된 상태다.
+  evidence: 20채널 일일 수집에서 중간 채널이 쿼터 상한에 걸리면 앞 채널 데이터가 유실되고 다음 주기에 재페치(쿼터 재소비)한다. 2.3/2.5 잡이 채널/배치별로 증분 저장(부분 진행 커밋)하도록 설계해 재페치 낭비를 막아야 한다.
