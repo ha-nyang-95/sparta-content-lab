@@ -44,4 +44,45 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     get root_path
     assert_not_includes @response.body, "구독자 대비 조회수"
   end
+
+  test "에버그린 후보가 있으면 섹션에 제목과 뱃지를 렌더한다" do
+    make_evergreen("에버그린 후보 콘텐츠", multiple: 4.5)
+    get root_path
+    assert_response :success
+    assert_includes @response.body, "에버그린 후보 콘텐츠"
+    # 스냅샷 없음(<14) → 후보 ghost 뱃지.
+    assert_includes @response.body, "에버그린 후보"
+  end
+
+  test "에버그린 후보가 없어도 섹션은 유지되고 200(위젯 숨김 없음)" do
+    get root_path
+    assert_response :success
+    assert_includes @response.body, "에버그린 콘텐츠"
+  end
+
+  test "읽기 전용 — GET 이 VideoScore 를 쓰지 않는다" do
+    make_evergreen("에버그린 후보 콘텐츠", multiple: 4.5)
+    before = VideoScore.count
+    get root_path
+    assert_equal before, VideoScore.count
+  end
+
+  test "스냅샷 충분(>=14일)하나 후보 0 이면 빈 void 대신 자리 유지 안내(§4.7)" do
+    # 14 distinct 날짜 스냅샷 → widget_collecting? false. 에버그린 후보는 없음.
+    14.times { |i| @video.daily_stats.create!(date: (i + 1).days.ago.to_date, view_count: 1000 + i) }
+    get root_path
+    assert_response :success
+    assert_includes @response.body, "에버그린 후보가 아직 없습니다.", "heading-only void 금지 — 빈 상태 자리 유지"
+  end
+
+  private
+
+  # evergreen_candidate=true 영상+스코어 생성(대시보드 섹션 픽스처).
+  def make_evergreen(title, multiple:)
+    video = @channel.videos.create!(youtube_video_id: "evg_#{SecureRandom.hex(4)}", title: title,
+                                    view_count: 90_000, is_short: false, published_at: 200.days.ago)
+    VideoScore.create!(video: video, performance_multiple: multiple, own_match_count: 0,
+                       needs_verification: false, rank_eligible: true, evergreen_candidate: true)
+    video
+  end
 end

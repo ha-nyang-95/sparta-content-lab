@@ -89,8 +89,18 @@
     <h3 class="text-h3 text-ink-strong">에버그린 콘텐츠</h3>
     <p class="mt-1 text-caption text-ink-muted">꾸준히 조회수가 유지되는 검증된 주제입니다.</p>
     <div class="mt-4">
-      <% if widget_collecting?(:evergreen_validation) %>
+      <% if @evergreen_scores.any? %>
+        <div class="divide-y divide-border-subtle">
+          <%= render partial: "dashboard/evergreen_item", collection: @evergreen_scores, as: :score %>
+        </div>
+        <%# 대시보드는 상위 요약(최대 5) — 전체는 인기 콘텐츠 에버그린 탭에서(무언의 절단 방지). %>
+        <%= link_to "전체 보기 →", popular_path(period: "evergreen"),
+              class: "mt-3 inline-block text-caption text-primary-600 hover:underline" %>
+      <% elsif widget_collecting?(:evergreen_validation) %>
         <%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:evergreen_validation) %>
+      <% else %>
+        <%# 스냅샷은 충분하나 자격 후보가 아직 없음 — 위젯 숨기지 않고 자리 유지(§4.7·AD-16). %>
+        <p class="text-caption text-ink-muted">에버그린 후보가 아직 없습니다.</p>
       <% end %>
     </div>
   </div>

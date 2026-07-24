@@ -2,6 +2,7 @@
     로컬: video(필수), rank(옵션 → 없으면 # 셀 생략), sparkline(옵션 기본 false → 없으면 트렌드 셀 생략). N+1 방지: includes(video: [:channel, :daily_stats])·video_score 프리로드. nil 방어 AD-9·다국어 §7. %>
 <% rank = local_assigns.fetch(:rank, nil) %>
 <% sparkline = local_assigns.fetch(:sparkline, false) %>
+<% evergreen = local_assigns.fetch(:evergreen, false) %>
 <% score = video.video_score %>
 <tr class="border-b border-border-subtle hover:bg-surface-sunken">
   <% if rank %>
@@ -32,6 +33,9 @@
           <% end %>
           <% if video.topic_cluster_id %>
             <span class="inline-flex items-center rounded-chip bg-primary-50 px-1.5 py-0.5 text-label text-primary-600">주제 그룹</span>
+          <% end %>
+          <% if evergreen && (ev = evergreen_badge_status(score, video)) %>
+            <%= render "shared/honesty_status", status: ev %>
           <% end %>
         </div>
       </div>

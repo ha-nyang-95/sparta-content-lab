@@ -134,7 +134,44 @@ class ScoringDisplayHelperTest < ActionView::TestCase
     assert_nil video_sparkline_points(video)
   end
 
+  # --- evergreen_badge_status(§4.7, AD-3 읽기만) ---
+
+  test "score 가 nil 이면 뱃지 없음(nil)" do
+    video = build_video_with_stats([])
+    assert_nil evergreen_badge_status(nil, video)
+  end
+
+  test "evergreen_candidate=false 면 뱃지 없음(nil)" do
+    video = build_evergreen_video(candidate: false, stat_count: 20)
+    assert_nil evergreen_badge_status(video.video_score, video)
+  end
+
+  test "후보이며 스냅샷<14 면 :evergreen_candidate(ghost)" do
+    video = build_evergreen_video(candidate: true, stat_count: 5)
+    assert_equal :evergreen_candidate, evergreen_badge_status(video.video_score, video)
+  end
+
+  test "후보이며 스냅샷 0 이면 :evergreen_candidate(AD-9)" do
+    video = build_evergreen_video(candidate: true, stat_count: 0)
+    assert_equal :evergreen_candidate, evergreen_badge_status(video.video_score, video)
+  end
+
+  test "후보이며 스냅샷>=14 면 :evergreen_verified(solid)" do
+    video = build_evergreen_video(candidate: true, stat_count: 14)
+    assert_equal :evergreen_verified, evergreen_badge_status(video.video_score, video)
+  end
+
   private
+
+  # evergreen_candidate 플래그와 stat_count 개의 daily_stats(유니크 날짜)를 심은 영상 생성.
+  def build_evergreen_video(candidate:, stat_count:)
+    channel = Channel.create!(name: "에버그린 채널", category: "직접경쟁", source: "seed", subscriber_count: 1000)
+    video = channel.videos.create!(youtube_video_id: "evg_#{SecureRandom.hex(4)}", title: "에버그린 영상")
+    VideoScore.create!(video: video, performance_multiple: 3.0, rank_eligible: true,
+                       needs_verification: false, evergreen_candidate: candidate)
+    stat_count.times { |i| video.daily_stats.create!(date: (stat_count - i).days.ago.to_date, view_count: 100 + i) }
+    video
+  end
 
   # 오래된→최신 순 view_count 배열로 daily_stats 를 심은 영상 생성(날짜 오름차순).
   def build_video_with_stats(view_counts)

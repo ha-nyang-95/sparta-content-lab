@@ -66,6 +66,15 @@ module ScoringDisplayHelper
     }.join(" ")
   end
 
+  # 에버그린 정직성 상태(§4.7) — 미후보 nil / 후보이며 스냅샷<임계 :evergreen_candidate / >=임계 :evergreen_verified.
+  # daily_stats 는 프리로드 전제(size 는 로드된 컬렉션 카운트 — 재쿼리 금지). 검증=관측 충분성 스냅샷 게이트(재계산 아님, AD-3).
+  def evergreen_badge_status(score, video)
+    return nil unless score&.evergreen_candidate
+
+    threshold = Scoring::Config.fetch(:cold_start_snapshots, :evergreen_validation)
+    video.daily_stats.size >= threshold ? :evergreen_verified : :evergreen_candidate
+  end
+
   # 영상 클릭 시 이동할 유튜브 watch URL. id 는 쿼리에 넣기 전 인코딩(비정규 스텁 id 의 &·공백 방어).
   def youtube_watch_url(video)
     "https://www.youtube.com/watch?v=#{CGI.escape(video.youtube_video_id.to_s)}"

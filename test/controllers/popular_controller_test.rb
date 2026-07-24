@@ -87,4 +87,22 @@ class PopularControllerTest < ActionDispatch::IntegrationTest
     get popular_path
     assert_not_includes @response.body, "구독자 대비 조회수"
   end
+
+  test "에버그린 탭은 후보 행에 에버그린 뱃지를 표시한다" do
+    make_scored("에버그린 뱃지 영상", multiple: 3.0, is_short: false, own_match_count: 0, published_at: 2.days.ago, evergreen: true)
+    get popular_path(period: "evergreen")
+    assert_response :success
+    assert_includes @response.body, "에버그린 뱃지 영상"
+    # 스냅샷 없음(<14) → 후보 ghost 뱃지.
+    assert_includes @response.body, "에버그린 후보"
+  end
+
+  test "타 기간 탭(1w)에는 에버그린 뱃지를 표시하지 않는다" do
+    make_scored("에버그린 뱃지 영상", multiple: 3.0, is_short: false, own_match_count: 0, published_at: 2.days.ago, evergreen: true)
+    get popular_path(period: "1w")
+    assert_response :success
+    assert_includes @response.body, "에버그린 뱃지 영상"
+    assert_not_includes @response.body, "에버그린 후보"
+    assert_not_includes @response.body, "✓ 에버그린"
+  end
 end

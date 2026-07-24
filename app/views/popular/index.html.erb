@@ -36,13 +36,13 @@
               </td>
             </tr>
             <% scores.each_with_index do |score, idx| %>
-              <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true %>
+              <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true, evergreen: (@period == "evergreen") %>
             <% end %>
           <% end %>
         <% else %>
           <%# 평면 모드 — 성과 배수 desc 전역 순위. %>
           <% @scores.each_with_index do |score, idx| %>
-            <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true %>
+            <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true, evergreen: (@period == "evergreen") %>
           <% end %>
         <% end %>
       </tbody>
