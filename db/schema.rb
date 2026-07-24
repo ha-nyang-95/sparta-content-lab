@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_100010) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_24_100011) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -106,6 +106,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_100010) do
     t.integer "comment_count"
     t.datetime "created_at", null: false
     t.integer "duration"
+    t.binary "embedding"
+    t.string "embedding_source_hash"
     t.boolean "is_short"
     t.integer "like_count"
     t.datetime "published_at"

@@ -4,4 +4,9 @@ class Video < ApplicationRecord
   has_many :daily_stats, class_name: "VideoDailyStat", dependent: :destroy
 
   validates :youtube_video_id, presence: true, uniqueness: true
+
+  # packed-float BLOB 임베딩을 Array<Float> 로 되돌린다(embedding 없으면 nil). 4.2 코사인이 소비.
+  def embedding_vector
+    embedding && embedding.unpack("f*")
+  end
 end

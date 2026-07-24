@@ -35,6 +35,11 @@ module YoutubePlanningHelper
     Rails.autoloaders.main.ignore(youtube_errors)
     require youtube_errors
 
+    # Embedding 경계도 동일하게 errors.rb 한 파일에 여러 예외(Embedding::Error/ConfigurationError)를 모은다.
+    embedding_errors = Rails.root.join("app/services/embedding/errors.rb")
+    Rails.autoloaders.main.ignore(embedding_errors)
+    require embedding_errors
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
