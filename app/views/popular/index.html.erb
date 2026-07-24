@@ -1,4 +1,61 @@
-<%# 인기 콘텐츠 placeholder — 후속 에픽이 채운다 (Story 1.4). %>
+<%# 인기 콘텐츠 — §4.3 급상승 테이블(순번/영상/채널/업로드일/조회수/성과 배수/트렌드/자사 유사영상) + 6.2 필터 재사용. 읽기 전용(AD-3), 밴드 그룹/평면 토글. %>
 <% content_for :title, "인기 콘텐츠" %>
+
 <h2 class="text-h2 text-ink-strong">인기 콘텐츠</h2>
-<p class="mt-2 text-caption text-ink-muted">준비 중 — 후속 에픽에서 구현</p>
+<p class="mt-1 text-caption text-ink-muted">성과 배수 상위 급상승 영상입니다.</p>
+
+<%# 필터 행 — 기간 탭(좌) + 카테고리/유형/레이아웃(우). base_path 로 popular 재사용. %>
+<div class="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+  <%= render "dashboard/period_tabs", current: @period, base_path: popular_path %>
+  <%= render "dashboard/filter_bar", category: @category, type: @type, layout: @layout, base_path: popular_path %>
+</div>
+
+<% if @scores.any? %>
+  <%# 테이블 영역만 가로 스크롤(§5), 본문은 min-w 로 컬럼 유지. %>
+  <div class="mt-6 overflow-x-auto rounded-card border border-border bg-surface shadow-card">
+    <table class="w-full min-w-[720px]">
+      <thead>
+        <tr class="border-b border-border-subtle bg-surface-sunken text-left text-label text-ink-muted">
+          <th class="p-2 font-medium">#</th>
+          <th class="p-2 font-medium">영상</th>
+          <th class="p-2 font-medium">채널</th>
+          <th class="p-2 font-medium">업로드일</th>
+          <th class="p-2 font-medium">조회수</th>
+          <th class="p-2 font-medium">성과 배수</th>
+          <th class="p-2 font-medium">트렌드</th>
+          <th class="p-2 font-medium">자사 유사영상</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @grouped %>
+          <%# 밴드 모드에선 순번을 밴드마다 1부터 리셋 — 각 밴드가 자기 리더보드다(전역 카운터는 밴드 간 순번이 성과 순위처럼 오독됨). %>
+          <% @grouped.each do |band, scores| %>
+            <tr class="bg-surface-sunken">
+              <td colspan="8" class="px-2 py-1.5 text-label text-ink-muted">
+                <%= (scores.first && subscriber_band_label(scores.first.video.channel)) || "구독자 미상" %>
+              </td>
+            </tr>
+            <% scores.each_with_index do |score, idx| %>
+              <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <%# 평면 모드 — 성과 배수 desc 전역 순위. %>
+          <% @scores.each_with_index do |score, idx| %>
+            <%= render "shared/video_row", video: score.video, rank: idx + 1, sparkline: true %>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <%# empty 상태 — 조건 부합 영상 0. 억지로 채우지 않고 정직성 자리 유지(AD-16). %>
+  <div class="mt-6 rounded-card border border-border bg-surface p-6 shadow-card">
+    <p class="text-body text-ink-body">조건에 맞는 급상승 영상이 아직 없습니다.</p>
+    <div class="mt-3">
+      <%= render "shared/honesty_status", status: :collecting, detail: "데이터 수집 중" %>
+    </div>
+  </div>
+<% end %>
+
+<%# NOTE: loading(스켈레톤) — 콜드스타트 시 각 행 트렌드 셀이 §4.7 "데이터 수집 중" 자리로 흡수(전역 배너 없음). error 는 컨트롤러가 던지면 Rails 기본 에러 페이지가 처리. %>

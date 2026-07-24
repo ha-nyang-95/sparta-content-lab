@@ -90,31 +90,43 @@ class SharedComponentsTest < ActionView::TestCase
     video
   end
 
-  test "video_row 는 다국어 방어·유형·유사영상을 담고 금지 라벨이 없다" do
+  test "video_row 는 다국어 방어·유형·유사영상 뱃지를 담고 금지 라벨이 없다" do
     video = build_scored_video(title: "일본어 강좌", is_short: false, own_match_count: 2)
     render partial: "shared/video_row", locals: { video: video }
     assert_includes rendered, "break-keep"
-    assert_includes rendered, "line-clamp"
+    assert_includes rendered, "truncate"
     assert_includes rendered, "tabular-nums"
     assert_includes rendered, "min-w-0"
     assert_includes rendered, "일본어 강좌"
+    # 자사 유사영상은 §1.4 뱃지(2개+ danger klass)로.
     assert_includes rendered, "2개"
+    assert_includes rendered, "bg-badge-dangerBg"
     assert_includes rendered, "롱폼"
     assert_includes rendered, "1만~10만"
+    # 영상 셀은 유튜브 watch URL 로 링크.
+    assert_includes rendered, "https://www.youtube.com/watch?v=#{video.youtube_video_id}"
     refute_includes rendered, "구독자 대비 조회수"
   end
 
-  test "video_row own_match_count 0 은 없음으로" do
+  test "video_row own_match_count 0 은 없음 neutral 뱃지로" do
     video = build_scored_video(title: "매치 없음 영상", own_match_count: 0)
     render partial: "shared/video_row", locals: { video: video }
     assert_includes rendered, "없음"
+    assert_includes rendered, "bg-badge-neutralBg"
   end
 
-  test "video_row 한일 혼재 긴 제목은 line-clamp + title 전체 툴팁" do
+  test "video_row own_match_count 1 은 caution 뱃지로" do
+    video = build_scored_video(title: "매치 하나 영상", own_match_count: 1)
+    render partial: "shared/video_row", locals: { video: video }
+    assert_includes rendered, "1개"
+    assert_includes rendered, "bg-badge-cautionBg"
+  end
+
+  test "video_row 한일 혼재 긴 제목은 truncate + title 전체 툴팁" do
     long = "일본인을 위한 韓国語 講座 완전정복 가이드"
     video = build_scored_video(title: long)
     render partial: "shared/video_row", locals: { video: video }
-    assert_includes rendered, "line-clamp-2"
+    assert_includes rendered, "truncate"
     assert_includes rendered, "title=\"#{long}\""
     assert_includes rendered, long
   end

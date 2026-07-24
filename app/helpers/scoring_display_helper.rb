@@ -31,4 +31,43 @@ module ScoringDisplayHelper
 
     video.is_short? ? "쇼츠" : "롱폼"
   end
+
+  # 자사 유사영상 뱃지(§1.4) — 없음 neutral / 1개 caution / 2개+ danger. 물질화 own_match_count 읽기.
+  def own_match_badge(count)
+    if count.nil? || count.zero?
+      { label: "없음", klass: "bg-badge-neutralBg text-badge-neutralFg" }
+    elsif count == 1
+      { label: "1개", klass: "bg-badge-cautionBg text-badge-cautionFg" }
+    else
+      { label: "#{count}개", klass: "bg-badge-dangerBg text-badge-dangerFg" }
+    end
+  end
+
+  # 최근 7일 조회수 스냅샷을 width×height 박스에 정규화한 SVG polyline points 문자열(읽기만, AD-3).
+  # 스냅샷 수 < cold_start_snapshots.sparkline 이면 nil(호출부가 콜드스타트 자리 유지). daily_stats 는 preload 전제.
+  def video_sparkline_points(video, width: 96, height: 28)
+    threshold = Scoring::Config.fetch(:cold_start_snapshots, :sparkline)
+    stats = video.daily_stats.sort_by(&:date)
+    return nil if stats.size < threshold
+
+    values = stats.last(threshold).map(&:view_count)
+    # 창 안에 결측(nil) 스냅샷이 하나라도 있으면 0으로 눌러 가짜 바닥선을 그리지 않고 콜드스타트 자리 유지(AD-9·§4.7).
+    return nil if values.any?(&:nil?)
+
+    min = values.min
+    max = values.max
+    n = values.size
+
+    values.each_with_index.map { |v, i|
+      x = (i.to_f / (n - 1) * width).round(1)
+      # min→바닥(y=height), max→천장(y=0). 전부 동일하면 중앙 평평선.
+      y = max == min ? (height / 2.0).round(1) : (height - (v - min).to_f / (max - min) * height).round(1)
+      "#{x},#{y}"
+    }.join(" ")
+  end
+
+  # 영상 클릭 시 이동할 유튜브 watch URL. id 는 쿼리에 넣기 전 인코딩(비정규 스텁 id 의 &·공백 방어).
+  def youtube_watch_url(video)
+    "https://www.youtube.com/watch?v=#{CGI.escape(video.youtube_video_id.to_s)}"
+  end
 end

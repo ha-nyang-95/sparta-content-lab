@@ -90,4 +90,59 @@ class ScoringDisplayHelperTest < ActionView::TestCase
     assert_nil subscriber_band_label(Channel.new(subscriber_count: nil))
     assert_nil subscriber_band_label(nil)
   end
+
+  # --- own_match_badge(§1.4) ---
+
+  test "own_match_badge 는 없음/1개/2개+ 로 neutral/caution/danger" do
+    assert_equal "없음", own_match_badge(nil)[:label]
+    assert_equal "없음", own_match_badge(0)[:label]
+    assert_includes own_match_badge(0)[:klass], "neutral"
+    assert_equal "1개", own_match_badge(1)[:label]
+    assert_includes own_match_badge(1)[:klass], "caution"
+    assert_equal "3개", own_match_badge(3)[:label]
+    assert_includes own_match_badge(3)[:klass], "danger"
+  end
+
+  # --- youtube_watch_url ---
+
+  test "youtube_watch_url 는 id 를 인코딩해 쿼리 오염을 막는다" do
+    video = Video.new(youtube_video_id: "abc&evil=1")
+    url = youtube_watch_url(video)
+    assert_includes url, "https://www.youtube.com/watch?v="
+    assert_not_includes url, "&evil=1", "인코딩 안 되면 별도 쿼리 파라미터로 주입됨"
+  end
+
+  # --- video_sparkline_points(스냅샷 7일, AD-3 읽기만) ---
+
+  test "스냅샷이 임계(7) 미만이면 nil(콜드스타트 자리 유지)" do
+    video = build_video_with_stats([100, 200, 300]) # 3 < 7
+    assert_nil video_sparkline_points(video)
+  end
+
+  test "스냅샷 7개면 정규화된 polyline points 를 낸다" do
+    video = build_video_with_stats([10, 20, 30, 40, 50, 60, 70])
+    pts = video_sparkline_points(video, width: 96, height: 28)
+    assert_not_nil pts
+    coords = pts.split(" ")
+    assert_equal 7, coords.size
+    assert coords.first.start_with?("0.0,"), "첫 점 x=0"
+    assert coords.last.start_with?("96.0,"), "마지막 점 x=width"
+  end
+
+  test "창 안에 결측(nil) 조회수가 있으면 nil(가짜 바닥선 방지, AD-9)" do
+    video = build_video_with_stats([10, 20, nil, 40, 50, 60, 70])
+    assert_nil video_sparkline_points(video)
+  end
+
+  private
+
+  # 오래된→최신 순 view_count 배열로 daily_stats 를 심은 영상 생성(날짜 오름차순).
+  def build_video_with_stats(view_counts)
+    channel = Channel.create!(name: "스파크라인 채널", category: "직접경쟁", source: "seed", subscriber_count: 1000)
+    video = channel.videos.create!(youtube_video_id: "spk_#{SecureRandom.hex(4)}", title: "추이 영상")
+    view_counts.each_with_index do |vc, i|
+      video.daily_stats.create!(date: (view_counts.size - i).days.ago.to_date, view_count: vc)
+    end
+    video
+  end
 end

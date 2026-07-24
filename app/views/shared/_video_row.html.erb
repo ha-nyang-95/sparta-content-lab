@@ -1,26 +1,44 @@
-<%# 급상승 영상 행 — 썸네일·제목·채널·업로드일·조회수·성과 배수·자사 유사영상·유형·구독자 밴드(§7 다국어 방어·nil 방어 AD-9). 로컬: video.
-    소비 화면은 N+1 방지를 위해 반드시 `includes(:video_score, :channel)`로 프리로드한다(행마다 video_score·channel 접근). %>
+<%# 급상승 영상 행(§4.3 정본) — #(옵션 rank) / 영상(썸네일+제목+인라인 유형·밴드·주제 칩) / 채널 / 업로드일 / 조회수(뮤트) / 성과 배수(히어로) / 트렌드(옵션 sparkline) / 자사 유사영상(§1.4 뱃지).
+    로컬: video(필수), rank(옵션 → 없으면 # 셀 생략), sparkline(옵션 기본 false → 없으면 트렌드 셀 생략). N+1 방지: includes(video: [:channel, :daily_stats])·video_score 프리로드. nil 방어 AD-9·다국어 §7. %>
+<% rank = local_assigns.fetch(:rank, nil) %>
+<% sparkline = local_assigns.fetch(:sparkline, false) %>
 <% score = video.video_score %>
-<tr class="border-b border-border-subtle">
+<tr class="border-b border-border-subtle hover:bg-surface-sunken">
+  <% if rank %>
+    <td class="p-2 text-ink-muted tabular-nums"><%= rank %></td>
+  <% end %>
   <td class="p-2">
-    <% if video.thumbnail.present? %>
-      <img src="<%= video.thumbnail %>" alt="<%= video.title.presence || "제목 없음" %>" width="96" height="54" class="h-[54px] w-24 rounded-control object-cover" loading="lazy">
-    <% else %>
-      <div class="h-[54px] w-24 rounded-control bg-surface-sunken" aria-hidden="true"></div>
-    <% end %>
-  </td>
-  <td class="p-2">
-    <div class="min-w-0">
-      <%# lang 하드코딩 안 함 — 한·일 혼재라 단일 lang 은 절반을 오표시(스크린리더 오독). §7 방어는 폰트 폴백·break-keep·line-clamp·min-w-0·title 툴팁으로 충족. per-title 언어 감지는 향후. %>
-      <% if video.title.present? %>
-        <span class="font-sans break-keep line-clamp-2 text-ink-strong" title="<%= video.title %>"><%= video.title %></span>
+    <a href="<%= youtube_watch_url(video) %>" target="_blank" rel="noopener" class="flex min-w-0 items-start gap-3">
+      <% if video.thumbnail.present? %>
+        <img src="<%= video.thumbnail %>" alt="" width="80" height="45" class="h-[45px] w-20 shrink-0 rounded-chip object-cover" loading="lazy">
       <% else %>
-        <span class="text-ink-muted">제목 없음</span>
+        <div class="h-[45px] w-20 shrink-0 rounded-chip bg-surface-sunken" aria-hidden="true"></div>
       <% end %>
-    </div>
+      <div class="min-w-0">
+        <%# lang 하드코딩 안 함 — 한·일 혼재라 단일 lang 은 절반을 오표시. §7 방어는 폰트 폴백·break-keep·truncate·min-w-0·title 툴팁. %>
+        <% if video.title.present? %>
+          <span class="block min-w-0 truncate break-keep text-body text-ink-strong" title="<%= video.title %>"><%= video.title %></span>
+        <% else %>
+          <span class="block text-ink-muted">제목 없음</span>
+        <% end %>
+        <div class="mt-1 flex flex-wrap gap-1">
+          <% type = video_type_label(video) %>
+          <% if type %>
+            <span class="inline-flex items-center rounded-chip bg-badge-neutralBg px-1.5 py-0.5 text-label text-badge-neutralFg"><%= type %></span>
+          <% end %>
+          <% band = subscriber_band_label(video.channel) %>
+          <% if band %>
+            <span class="inline-flex items-center rounded-chip bg-badge-neutralBg px-1.5 py-0.5 text-label text-badge-neutralFg"><%= band %></span>
+          <% end %>
+          <% if video.topic_cluster_id %>
+            <span class="inline-flex items-center rounded-chip bg-primary-50 px-1.5 py-0.5 text-label text-primary-600">주제 그룹</span>
+          <% end %>
+        </div>
+      </div>
+    </a>
   </td>
   <td class="p-2">
-    <span class="block min-w-0 max-w-[12rem] truncate text-ink-body" title="<%= video.channel&.name %>"><%= video.channel&.name.presence || "미상" %></span>
+    <span class="block min-w-0 max-w-[12rem] truncate text-ink-muted" title="<%= video.channel&.name %>"><%= video.channel&.name.presence || "미상" %></span>
   </td>
   <td class="p-2 tabular-nums text-ink-body">
     <% if video.published_at %>
@@ -29,29 +47,28 @@
       <span class="text-ink-muted">미상</span>
     <% end %>
   </td>
-  <td class="p-2 tabular-nums text-ink-body"><%= video.view_count.nil? ? "—" : number_with_delimiter(video.view_count) %></td>
+  <td class="p-2 tabular-nums text-ink-muted"><%= video.view_count.nil? ? "—" : number_with_delimiter(video.view_count) %></td>
   <td class="p-2">
+    <%# 조회수 컬럼이 이미 있으므로 히어로 셀엔 raw 조회수 중복을 피해 nil 전달(pill 만 강조). %>
     <%= render "shared/performance_cell",
                multiple: score&.performance_multiple,
-               view_count: video.view_count,
+               view_count: nil,
                needs_verification: score&.needs_verification || false %>
   </td>
-  <td class="p-2 tabular-nums text-ink-body">
-    <% match = score&.own_match_count %>
-    <%= match.nil? || match.zero? ? "없음" : "#{match}개" %>
-  </td>
+  <% if sparkline %>
+    <td class="p-2">
+      <% pts = video_sparkline_points(video) %>
+      <% if pts %>
+        <svg viewBox="0 0 96 28" width="96" height="28" class="text-primary-600" role="img" aria-label="최근 7일 조회수 추이">
+          <polyline points="<%= pts %>" fill="none" stroke="currentColor" stroke-width="1.5" />
+        </svg>
+      <% else %>
+        <%= render "shared/honesty_status", status: :collecting, detail: "데이터 수집 중" %>
+      <% end %>
+    </td>
+  <% end %>
   <td class="p-2">
-    <% type = video_type_label(video) %>
-    <% if type %>
-      <span class="inline-flex items-center rounded-chip bg-badge-neutralBg px-1.5 py-0.5 text-label text-badge-neutralFg"><%= type %></span>
-    <% end %>
-  </td>
-  <td class="p-2">
-    <% band = subscriber_band_label(video.channel) %>
-    <% if band %>
-      <span class="inline-flex items-center rounded-chip bg-badge-neutralBg px-1.5 py-0.5 text-label text-badge-neutralFg"><%= band %></span>
-    <% else %>
-      <span class="text-ink-muted">미상</span>
-    <% end %>
+    <% b = own_match_badge(score&.own_match_count) %>
+    <span class="inline-flex items-center rounded-chip px-1.5 py-0.5 text-label <%= b[:klass] %>"><%= b[:label] %></span>
   </td>
 </tr>
