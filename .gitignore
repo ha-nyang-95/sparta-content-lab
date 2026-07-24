@@ -26,3 +26,6 @@ _bmad/custom/*.user.toml
 
 # Playwright MCP 조사 부산물
 .playwright-mcp/
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

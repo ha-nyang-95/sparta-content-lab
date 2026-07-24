@@ -1,0 +1,6 @@
+<%# Tailwind content-scan 프로브 (Story 1.3) — 렌더 대상이 아니다(아무도 이 partial을 렌더하지 않는다).
+    존재 이유: Tailwind JIT는 실제로 "사용된" 유틸만 빌드에 emit하므로, 토큰 파이프라인 회귀 테스트가
+    특정 뷰(예: home)의 클래스 사용에 의존하면 그 뷰가 바뀔 때(Story 1.4가 home을 교체) 토큰이 정상인데도
+    테스트가 깨진다. 이 파일이 아래 대표 토큰 유틸을 항상 content-scan에 노출시켜 빌드에 고정한다.
+    test/design_tokens_test.rb (c)가 이 앵커를 검증한다. 여기 클래스를 지우지 말 것. %>
+<div class="hidden bg-primary-600 text-primary-600 bg-success-600 text-success-600"></div>

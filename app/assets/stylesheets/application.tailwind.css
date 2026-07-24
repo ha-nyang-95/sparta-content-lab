@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 폰트 스택 적용 — DESIGN.md §2/§10의 Pretendard·Noto Sans KR/JP 스택을 본문에 활성화.
+   숫자는 tabular-nums(Tailwind 내장 유틸)로 정렬. 앱 셸·색·레이아웃은 Story 1.4 소관. */
+@layer base {
+  body {
+    @apply font-sans;
+  }
+}
