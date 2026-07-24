@@ -13,3 +13,11 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-5-scoring-config-secrets.md`
   summary: test 환경에서 YOUTUBE_API_MODE/EMBEDDING_MODE 를 stub 로 강제하지 않아, dotenv 가 로드한 .env 의 실제 키·모드가 test ENV 에 남는다 — 미래 테스트가 우발적으로 live 경로를 타면 실제 API 를 호출할 수 있다.
   evidence: dotenv-rails 가 dev/test 에서 .env 를 로드한다. 현재는 모드를 소비하는 코드가 없어 무해하나, Epic 2·4 가 stub/live 분기를 구현할 때 test 환경 기본을 stub 로 고정해야 안전하다(사용자의 스텁 개발 전략 정합).
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-2-1-channel-video-models.md`
+  summary: Story 2.2가 handle-only 시드 채널을 API로 실제 UC 채널ID로 해결할 때, 이미 UC-id로 존재하는 행과 youtube_channel_id 유니크 인덱스에서 충돌할 수 있고 병합 경로가 없다. handle 부분 유니크 인덱스를 dedup 앵커로 두었으니, 2.2는 handle로 기존 행을 찾아 in-place UPDATE(또는 merge)로 id를 부여해야 한다(seed 파일을 편집해 UC-id를 넣고 재시드하면 중복 생성됨).
+  evidence: youtube_channel_id 유니크(nil 다중)·handle 부분 유니크. 시드 dedup 키는 youtube_channel_id>handle>name. 3-tier 키는 정적 시드엔 idempotent하나 API 해결로 식별자가 바뀌면 재시드가 중복을 만든다. 会社員A/J는 단일 행이 두 실채널을 표현 — 2.2 해결 시 하나로 발산.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-2-1-channel-video-models.md`
+  summary: Channel `has_many :videos, dependent: :destroy` 는 채널 destroy 시 수집된 영상·(향후)스냅샷 이력을 cascade 삭제한다. 설계는 은퇴를 excluded 불리언으로 처리하지만 destroy를 막지 않는다.
+  evidence: AD-17은 스냅샷 이력을 소급 재구성 불가·일일 백업 필수로 규정. 채널 삭제 흐름이 도입되면 dependent 전략을 restrict_with_exception 등으로 재검토해 이력 유실을 막아야 한다. MVP엔 destroy 경로 없음.
