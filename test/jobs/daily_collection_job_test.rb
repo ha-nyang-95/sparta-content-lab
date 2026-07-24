@@ -23,6 +23,25 @@ class DailyCollectionJobTest < ActiveSupport::TestCase
     assert VideoDailyStat.count > 0, "일별 스냅샷이 기록돼야 한다"
   end
 
+  test "스코어링 스테이지 append: 스냅샷 뒤 기준선·성과배수가 물질화되고 런은 succeeded" do
+    make_channel(name: "a", youtube_channel_id: "UCaaa")
+    make_channel(name: "b", youtube_channel_id: "UCbbb")
+
+    DailyCollectionJob.perform_now
+
+    run = JobRun.last
+    assert_equal "succeeded", run.status
+    assert VideoDailyStat.count > 0, "스코어링은 스냅샷 뒤 append — 스냅샷 물질화가 선행돼야 한다"
+    assert Baseline.count > 0, "기준선 스테이지가 append 실행돼야 한다"
+    assert VideoScore.count > 0, "성과배수 스테이지가 append 실행돼야 한다"
+
+    # 순서 불변식 — 물질화된 VideoScore 의 영상은 자기 채널의 기준선을 가진다(baseline→performance 순).
+    VideoScore.joins(:video).includes(video: :channel).each do |score|
+      assert Baseline.exists?(channel_id: score.video.channel_id),
+             "성과배수를 받은 영상의 채널은 기준선이 먼저 물질화돼 있어야 한다"
+    end
+  end
+
   test "채널별 회복: 한 채널 실패해도 런은 succeeded·스냅샷은 기록된다" do
     make_channel(name: "good", youtube_channel_id: "UCgood")
     bad = make_channel(name: "bad", youtube_channel_id: "UCbad")
@@ -83,6 +102,34 @@ class DailyCollectionJobTest < ActiveSupport::TestCase
     assert_equal "failed", stale.reload.status
     assert_not_nil stale.finished_at
     assert_equal "running", fresh.reload.status, "최근 실행은 회수하지 않는다"
+  end
+
+  test "전 채널 스코어링 실패는 succeeded 로 위장하지 않고 failed 로 기록된다(정직성)" do
+    make_channel(name: "a", youtube_channel_id: "UCscore1")
+    make_channel(name: "b", youtube_channel_id: "UCscore2")
+
+    # 수집은 정상(stub), 스코어링 첫 스테이지를 전 채널 실패시킨다 — .new 를 raise 로 임시 교체.
+    Scoring::CalculateBaseline.define_singleton_method(:new) { |_channel| raise "boom(스코어링)" }
+    begin
+      DailyCollectionJob.perform_now
+    ensure
+      Scoring::CalculateBaseline.singleton_class.send(:remove_method, :new)
+    end
+
+    run = JobRun.last
+    assert_equal "failed", run.status, "전 채널 스코어링 실패는 체계적 문제 — failed 여야 한다"
+    assert VideoDailyStat.count > 0, "수집·스냅샷은 성공했어야 한다(스코어링만 실패)"
+  end
+
+  test "스코어링은 수집 스코프와 동일 — youtube_channel_id 없는 handle-only 채널은 기준선을 만들지 않는다" do
+    fetched = make_channel(name: "fetched", youtube_channel_id: "UChandle1")
+    handle_only = Channel.create!(name: "handle-only", category: "직접경쟁", source: "seed", handle: "@handleonly")
+
+    DailyCollectionJob.perform_now
+
+    assert Baseline.exists?(channel_id: fetched.id), "수집 대상 채널은 스코어링된다"
+    assert_not Baseline.exists?(channel_id: handle_only.id),
+      "youtube_channel_id 없는 채널은 스코어링 스코프 밖 — 빈 기준선을 만들지 않는다"
   end
 
   # 전 채널을 실패시키는 fetcher(체계적 실패 시뮬레이션).

@@ -26,9 +26,31 @@ class DailyCollectionJob < ApplicationJob
       end
 
       Snapshot::RecordDailyStats.call
-      # Epic 3 스테이지(기준선→성과배수→에버그린 후보)는 여기 스냅샷 뒤에 append된다(자리).
+      # Epic 3 스코어링 스테이지 — 스냅샷 뒤 append. 수집과 같은 스코프(youtube_channel_id 있는 채널)만 —
+      # 영상 없는 handle-only 채널의 빈 기준선을 만들지 않는다. 채널별 기준선→성과배수→에버그린(이전 산출을 DB에서 읽음, AD-11).
+      scoring_attempted = 0
+      scoring_failed = 0
+      Channel.not_excluded.where.not(youtube_channel_id: nil).find_each do |channel|
+        scoring_attempted += 1
+        # 세 스테이지를 한 트랜잭션으로 — 중간 실패가 '새 배수 + 옛 에버그린' 같은 불일치 상태를 남기지 않는다(all-or-nothing).
+        ApplicationRecord.transaction do
+          Scoring::CalculateBaseline.new(channel).call
+          Scoring::CalculatePerformance.new(channel).call
+          Scoring::DetermineEvergreen.new(channel).call
+        end
+      rescue => e
+        scoring_failed += 1
+        Rails.logger.error("[DailyCollectionJob] 채널 스코어링 실패(스킵): #{channel.name} — #{e.class}: #{e.message}")
+      end
 
-      finalize(run, processed, failed, ledger.spent(:shared))
+      # 전 채널 스코어링 실패는 체계적 문제 — 수집 정직성 패턴대로 succeeded 로 위장하지 않고 failed 로 기록한다(finalize 와 동일하게 raise 없이).
+      if scoring_attempted.positive? && scoring_failed == scoring_attempted
+        run.fail!(error: "전 채널 스코어링 실패(#{scoring_failed}/#{scoring_attempted})",
+                  quota_used: ledger.spent(:shared),
+                  channels_processed: processed, channels_failed: failed)
+      else
+        finalize(run, processed, failed, ledger.spent(:shared))
+      end
     rescue => e
       # 체계적 실패(스냅샷 단계 raise 등)만 여기 도달 — 채널 실패는 위에서 이미 삼켰다.
       run.fail!(error: e.message, quota_used: ledger.spent(:shared),
