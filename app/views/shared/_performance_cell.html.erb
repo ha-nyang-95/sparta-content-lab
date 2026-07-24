@@ -1,0 +1,20 @@
+<%# 성과 배수 히어로 셀 — 색 밴드 pill + raw 조회수 2차 뮤트 + 편향 툴팁(§1.5·FR-24). 로컬: multiple, view_count, needs_verification(기본 false). %>
+<% multiple = local_assigns[:multiple] %>
+<% view_count = local_assigns[:view_count] %>
+<% needs_verification = local_assigns.fetch(:needs_verification, false) %>
+<%# 밴드와 표시를 같은 반올림 값에서 구동 — 1.96 이 "2.0×"인데 밴드는 neutral 같은 색·숫자 불일치 방지. %>
+<% rounded = multiple&.round(1) %>
+<div class="flex flex-col gap-0.5">
+  <div class="flex items-center gap-1.5">
+    <% if rounded.nil? %>
+      <span class="tabular-nums text-ink-muted" title="<%= performance_bias_note %>" aria-label="<%= performance_multiple_label %>">—</span>
+    <% else %>
+      <span class="rounded-chip px-1.5 py-0.5 tabular-nums <%= performance_band_class(rounded) %>"
+            title="<%= performance_bias_note %>" aria-label="<%= performance_multiple_label %>"><%= format("%.1f×", rounded) %></span>
+    <% end %>
+    <% if needs_verification %>
+      <%= render "shared/honesty_status", status: :needs_verification %>
+    <% end %>
+  </div>
+  <span class="text-caption text-ink-muted tabular-nums"><%= view_count.nil? ? "—" : number_with_delimiter(view_count) %></span>
+</div>

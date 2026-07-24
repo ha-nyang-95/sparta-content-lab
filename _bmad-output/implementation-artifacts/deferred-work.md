@@ -53,3 +53,7 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-3-2-performance-multiple.md`
   summary: CalculatePerformance 의 find_or_initialize_by(video:)+update! 는 동일 채널 동시 재계산 시 video_scores unique(video_id) 경합으로 RecordNotUnique 를 던진다(3.1 CalculateBaseline 과 동일 클래스).
   evidence: 두 워커가 각각 미저장 VideoScore 를 초기화 후 INSERT → 두 번째가 유니크 위반. 모델 uniqueness 검증은 read-then-write라 경합 방지 못함. 현재 recurring 잡은 직렬 실행이라 미도달이나, 잡 병렬화·수동 재계산 병행 시 스코어링 서비스 전반에 upsert_all(unique_by) 또는 with_lock 도입 필요.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-6-1-shared-display-components.md`
+  summary: `_video_row` 제목 셀의 per-title 언어(lang) 힌트 — 현재 한·일 혼재라 단일 하드코딩 lang 은 절반을 오표시해 제거했다. 제목별 언어 감지 후 lang 을 정확히 부착하면 스크린리더 발음·CJK 폰트 선택이 개선된다(향후).
+  evidence: FR-24/§7 다국어 방어는 폰트 폴백·break-keep·line-clamp·min-w-0·title 툴팁으로 충족되나, lang 속성은 언어 감지 없이는 정확히 못 준다. 제목 언어 감지(간이 스크립트 판별 등) 도입 시 lang 재부착.

@@ -1,0 +1,19 @@
+<%# 정직성 5+1상태를 §4.7 토큰 스타일로 렌더 — 값 없음/불확실을 숨기지 않고 자리 유지(AD-16). 로컬: status(Symbol), 옵션 detail. %>
+<% status = local_assigns[:status] %>
+<% detail = local_assigns[:detail] %>
+<% case status %>
+<% when :collecting %>
+  <div class="rounded-control border border-dashed border-border bg-app px-3 py-2 text-center text-caption text-ink-subtle">
+    <%= detail || "데이터 수집 중" %>
+  </div>
+<% when :measurement_limit %>
+  <span class="inline-flex items-center rounded-chip bg-badge-neutralBg px-1.5 py-0.5 text-label text-badge-neutralFg">측정한계</span>
+<% when :evergreen_candidate %>
+  <span class="inline-flex items-center rounded-chip border border-success-100 bg-transparent px-1.5 py-0.5 text-label text-success-700">에버그린 후보</span>
+<% when :evergreen_verified %>
+  <span class="inline-flex items-center rounded-chip bg-success-600 px-1.5 py-0.5 text-label text-white">✓ 에버그린</span>
+<% when :needs_verification %>
+  <span class="inline-flex items-center rounded-chip border border-warning-500 bg-warning-50 px-1.5 py-0.5 text-label text-warning-600">⚠ 검증 요망</span>
+<% when :low_confidence %>
+  <span class="text-caption text-warning-600" title="최근 공개 영상 수가 적어 신뢰도 낮음">저신뢰</span>
+<% end %>
