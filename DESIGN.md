@@ -223,7 +223,7 @@ FR-8은 성과 배수를 4구간 색으로 구분하도록 요구한다. 목업�
 
 ### 4.6 도넛 + 범례 (콘텐츠 기회) · 스파크라인
 
-- **도넛**: `primary` 계열 톤(진→연: `primary-600` → `primary-100`) + `neutral` 1개. 중앙 `text-score` `primary-600`(68%).
+- **도넛**: 4구간을 **뚜렷이 구분되는 색**으로(운영자 요청·목업 색 구분). 미제작 `primary-600`(기회·중앙 %와 동일) / 유사 1개 `success-600` / 유사 2개+ `warning-500` / 포화 `ink-subtle`(중립 회색). 트랙은 `border`. 중앙 `text-score` `primary-600`(68%).
 - **범례**: 색 dot(`radius-full`) + 라벨 `text-body` + 값 `text-muted tabular`. 4구간(미제작/유사 1개/유사 2개+/포화).
 - **스파크라인**: `primary-600` 라인 1.5px, 채움 없음 또는 `primary-50` 아주 옅게. 마지막 점만 dot.
 - 색 매핑 규칙은 프로젝트 `dataviz` 스킬 팔레트가 아니라 이 문서를 따른다.

@@ -14,19 +14,19 @@ class DashboardViewTest < ActionDispatch::IntegrationTest
   test "추천 3개면 카드 3개를 렌더한다" do
     3.times { |i| create_recommendation(rank: i + 1) }
     get root_path
-    assert_equal 3, @response.body.scan('data-controller="disclosure"').size
+    assert_equal 3, @response.body.scan('data-controller="modal"').size
   end
 
   test "추천 2개면 '이번 주 2개 확보' 정직성 문구를 렌더한다" do
     2.times { |i| create_recommendation(rank: i + 1) }
     get root_path
     assert_includes @response.body, "이번 주 2개 확보"
-    assert_equal 2, @response.body.scan('data-controller="disclosure"').size
+    assert_equal 2, @response.body.scan('data-controller="modal"').size
   end
 
   test "추천 0개면 empty 상태를 렌더한다" do
     get root_path
-    assert_equal 0, @response.body.scan('data-controller="disclosure"').size
+    assert_equal 0, @response.body.scan('data-controller="modal"').size
     assert_includes @response.body, "0개 확보"
   end
 

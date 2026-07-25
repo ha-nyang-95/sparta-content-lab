@@ -1,0 +1,11 @@
+<%# 영상 썸네일 + 우하단 영상 시간 뱃지(공유) — 로컬: video. 썸네일 없으면 플레이스홀더, 시간 없으면 뱃지 생략(AD-9). %>
+<div class="relative h-[45px] w-20 shrink-0">
+  <% if video.thumbnail.present? %>
+    <img src="<%= video.thumbnail %>" alt="" width="80" height="45" class="h-[45px] w-20 rounded-chip object-cover" loading="lazy">
+  <% else %>
+    <div class="h-full w-full rounded-chip bg-surface-sunken" aria-hidden="true"></div>
+  <% end %>
+  <% if (dur = format_duration(video.duration)) %>
+    <span class="absolute bottom-0.5 right-0.5 rounded bg-ink-strong/80 px-1 text-[10px] font-medium leading-tight tabular-nums text-white"><%= dur %></span>
+  <% end %>
+</div>

@@ -75,6 +75,17 @@ module ScoringDisplayHelper
     video.daily_stats.size >= threshold ? :evergreen_verified : :evergreen_candidate
   end
 
+  # 영상 길이(초) → 표시 문자열(m:ss 또는 h:mm:ss). nil·0 이하면 nil(뱃지 숨김).
+  def format_duration(seconds)
+    return nil if seconds.nil? || seconds.to_i <= 0
+
+    s = seconds.to_i
+    h = s / 3600
+    m = (s % 3600) / 60
+    sec = s % 60
+    h.positive? ? format("%d:%02d:%02d", h, m, sec) : format("%d:%02d", m, sec)
+  end
+
   # 영상 클릭 시 이동할 유튜브 watch URL. id 는 쿼리에 넣기 전 인코딩(비정규 스텁 id 의 &·공백 방어).
   def youtube_watch_url(video)
     "https://www.youtube.com/watch?v=#{CGI.escape(video.youtube_video_id.to_s)}"

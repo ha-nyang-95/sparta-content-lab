@@ -24,11 +24,11 @@ class DashboardController < ApplicationController
                                   .to_a
 
     # 요약 위젯 — 시계열(스냅샷)이 얕아도 물질화된 값으로 "최선 데이터"를 보여준다(콜드 시 하단에 안내 문구).
-    # 급상승: 경쟁 상위 성과 배수(배수 자체는 스냅샷 없이도 물질화됨).
+    # 급상승: 경쟁 상위 성과 배수(배수 자체는 스냅샷 없이도 물질화됨). 옆 박스 높이를 채우도록 넉넉히 로드.
     @top_scores = VideoScore.ranked.joins(video: :channel)
                             .where(channels: { excluded: false, is_own: false })
                             .includes(video: [:channel, :video_score])
-                            .limit(5).to_a
+                            .limit(10).to_a
     # 경쟁 채널 동향: 구독자 상위(증감은 콜드여도 채널·구독자는 표시).
     @top_competitors = Channel.competitor.not_excluded
                               .includes(:daily_stats)

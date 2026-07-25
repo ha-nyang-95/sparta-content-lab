@@ -13,7 +13,8 @@
             class: nav_item_classes(item),
             aria: { current: (nav_active?(item) ? "page" : nil) },
             data: { nav_label: item.label } do %>
-        <span class="shrink-0"><%= nav_icon(item.icon) %></span>
+<%# 비활성 아이콘은 항목별 색(§10), 활성은 흰색(파랑 pill) 상속 — currentColor. %>
+        <span class="shrink-0 <%= nav_active?(item) ? '' : item.icon_color %>"><%= nav_icon(item.icon) %></span>
         <span class="min-w-0 truncate"><%= item.label %></span>
       <% end %>
     <% end %>

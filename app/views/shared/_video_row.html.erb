@@ -11,11 +11,7 @@
   <% end %>
   <td class="p-2">
     <a href="<%= youtube_watch_url(video) %>" target="_blank" rel="noopener" class="flex min-w-0 items-start gap-3">
-      <% if video.thumbnail.present? %>
-        <img src="<%= video.thumbnail %>" alt="" width="80" height="45" class="h-[45px] w-20 shrink-0 rounded-chip object-cover" loading="lazy">
-      <% else %>
-        <div class="h-[45px] w-20 shrink-0 rounded-chip bg-surface-sunken" aria-hidden="true"></div>
-      <% end %>
+      <%= render "shared/video_thumb", video: video %>
       <div class="min-w-0">
         <%# lang 하드코딩 안 함 — 한·일 혼재라 단일 lang 은 절반을 오표시. §7 방어는 폰트 폴백·break-keep·truncate·min-w-0·title 툴팁. %>
         <% if video.title.present? %>

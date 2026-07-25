@@ -40,17 +40,20 @@
 
 <%# 하단 시계열 위젯 — 실 콘텐츠는 6.3~6.6. 여기선 위젯별 콜드스타트 자리(AD-7, 전역 배너 금지). %>
 <section class="mt-8 grid gap-5 lg:grid-cols-3">
-  <%# 급상승 영상 — 스냅샷이 얕아도 물질화된 성과 배수로 상위를 보여준다(콜드면 하단 안내). %>
-  <div class="rounded-card border border-border bg-surface p-6 shadow-card lg:col-span-2">
+  <%# 급상승 영상 — flex 세로: 리스트가 남는 높이를 채우고(옆 박스에 맞춰 유동), 전체보기·안내는 박스 하단 고정. %>
+  <div class="flex flex-col rounded-card border border-border bg-surface p-6 shadow-card lg:col-span-2">
     <h3 class="text-h3 text-ink-strong">급상승 영상</h3>
     <% if @top_scores.any? %>
-      <div class="mt-4 divide-y divide-border-subtle">
+      <div class="mt-4 flex-1 divide-y divide-border-subtle">
         <%= render partial: "dashboard/top_score_item", collection: @top_scores, as: :score %>
       </div>
-      <%= link_to "전체 보기 →", popular_path(period: "3m"), class: "mt-3 inline-block text-caption text-primary-600 hover:underline" %>
-      <%= render "dashboard/thin_note" if widget_collecting?(:sparkline) %>
+      <%# mt-auto — 리스트가 짧아도 footer 를 박스 맨 아래로 민다. %>
+      <div class="mt-auto border-t border-border-subtle pt-3">
+        <%= link_to "전체 보기 →", popular_path(period: "3m"), class: "inline-block text-caption text-primary-600 hover:underline" %>
+        <%= render "dashboard/thin_note" if widget_collecting?(:sparkline) %>
+      </div>
     <% else %>
-      <div class="mt-4"><%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:sparkline) %></div>
+      <div class="mt-4 flex-1"><%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:sparkline) %></div>
     <% end %>
   </div>
 

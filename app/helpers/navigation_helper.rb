@@ -1,15 +1,15 @@
 # 좌측 내비 6항목 정의와 현재 컨트롤러 기준 활성 판정·토큰 클래스를 제공하는 헬퍼 (Story 1.4)
 module NavigationHelper
-  NavItem = Struct.new(:label, :path_name, :controller, :icon, keyword_init: true)
+  NavItem = Struct.new(:label, :path_name, :controller, :icon, :icon_color, keyword_init: true)
 
-  # 순서·라벨은 DESIGN.md §4.1 / IA §11 고정.
+  # 순서·라벨은 DESIGN.md §4.1 / IA §11 고정. icon_color = 비활성 시 아이콘 색(§10 토큰, 항목별 구분).
   NAV_ITEMS = [
-    NavItem.new(label: "대시보드",   path_name: :root_path,        controller: "dashboard",   icon: :grid),
-    NavItem.new(label: "인기 콘텐츠", path_name: :popular_path,     controller: "popular",     icon: :fire),
-    NavItem.new(label: "경쟁 채널",   path_name: :competitors_path, controller: "competitors", icon: :users),
-    NavItem.new(label: "콘텐츠 갭",   path_name: :content_gap_path, controller: "content_gap", icon: :puzzle),
-    NavItem.new(label: "저장한 영상", path_name: :saved_path,       controller: "saved",       icon: :bookmark),
-    NavItem.new(label: "설정",       path_name: :settings_path,    controller: "settings",    icon: :cog)
+    NavItem.new(label: "대시보드",   path_name: :root_path,        controller: "dashboard",   icon: :grid,     icon_color: "text-primary-600"),
+    NavItem.new(label: "인기 콘텐츠", path_name: :popular_path,     controller: "popular",     icon: :fire,     icon_color: "text-badge-cautionFg"),
+    NavItem.new(label: "경쟁 채널",   path_name: :competitors_path, controller: "competitors", icon: :users,    icon_color: "text-success-600"),
+    NavItem.new(label: "콘텐츠 갭",   path_name: :content_gap_path, controller: "content_gap", icon: :puzzle,   icon_color: "text-badge-dangerFg"),
+    NavItem.new(label: "저장한 영상", path_name: :saved_path,       controller: "saved",       icon: :bookmark, icon_color: "text-warning-500"),
+    NavItem.new(label: "설정",       path_name: :settings_path,    controller: "settings",    icon: :cog,      icon_color: "text-ink-subtle")
   ].freeze
 
   def nav_items

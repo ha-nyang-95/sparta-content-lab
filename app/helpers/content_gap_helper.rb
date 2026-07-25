@@ -9,20 +9,20 @@ module ContentGapHelper
     "saturated" => "포화"
   }.freeze
 
-  # §4.6 진→연 primary 램프 + neutral 1개(border #E5E7EB). 원시 색 금지(§10 토큰만).
+  # §4.6 구간별 뚜렷한 색 구분(§10 토큰만) — 미제작=primary(기회·중앙 %와 동일)/유사1개=success/유사2개+=warning/포화=중립 회색.
   BUCKET_STROKE = {
     "not_made" => "stroke-primary-600",
-    "one" => "stroke-primary-500",
-    "few" => "stroke-primary-100",
-    "saturated" => "stroke-border"
+    "one" => "stroke-success-600",
+    "few" => "stroke-warning-500",
+    "saturated" => "stroke-ink-subtle"
   }.freeze
 
   # 범례 dot용 — BUCKET_STROKE 와 동일 색을 bg 로.
   BUCKET_DOT = {
     "not_made" => "bg-primary-600",
-    "one" => "bg-primary-500",
-    "few" => "bg-primary-100",
-    "saturated" => "bg-border"
+    "one" => "bg-success-600",
+    "few" => "bg-warning-500",
+    "saturated" => "bg-ink-subtle"
   }.freeze
 
   def content_gap_bucket_label(key)
