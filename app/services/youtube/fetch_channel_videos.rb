@@ -31,9 +31,11 @@ module Youtube
       uploads = ch_item.dig("contentDetails", "relatedPlaylists", "uploads")
       subs = ch_item.dig("statistics", "subscriberCount")
       thumb = Youtube::VideoAttributes.thumbnail_url(ch_item.dig("snippet", "thumbnails")) # 채널 아바타.
+      name = ch_item.dig("snippet", "title") # 채널명은 API 원어(creator 기본 제목) — 시드 번역 대신.
       channel.uploads_playlist_id = uploads if uploads.present?
       channel.subscriber_count = subs.to_i if subs.present?
       channel.thumbnail_url = thumb if thumb.present?
+      channel.name = name if name.present?
       channel.save!
 
       uploads_id = channel.uploads_playlist_id

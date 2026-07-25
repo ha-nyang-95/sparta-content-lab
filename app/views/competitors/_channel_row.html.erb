@@ -5,7 +5,7 @@
   <div class="min-w-0 flex-1">
     <span class="block min-w-0 truncate break-keep text-body text-ink-body" title="<%= channel.name %>"><%= channel.name %></span>
     <span class="block text-label tabular-nums text-ink-muted">
-      <%= channel.subscriber_count.nil? ? "미상" : number_with_delimiter(channel.subscriber_count) %>
+      구독자 <%= format_subscriber_count(channel.subscriber_count) %>
     </span>
   </div>
   <div class="shrink-0">

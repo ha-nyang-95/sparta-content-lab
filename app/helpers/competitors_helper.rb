@@ -36,6 +36,20 @@ module CompetitorsHelper
     (pct.abs / full * 100).round.clamp(0, 100)
   end
 
+  # 구독자 수를 YouTube 식으로 축약 — 5,880,000→"588만" · 52,200→"5.2만" · 9,999→"9,999" · nil→"미상".
+  def format_subscriber_count(count)
+    return "미상" if count.nil?
+
+    n = count.to_i
+    unit, suffix = [[100_000_000, "억"], [10_000, "만"]].find { |u, _| n >= u }
+    return number_with_delimiter(n) unless unit
+
+    v = n.to_f / unit
+    v = v >= 100 ? v.round : (v * 10).round / 10.0 # 100 이상은 정수, 아니면 소수 1자리
+    num = v == v.to_i ? v.to_i.to_s : v.to_s
+    "#{num}#{suffix}"
+  end
+
   # 채널명 첫 grapheme 대문자. 이름 없으면 "?".
   def avatar_initial(name)
     first = name.to_s.strip.chars.first

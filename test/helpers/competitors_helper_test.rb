@@ -68,4 +68,15 @@ class CompetitorsHelperTest < ActionView::TestCase
     assert_includes CompetitorsHelper::AVATAR_PALETTE, a
     assert_no_match(/(blue|green|red|amber|gray|slate|zinc|emerald|indigo)-\d/, a)
   end
+
+  test "format_subscriber_count — YouTube 식 축약(만·억)" do
+    assert_equal "588만", format_subscriber_count(5_880_000)
+    assert_equal "173만", format_subscriber_count(1_730_000)
+    assert_equal "21만", format_subscriber_count(210_000)
+    assert_equal "5.2만", format_subscriber_count(52_200)
+    assert_equal "1만", format_subscriber_count(10_200)
+    assert_equal "9,999", format_subscriber_count(9_999)
+    assert_equal "1억", format_subscriber_count(100_000_000)
+    assert_equal "미상", format_subscriber_count(nil)
+  end
 end
