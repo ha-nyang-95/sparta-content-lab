@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_24_162116) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_25_062541) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -42,6 +42,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_24_162116) do
     t.string "name", null: false
     t.string "source", null: false
     t.integer "subscriber_count"
+    t.string "thumbnail_url"
     t.datetime "updated_at", null: false
     t.string "uploads_playlist_id"
     t.string "youtube_channel_id"

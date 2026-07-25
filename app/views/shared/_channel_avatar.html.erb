@@ -1,0 +1,7 @@
+<%# 채널 아바타 — 채널 이미지 있으면 이미지, 없으면 이니셜 동그라미 폴백. local: channel, size(옵션 기본 h-9 w-9). %>
+<% size = local_assigns.fetch(:size, "h-9 w-9") %>
+<% if channel&.thumbnail_url.present? %>
+  <img src="<%= channel.thumbnail_url %>" alt="" class="<%= size %> shrink-0 rounded-full object-cover" loading="lazy">
+<% else %>
+  <span class="flex <%= size %> shrink-0 items-center justify-center rounded-full text-label font-semibold <%= avatar_style(channel&.name) %>" aria-hidden="true"><%= avatar_initial(channel&.name) %></span>
+<% end %>

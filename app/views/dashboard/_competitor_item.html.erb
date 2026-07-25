@@ -1,8 +1,6 @@
 <%# 대시보드 경쟁 요약 행 — 아바타 + 채널명 + 구독자 + 증감(콜드면 측정한계/수집 중). local: channel. 다국어 §7·nil 방어. %>
 <div class="flex items-center gap-3 py-2">
-  <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-label font-semibold <%= avatar_style(channel.name) %>" aria-hidden="true">
-    <%= avatar_initial(channel.name) %>
-  </span>
+  <%= render "shared/channel_avatar", channel: channel, size: "h-8 w-8" %>
   <div class="min-w-0 flex-1">
     <span class="block min-w-0 truncate break-keep text-body text-ink-body" title="<%= channel.name %>"><%= channel.name %></span>
     <span class="block text-label tabular-nums text-ink-muted">

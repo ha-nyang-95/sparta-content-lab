@@ -63,9 +63,7 @@
     <div class="hidden border-t border-border-subtle" data-disclosure-target="content">
       <% @excluded.each do |ch| %>
         <div class="flex items-center gap-3 border-b border-border-subtle p-3">
-          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-label font-semibold <%= avatar_style(ch.name) %>" aria-hidden="true">
-            <%= avatar_initial(ch.name) %>
-          </span>
+          <%= render "shared/channel_avatar", channel: ch %>
           <span class="min-w-0 flex-1 truncate break-keep text-body text-ink-muted" title="<%= ch.name %>"><%= ch.name %></span>
           <%= button_to "복원", competitor_exclusion_path(ch), method: :patch,
                 class: "shrink-0 rounded-control border border-border bg-surface px-3 py-1.5 text-label text-primary-600 hover:bg-primary-50" %>

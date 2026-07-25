@@ -16,8 +16,9 @@ module Youtube
     end
 
     # channels.list — ids 를 50개씩 배치, 배치당 1 unit(:shared). 병합된 items 배열을 반환한다.
+    # snippet 포함 — 채널 썸네일(아바타) 수집용. part 추가는 쿼터 비용 불변(호출당 1 unit).
     def list_channels(ids)
-      batched_items(ids, :channels_list, part: "contentDetails,statistics")
+      batched_items(ids, :channels_list, part: "snippet,contentDetails,statistics")
     end
 
     # videos.list — ids 를 50개씩 배치, 배치당 1 unit(:shared). 병합된 items 배열을 반환한다.

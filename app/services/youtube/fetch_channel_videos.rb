@@ -30,8 +30,10 @@ module Youtube
       # 값이 있을 때만 갱신 — 없는데 nil로 덮어 좋은 스냅샷을 지우지 않는다(hiddenSubscriberCount 등).
       uploads = ch_item.dig("contentDetails", "relatedPlaylists", "uploads")
       subs = ch_item.dig("statistics", "subscriberCount")
+      thumb = Youtube::VideoAttributes.thumbnail_url(ch_item.dig("snippet", "thumbnails")) # 채널 아바타.
       channel.uploads_playlist_id = uploads if uploads.present?
       channel.subscriber_count = subs.to_i if subs.present?
+      channel.thumbnail_url = thumb if thumb.present?
       channel.save!
 
       uploads_id = channel.uploads_playlist_id
