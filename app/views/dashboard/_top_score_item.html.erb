@@ -1,0 +1,10 @@
+<%# 대시보드 급상승 요약 행 — 제목 + 성과 배수 pill(스냅라인 없이 배수만). local: score. 다국어 §7·nil 방어 AD-9. %>
+<% video = score.video %>
+<div class="flex items-center justify-between gap-3 py-2">
+  <a href="<%= youtube_watch_url(video) %>" target="_blank" rel="noopener" class="block min-w-0 flex-1 truncate break-keep text-body text-ink-body hover:text-primary-600" title="<%= video.title %>">
+    <%= video.title.presence || "제목 없음" %>
+  </a>
+  <div class="shrink-0">
+    <%= render "shared/performance_cell", multiple: score.performance_multiple, view_count: nil, needs_verification: score.needs_verification %>
+  </div>
+</div>

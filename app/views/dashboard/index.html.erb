@@ -40,45 +40,44 @@
 
 <%# 하단 시계열 위젯 — 실 콘텐츠는 6.3~6.6. 여기선 위젯별 콜드스타트 자리(AD-7, 전역 배너 금지). %>
 <section class="mt-8 grid gap-5 lg:grid-cols-3">
-  <%# 급상승 영상(6.3) — 스파크라인 시계열 의존. 테이블 영역만 가로 스크롤. %>
+  <%# 급상승 영상 — 스냅샷이 얕아도 물질화된 성과 배수로 상위를 보여준다(콜드면 하단 안내). %>
   <div class="rounded-card border border-border bg-surface p-6 shadow-card lg:col-span-2">
     <h3 class="text-h3 text-ink-strong">급상승 영상</h3>
-    <% if widget_collecting?(:sparkline) %>
-      <div class="mt-4">
-        <%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:sparkline) %>
+    <% if @top_scores.any? %>
+      <div class="mt-4 divide-y divide-border-subtle">
+        <%= render partial: "dashboard/top_score_item", collection: @top_scores, as: :score %>
       </div>
-      <%# 로딩(스켈레톤) 예시 — §4.9/§6 pulse, 실제 레이아웃 치수 유지(시프트 방지). %>
-      <div class="mt-4 space-y-3" aria-hidden="true">
-        <% 3.times do %>
-          <div class="flex items-center gap-3">
-            <div class="h-[54px] w-24 shrink-0 animate-pulse rounded-control bg-surface-sunken"></div>
-            <div class="h-4 flex-1 animate-pulse rounded-control bg-surface-sunken"></div>
-          </div>
-        <% end %>
-      </div>
+      <%= link_to "전체 보기 →", popular_path(period: "3m"), class: "mt-3 inline-block text-caption text-primary-600 hover:underline" %>
+      <%= render "dashboard/thin_note" if widget_collecting?(:sparkline) %>
     <% else %>
-      <%# 6.3에서 급상승 테이블을 이 자리에 렌더(overflow-x-auto 컨테이너). %>
-      <div class="mt-4 overflow-x-auto"></div>
+      <div class="mt-4"><%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:sparkline) %></div>
     <% end %>
   </div>
 
-  <%# 경쟁 채널 동향(6.4) + 콘텐츠 기회 도넛(6.5). %>
+  <%# 경쟁 채널 동향 + 콘텐츠 기회 도넛. %>
   <div class="flex flex-col gap-5">
     <div class="rounded-card border border-border bg-surface p-6 shadow-card">
       <h3 class="text-h3 text-ink-strong">경쟁 채널 동향</h3>
-      <div class="mt-4">
-        <% if widget_collecting?(:subscriber_delta) %>
-          <%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:subscriber_delta) %>
-        <% end %>
-      </div>
+      <% if @top_competitors.any? %>
+        <div class="mt-4 divide-y divide-border-subtle">
+          <%= render partial: "dashboard/competitor_item", collection: @top_competitors, as: :channel %>
+        </div>
+        <%= link_to "전체 보기 →", competitors_path, class: "mt-3 inline-block text-caption text-primary-600 hover:underline" %>
+        <%= render "dashboard/thin_note" if widget_collecting?(:subscriber_delta) %>
+      <% else %>
+        <div class="mt-4"><%= render "shared/honesty_status", status: :collecting, detail: widget_collecting_detail(:subscriber_delta) %></div>
+      <% end %>
     </div>
 
     <div class="rounded-card border border-border bg-surface p-6 shadow-card">
       <h3 class="text-h3 text-ink-strong">콘텐츠 기회</h3>
-      <%# 도넛은 시계열 아님(6.5 임베딩 의존) — 준비 중 자리 유지. %>
-      <div class="mt-4">
-        <%= render "shared/honesty_status", status: :collecting, detail: "데이터 수집 중" %>
-      </div>
+      <% if @distribution.values.sum > 0 %>
+        <div class="mt-4 flex justify-center"><%= render "content_gap/donut" %></div>
+        <%= link_to "전체 보기 →", content_gap_path, class: "mt-3 inline-block text-caption text-primary-600 hover:underline" %>
+        <%= render "dashboard/thin_note" if widget_collecting?(:sparkline) %>
+      <% else %>
+        <div class="mt-4"><%= render "shared/honesty_status", status: :collecting, detail: "데이터 수집 중" %></div>
+      <% end %>
     </div>
   </div>
 </section>

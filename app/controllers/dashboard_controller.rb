@@ -22,5 +22,22 @@ class DashboardController < ApplicationController
                                   .order(video_id: :asc) # 동점 시 결정적 — ranked 규약과 동일 타이브레이크.
                                   .limit(5)
                                   .to_a
+
+    # 요약 위젯 — 시계열(스냅샷)이 얕아도 물질화된 값으로 "최선 데이터"를 보여준다(콜드 시 하단에 안내 문구).
+    # 급상승: 경쟁 상위 성과 배수(배수 자체는 스냅샷 없이도 물질화됨).
+    @top_scores = VideoScore.ranked.joins(video: :channel)
+                            .where(channels: { excluded: false, is_own: false })
+                            .includes(video: [:channel, :video_score])
+                            .limit(5).to_a
+    # 경쟁 채널 동향: 구독자 상위(증감은 콜드여도 채널·구독자는 표시).
+    @top_competitors = Channel.competitor.not_excluded
+                              .includes(:daily_stats)
+                              .order(Arel.sql("subscriber_count DESC NULLS LAST")).order(:id)
+                              .limit(5).to_a
+    # 콘텐츠 기회 도넛: 경쟁 분류 스코어 버킷 분포(content_gap/_donut 재사용 — @distribution 소비).
+    @distribution = VideoScore.joins(video: :channel)
+                              .where(channels: { is_own: false, excluded: false })
+                              .where.not(content_gap_bucket: nil)
+                              .group(:content_gap_bucket).count
   end
 end

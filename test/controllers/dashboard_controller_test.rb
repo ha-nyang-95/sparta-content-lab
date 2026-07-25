@@ -45,6 +45,15 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes @response.body, "구독자 대비 조회수"
   end
 
+  test "요약 위젯 — 스냅샷이 얕아도 최선 데이터(급상승 배수)를 보여주고 하단에 안내 문구를 단다" do
+    # setup 의 @video/@score(rank_eligible)가 급상승 위젯에 뜨고, 스냅샷 0일이라 안내 문구가 붙는다.
+    get root_path
+    assert_response :success
+    assert_includes @response.body, @video.title, "급상승 위젯이 최선 데이터(영상 제목)를 렌더"
+    assert_includes @response.body, "최적화된 결과는 아닙니다", "수집 기간 짧을 때 안내 문구"
+    # '데이터 수집 중'만 뜨고 콘텐츠는 없던 예전 상태가 아니어야 한다(위젯이 내용을 가짐).
+  end
+
   test "에버그린 후보가 있으면 섹션에 제목과 뱃지를 렌더한다" do
     make_evergreen("에버그린 후보 콘텐츠", multiple: 4.5)
     get root_path
