@@ -15,15 +15,19 @@ module Youtube
       @sleep = sleep
     end
 
+    # 표시 로케일 — 앱 운영 언어(한국어). snippet.localized.* 가 이 언어로 현지화된 제목을 채운다
+    # (없으면 채널/영상 기본 언어로 폴백). 브라우저(한국어 로케일)가 보여주는 이름과 일치시킨다.
+    DISPLAY_LOCALE = "ko".freeze
+
     # channels.list — ids 를 50개씩 배치, 배치당 1 unit(:shared). 병합된 items 배열을 반환한다.
-    # snippet 포함 — 채널 썸네일(아바타) 수집용. part 추가는 쿼터 비용 불변(호출당 1 unit).
+    # snippet 포함 — 채널 썸네일(아바타)·현지화 제목 수집용. part·hl 추가는 쿼터 비용 불변(호출당 1 unit).
     def list_channels(ids)
-      batched_items(ids, :channels_list, part: "snippet,contentDetails,statistics")
+      batched_items(ids, :channels_list, part: "snippet,contentDetails,statistics", hl: DISPLAY_LOCALE)
     end
 
     # videos.list — ids 를 50개씩 배치, 배치당 1 unit(:shared). 병합된 items 배열을 반환한다.
     def list_videos(ids)
-      batched_items(ids, :videos_list, part: "snippet,statistics,contentDetails")
+      batched_items(ids, :videos_list, part: "snippet,statistics,contentDetails", hl: DISPLAY_LOCALE)
     end
 
     # playlistItems.list — 단일 페이지(1 unit :shared)를 그대로 반환(items + nextPageToken).

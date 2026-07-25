@@ -31,7 +31,8 @@ module Youtube
       uploads = ch_item.dig("contentDetails", "relatedPlaylists", "uploads")
       subs = ch_item.dig("statistics", "subscriberCount")
       thumb = Youtube::VideoAttributes.thumbnail_url(ch_item.dig("snippet", "thumbnails")) # 채널 아바타.
-      name = ch_item.dig("snippet", "title") # 채널명은 API 원어(creator 기본 제목) — 시드 번역 대신.
+      # 채널명 = 한국어 현지화(localized.title) 우선, 없으면 기본 제목 — 브라우저(한국어)가 보여주는 이름과 일치.
+      name = ch_item.dig("snippet", "localized", "title").presence || ch_item.dig("snippet", "title")
       channel.uploads_playlist_id = uploads if uploads.present?
       channel.subscriber_count = subs.to_i if subs.present?
       channel.thumbnail_url = thumb if thumb.present?

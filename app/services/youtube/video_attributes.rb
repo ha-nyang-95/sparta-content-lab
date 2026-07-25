@@ -5,7 +5,8 @@ module Youtube
     def self.from(item)
       {
         youtube_video_id: item["id"],
-        title: item.dig("snippet", "title"),
+        # 한국어 현지화 제목 우선, 없으면 기본 제목(브라우저 한국어 로케일과 일치).
+        title: item.dig("snippet", "localized", "title").presence || item.dig("snippet", "title"),
         view_count: item.dig("statistics", "viewCount")&.to_i,
         like_count: item.dig("statistics", "likeCount")&.to_i,
         comment_count: item.dig("statistics", "commentCount")&.to_i,
