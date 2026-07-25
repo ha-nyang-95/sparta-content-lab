@@ -7,10 +7,6 @@ class DashboardController < ApplicationController
                           .includes(:video_score, :channel)
                           .index_by(&:id)
 
-    @period   = helpers.permitted_period(params)
-    @category = helpers.permitted_category(params)
-    @type     = helpers.permitted_type(params)
-    @layout   = helpers.permitted_layout(params)
     @max_recommendations = Scoring::Config.fetch(:recommendation, :max_count)
 
     # 에버그린 후보(6.6) — 물질화 flag 만 읽어 배수 desc 로 상위 로드(읽기 전용, N+1 프리로드).

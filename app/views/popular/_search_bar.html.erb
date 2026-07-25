@@ -23,12 +23,14 @@
   <%# 추가 필터·정렬 — 채널/배수/밴드/정렬. string 키 병합(6.2 규약)으로 다른 필터 보존. %>
   <div class="flex flex-wrap items-center gap-2">
     <% channel_options = [["", "전체"]] + channels.map { |c| [c.id.to_s, c.name] } %>
-    <% [["channel", channel_options, channel], ["min_multiple", multiple_options, min_multiple],
-        ["band", band_options, band], ["sort", sort_options, sort]].each do |param, options, current| %>
+    <% [["channel", "채널", channel_options, channel], ["min_multiple", "배수", multiple_options, min_multiple],
+        ["band", "규모", band_options, band], ["sort", "정렬", sort_options, sort]].each do |param, dim_label, options, current| %>
       <% current_label = options.find { |k, _| k == current }&.last %>
-      <details class="group relative">
-        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body">
-          <span class="min-w-0 max-w-[10rem] truncate" title="<%= current_label %>"><%= current_label %></span>
+      <%# data-controller=dropdown — 바깥 클릭·다른 드롭다운 열 때 자동 닫힘. %>
+      <details class="group relative" data-controller="dropdown">
+        <summary class="flex cursor-pointer list-none items-center gap-1.5 rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body">
+          <span class="text-label text-ink-muted"><%= dim_label %></span>
+          <span class="min-w-0 max-w-[9rem] truncate font-medium" title="<%= current_label %>"><%= current_label %></span>
           <%= tag.svg viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round", "stroke-linejoin": "round", class: "h-4 w-4 shrink-0 text-ink-subtle" do %>
             <polyline points="6 8 10 12 14 8"></polyline>
           <% end %>

@@ -35,10 +35,11 @@ class DashboardViewTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "데이터 수집 중"
   end
 
-  test "기간 탭이 렌더된다" do
+  test "필터/그룹핑 컨트롤은 대시보드에 두지 않는다(동작 대상 영상 테이블 없음 — 인기 콘텐츠 소관)" do
     get root_path
-    assert_includes @response.body, "최근 1주"
-    assert_includes @response.body, "에버그린"
+    # 밴드/평면·카테고리 드롭다운은 대시보드에서 제거됨. 에버그린 콘텐츠 섹션은 유지.
+    assert_not_includes @response.body, "구독자 규모별"
+    assert_includes @response.body, "에버그린 콘텐츠"
   end
 
   test "금지 라벨 '구독자 대비 조회수' 가 없다" do

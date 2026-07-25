@@ -1,11 +1,5 @@
-<%# 대시보드 홈 — 기간 탭·필터·추천 3개 카드 + 시계열 위젯 콜드스타트 자리(6.3~6.6 실 콘텐츠). 읽기 전용(AD-3). %>
+<%# 대시보드 홈 — 이번 주 추천 3개 + 요약 위젯. 읽기 전용(AD-3). 필터/그룹핑 컨트롤은 대시보드에서 동작 대상(영상 테이블)이 없어 두지 않는다 — 인기 콘텐츠 화면 소관. %>
 <% content_for :title, "대시보드" %>
-
-<%# 필터 행 — 기간 탭(좌) + 카테고리/유형/레이아웃(우), 모바일 세로 스택. %>
-<div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-  <%= render "dashboard/period_tabs", current: @period %>
-  <%= render "dashboard/filter_bar", category: @category, type: @type, layout: @layout %>
-</div>
 
 <%# 추천 섹션 헤더. %>
 <section class="mt-8">

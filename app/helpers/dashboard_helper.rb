@@ -7,7 +7,7 @@ module DashboardHelper
   # 유형 드롭다운 화이트리스트(전체/롱폼/쇼츠).
   TYPES = [%w[all 전체], %w[long 롱폼], %w[short 쇼츠]].freeze
   # 레이아웃 토글 화이트리스트(구독자 밴드 그룹핑 ↔ 평면).
-  LAYOUTS = [%w[band 밴드\ 그룹핑], %w[flat 평면]].freeze
+  LAYOUTS = [%w[band 구독자\ 규모별], %w[flat 목록]].freeze
   # 정렬 화이트리스트(7.1) — 배수(기본·6.3 보존)/조회수/최신. 결정적 타이브레이크는 컨트롤러가 video_id asc 로.
   SORTS = [%w[multiple 배수\ 높은순], %w[views 조회수\ 높은순], %w[recent 최신순]].freeze
 
