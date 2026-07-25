@@ -1,12 +1,18 @@
-# Similarity::BuildTopicClusters — 연결요소·τ 경계·nil/excluded 제외·고립·휘발 재구축·교차·결정성 검증
+# Similarity::BuildTopicClusters — 리더(중심) 클러스터링·체이닝 방지·τ 경계·nil/excluded 제외·고립·휘발 재구축·교차·결정성 검증
 require "test_helper"
 
 class Similarity::BuildTopicClustersTest < ActiveSupport::TestCase
   setup do
     @own_channel = Channel.create!(name: "자사 채널", category: "직접경쟁", source: "seed", is_own: true)
     @comp_channel = Channel.create!(name: "경쟁 채널", category: "직접경쟁", source: "seed", is_own: false)
-    @tau = Scoring::Config.fetch(:similarity, :tau)
+    @tau = Scoring::Config.fetch(:similarity, :cluster_tau)
     @seq = 0
+  end
+
+  # 2D 단위벡터를 각도(도)로 생성 — 두 벡터 코사인 = cos(각도차). 체이닝 테스트용.
+  def vec_at(deg)
+    r = deg * Math::PI / 180.0
+    [Math.cos(r), Math.sin(r), 0.0]
   end
 
   # embedding(float 배열)을 packed-float BLOB 으로 저장한 영상 생성. vec 이 nil 이면 embedding 미설정.
@@ -41,6 +47,23 @@ class Similarity::BuildTopicClustersTest < ActiveSupport::TestCase
     assert_nil d.reload.topic_cluster_id
     assert_equal 1, TopicCluster.count
     assert_equal 3, TopicCluster.find(cid).size
+  end
+
+  test "체이닝 방지: 그라디언트 체인(A~B~C~D, 인접 0.906·간격 0.79)을 중심 게이트로 {A,B}·{C,D}로 분리" do
+    # 25°씩 벌린 4개 — 인접 코사인 cos25≈0.906(≥cluster_tau 0.88), 한 칸 건너 cos50≈0.643.
+    # 단일연결이면 인접 간선으로 {A,B,C,D} 한 덩어리(체이닝). 리더(중심)면 중심에서 벌어져 2개로 분리.
+    a = make_video(@comp_channel, vec_at(0))
+    b = make_video(@comp_channel, vec_at(25))
+    c = make_video(@comp_channel, vec_at(50))
+    d = make_video(@comp_channel, vec_at(75))
+
+    Similarity::BuildTopicClusters.new.call
+
+    assert_equal 2, TopicCluster.count, "체이닝으로 한 덩어리가 되지 않고 2개 클러스터로 분리돼야 한다"
+    assert_equal a.reload.topic_cluster_id, b.reload.topic_cluster_id, "{A,B} 한 클러스터"
+    assert_equal c.reload.topic_cluster_id, d.reload.topic_cluster_id, "{C,D} 한 클러스터"
+    assert_not_nil a.topic_cluster_id
+    assert_not_equal a.topic_cluster_id, c.topic_cluster_id, "{A,B}와 {C,D}는 다른 클러스터"
   end
 
   test "τ 경계: 동일(코사인 1.0 ≥ τ)은 묶고, 직교(코사인 0 < τ)는 안 묶는다" do

@@ -12,7 +12,10 @@ evergreen:
   min_age_days: 180          # 나이 임계 AND 배수 임계 동시 충족 (본개발 실측 튜닝)
   min_multiple: 2            # (본개발 실측 튜닝)
 similarity:
-  tau: 0.8                   # 코사인 임계(FR-17, 주제 묶기 재사용). 고정 0.8 맹신 금지 (본개발 실측 튜닝)
+  tau: 0.8                   # 자사 유사영상(OwnVideoMatch) 매칭 임계 — "이미 비슷한 걸 만들었나". (본개발 실측 튜닝)
+  cluster_tau: 0.88          # 주제 클러스터링(리더/중심) 임계. 단일연결 체이닝(메가클러스터) 방지 위해 상향.
+                             #   실측(경쟁 5채널 1,791영상): SL τ0.8 → max 990(전체 55%) 메가클러스터.
+                             #   leader τ0.88 → max 31·커버 28%·139클러스터, 응집 양호. (본개발 실측 튜닝)
 content_gap:
   saturation_min: 3          # OwnVideoMatch 이 수 이상이면 '포화'. 2~(this-1)=유사영상 2개+, 1=유사영상 1개, 0=미제작 (본개발 실측 튜닝)
 opportunity_score:
