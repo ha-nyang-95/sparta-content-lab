@@ -5,12 +5,12 @@ class Embedding::BoundaryTest < ActiveSupport::TestCase
   ROOT = Rails.root.to_s
 
   # 경계(app/services/embedding) 밖 소스 전체를 스캔한다 — app/services 형제·lib 포함.
-  # app/services/youtube 는 별개의 sanctioned HTTP 경계(YouTube 전용)라 이 Gemini 가드에서 제외한다.
+  # app/services/youtube(YouTube 전용)·app/services/analysis(Gemini 생성+yt-dlp 전용)는 별개의 sanctioned 경계라 제외.
   def sources_outside_boundary
     (Dir.glob(File.join(ROOT, "app", "**", "*.rb")) +
      Dir.glob(File.join(ROOT, "lib", "**", "*.rb")))
       .select { |p| File.file?(p) }
-      .reject { |p| p.include?("/app/services/embedding/") || p.include?("/app/services/youtube/") }
+      .reject { |p| p.include?("/app/services/embedding/") || p.include?("/app/services/youtube/") || p.include?("/app/services/analysis/") }
   end
 
   test "경계 밖에서 Gemini 임베딩 API에 직접 접근(HTTP·googleapis·live 어댑터)하지 않는다" do

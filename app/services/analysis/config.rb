@@ -12,9 +12,15 @@ module Analysis
         ENV["ANALYSIS_MODEL"].presence || "gemini-flash-latest"
       end
 
-      # 임베딩과 동일한 GEMINI_API_KEY 재사용(별도 키 불필요).
+      # GEMINI_API_KEY 를 이 경계에서 직접 읽는다(ENV → credentials). 임베딩과 같은 키지만 경계별 자기완결(AD-1).
       def api_key
-        Embedding::Config.api_key
+        ENV["GEMINI_API_KEY"].presence || credentials_api_key
+      end
+
+      def credentials_api_key
+        Rails.application.credentials.dig(:gemini, :api_key)
+      rescue ActiveSupport::MessageEncryptor::InvalidMessage, ActiveSupport::EncryptedFile::MissingKeyError
+        nil
       end
     end
   end
