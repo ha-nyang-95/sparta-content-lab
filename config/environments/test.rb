@@ -11,6 +11,7 @@ Rails.application.configure do
   # 테스트 안에서 일시적으로 덮어쓴다. 우발적 live 경로 → 실 API 호출·쿼터 소진·과금을 원천 차단.
   ENV["YOUTUBE_API_MODE"] = "stub"
   ENV["EMBEDDING_MODE"] = "stub"
+  ENV["ANALYSIS_MODE"] = "stub" # 영상 분석도 테스트에선 실 yt-dlp·Gemini 호출 없이 stub.
 
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false

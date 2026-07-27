@@ -3,6 +3,7 @@ class Video < ApplicationRecord
   belongs_to :channel
   belongs_to :topic_cluster, optional: true
   has_one :video_score
+  has_one :video_analysis, dependent: :destroy
   has_many :daily_stats, class_name: "VideoDailyStat", dependent: :destroy
   has_many :saved_videos, dependent: :destroy
 
