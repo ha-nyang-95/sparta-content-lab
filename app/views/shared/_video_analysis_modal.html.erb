@@ -22,19 +22,33 @@
           <span class="ml-2 align-middle">스크립트를 읽고 기획을 분석하는 중…</span>
         </div>
 
-        <%# 콘텐츠 — 확정 2블록(도입부 / 전체). %>
+        <%# 콘텐츠 — 도입부/전체 두 블록. 그룹 칩(도입부=primary·전체=success)으로 구분을 직관화, 모든 내용은 박스 처리. %>
         <div data-video-analysis-target="content" class="hidden flex-col gap-6">
           <section>
-            <h5 class="text-label font-semibold text-ink-muted">도입부 스크립트</h5>
-            <p data-video-analysis-target="introExcerpt" class="mt-1 whitespace-pre-line rounded-control bg-surface-sunken p-3 text-body text-ink-body"></p>
-            <h5 class="mt-4 text-label font-semibold text-ink-muted">도입부 기획 분석</h5>
-            <p data-video-analysis-target="introAnalysis" class="mt-1 whitespace-pre-line break-keep text-body text-ink-body"></p>
+            <div class="mb-2 inline-flex items-center rounded-chip bg-primary-50 px-2.5 py-1 text-label font-semibold text-primary-700">도입부</div>
+            <div class="flex flex-col gap-2">
+              <div>
+                <p class="mb-1 text-label text-ink-muted">스크립트 발췌</p>
+                <p data-video-analysis-target="introExcerpt" class="whitespace-pre-line break-keep rounded-control border border-border-subtle bg-surface-sunken p-3 text-body text-ink-body"></p>
+              </div>
+              <div>
+                <p class="mb-1 text-label text-ink-muted">기획 분석</p>
+                <p data-video-analysis-target="introAnalysis" class="whitespace-pre-line break-keep rounded-control border border-border-subtle bg-surface-sunken p-3 text-body text-ink-body"></p>
+              </div>
+            </div>
           </section>
-          <section class="border-t border-border-subtle pt-5">
-            <h5 class="text-label font-semibold text-ink-muted">전체 스크립트 요약</h5>
-            <p data-video-analysis-target="summary" class="mt-1 whitespace-pre-line break-keep text-body text-ink-body"></p>
-            <h5 class="mt-4 text-label font-semibold text-ink-muted">전체 기획 분석</h5>
-            <p data-video-analysis-target="overallAnalysis" class="mt-1 whitespace-pre-line break-keep text-body text-ink-body"></p>
+          <section>
+            <div class="mb-2 inline-flex items-center rounded-chip bg-success-50 px-2.5 py-1 text-label font-semibold text-success-700">전체</div>
+            <div class="flex flex-col gap-2">
+              <div>
+                <p class="mb-1 text-label text-ink-muted">스크립트 요약</p>
+                <p data-video-analysis-target="summary" class="whitespace-pre-line break-keep rounded-control border border-border-subtle bg-surface-sunken p-3 text-body text-ink-body"></p>
+              </div>
+              <div>
+                <p class="mb-1 text-label text-ink-muted">기획 분석</p>
+                <p data-video-analysis-target="overallAnalysis" class="whitespace-pre-line break-keep rounded-control border border-border-subtle bg-surface-sunken p-3 text-body text-ink-body"></p>
+              </div>
+            </div>
           </section>
         </div>
 
