@@ -21,7 +21,7 @@
   <div class="ml-auto flex items-center gap-3">
     <%# 실시간 검색(타입어헤드) — 입력 시 아래로 상위 5건, 초과분은 '모두 보기'로 인기 페이지 전체 검색. 엔터도 전체 검색. %>
     <div class="relative hidden lg:block" data-controller="search"
-         data-search-url-value="<%= search_path %>" data-search-all-url-value="<%= popular_path %>">
+         data-search-url-value="<%= search_path %>">
       <%= form_with url: popular_path, method: :get, role: "search", data: { turbo: false } do %>
         <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink-subtle">
           <%= tag.svg viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
@@ -36,12 +36,12 @@
                class="w-64 rounded-control border border-border bg-surface py-2 pl-9 pr-3 text-body text-ink-body placeholder:text-ink-subtle">
       <% end %>
 
-      <%# 결과 드롭다운 — 최대 5행 고정(더 커지지 않음). 초과분은 '모두 보기'. 기본 숨김. %>
+      <%# 결과 드롭다운 — 박스 크기 고정(리스트는 max-h 안에서 내부 스크롤, 더 커지지 않음). 초과분은 '모두 보기'로 펼쳐 스크롤. 기본 숨김. %>
       <div data-search-target="results"
            class="absolute left-0 right-0 z-50 mt-1 hidden overflow-hidden rounded-card border border-border bg-surface shadow-card">
-        <div data-search-target="list"></div>
-        <a data-search-target="more" href="#"
-           class="hidden block border-t border-border-subtle px-3 py-2 text-caption font-medium text-primary-600 hover:bg-primary-50">모두 보기</a>
+        <div data-search-target="list" class="max-h-72 overflow-y-auto"></div>
+        <button type="button" data-search-target="more" data-action="search#showAll"
+                class="hidden block w-full border-t border-border-subtle px-3 py-2 text-left text-caption font-medium text-primary-600 hover:bg-primary-50">모두 보기</button>
       </div>
     </div>
 

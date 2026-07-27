@@ -32,6 +32,24 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert_equal 5, body["results"].size, "드롭다운은 최대 5건"
   end
 
+  test "all=1 이면 5건을 넘겨 반환한다(모두 보기 내부 스크롤용)" do
+    8.times { |i| make_video("펼침키워드 #{i}") }
+
+    get search_path(q: "펼침키워드", all: "1")
+    body = JSON.parse(@response.body)
+    assert_equal 8, body["total"]
+    assert_equal 8, body["results"].size, "all=1 은 5건 상한을 넘겨 펼친다"
+  end
+
+  test "all=1 도 MAX_ALL(50)로 상한한다" do
+    55.times { |i| make_video("상한키워드 #{i}") }
+
+    get search_path(q: "상한키워드", all: "1")
+    body = JSON.parse(@response.body)
+    assert_equal 55, body["total"]
+    assert_equal 50, body["results"].size, "펼쳐도 50건 상한(과다 렌더 방지)"
+  end
+
   test "빈 검색어는 빈 결과를 반환한다" do
     make_video("아무거나")
 

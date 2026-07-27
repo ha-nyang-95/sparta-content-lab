@@ -1,6 +1,7 @@
 # 헤더 실시간 검색(타입어헤드) — 제목 부분일치 상위 5건 + 전체 개수를 JSON 으로. 읽기 전용(AD-3)
 class SearchController < ApplicationController
-  LIMIT = 5 # 드롭다운 최대 노출 수 — 초과분은 '모두 보기'로 인기 페이지 전체 검색으로 넘긴다.
+  LIMIT = 5      # 기본 드롭다운 노출 수.
+  MAX_ALL = 50   # '모두 보기'로 펼칠 때 드롭다운 내부 스크롤로 보여줄 상한(과다 렌더 방지).
 
   def index
     q = helpers.search_query(params) # strip + 100자 상한(7.1 정규화 재사용).
@@ -10,8 +11,10 @@ class SearchController < ApplicationController
     scope = Video.joins(:channel).where(channels: { excluded: false })
                  .where("videos.title LIKE ? ESCAPE ?", "%#{Video.sanitize_sql_like(q)}%", "\\")
 
+    # all=1 이면 드롭다운 내부 스크롤용으로 더 많이(MAX_ALL), 아니면 상위 5건.
+    limit = params[:all].present? ? MAX_ALL : LIMIT
     total = scope.count
-    results = scope.order(view_count: :desc).limit(LIMIT).includes(:channel).map do |video|
+    results = scope.order(view_count: :desc).limit(limit).includes(:channel).map do |video|
       { title: video.title, channel: video.channel.name, url: helpers.youtube_watch_url(video) }
     end
 
