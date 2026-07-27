@@ -1,7 +1,11 @@
-<%# 카테고리·유형 드롭다운(라벨 명시). 쿼리 파라미터 링크로 서버 렌더. 로컬: category, type, base_path(옵션 기본 root_path). %>
+<%# 규모·카테고리·유형 드롭다운(라벨 명시)을 한 줄에. 쿼리 파라미터 링크로 서버 렌더. 로컬: category, type, base_path(옵션), band(옵션). %>
 <% base = local_assigns.fetch(:base_path, root_path) %>
+<% band = local_assigns[:band] %>
 <div class="flex flex-wrap items-center gap-2">
-  <% [[:category, "카테고리", category_options, category], [:type, "유형", type_options, type]].each do |param, dim_label, options, current| %>
+  <% dims = [] %>
+  <% dims << [:band, "규모", band_options, band] unless band.nil? %>
+  <% dims += [[:category, "카테고리", category_options, category], [:type, "유형", type_options, type]] %>
+  <% dims.each do |param, dim_label, options, current| %>
     <% current_label = options.find { |k, _| k == current }&.last %>
     <%# data-controller=dropdown — 바깥 클릭·다른 드롭다운 열 때 자동 닫힘. %>
     <details class="group relative" data-controller="dropdown">

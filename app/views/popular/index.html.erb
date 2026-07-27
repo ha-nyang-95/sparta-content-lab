@@ -11,7 +11,8 @@
 <%# 필터 행 — 기간 탭(좌) + 카테고리/유형(우). base_path 로 popular 재사용. %>
 <div class="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
   <%= render "dashboard/period_tabs", current: @period, base_path: popular_path %>
-  <%= render "dashboard/filter_bar", category: @category, type: @type, base_path: popular_path %>
+  <%# 규모·카테고리·유형 한 줄. %>
+  <%= render "dashboard/filter_bar", category: @category, type: @type, band: @band, base_path: popular_path %>
 </div>
 
 <% if @scores.any? %>
