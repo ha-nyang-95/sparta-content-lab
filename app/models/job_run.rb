@@ -17,10 +17,18 @@ class JobRun < ApplicationRecord
                   error: "stale — 프로세스 중단 추정(reaped)", updated_at: Time.current)
   end
 
-  # 성공 종료 — finished_at·쿼터 사용량·채널 처리/실패 수를 기록하고 succeeded 로 전이한다.
+  # 진행 단계·가중 진행률(0~100)을 기록 — 게이지 폴링용. update_columns 로 검증·콜백 없이 빠르게,
+  # 진행률 기록 실패가 잡 본류를 막지 않게 rescue(관측용 보조 데이터).
+  def mark_progress!(phase:, progress:)
+    update_columns(phase: phase, progress: progress.round.clamp(0, 100), updated_at: Time.current)
+  rescue => e
+    Rails.logger.warn("[JobRun] progress 기록 실패(무시): #{e.class}: #{e.message}")
+  end
+
+  # 성공 종료 — finished_at·쿼터 사용량·채널 처리/실패 수를 기록하고 succeeded 로 전이한다(진행률 100).
   def succeed!(quota_used: nil, channels_processed: 0, channels_failed: 0)
     update!(status: "succeeded", finished_at: Time.current, quota_used: quota_used,
-            channels_processed: channels_processed, channels_failed: channels_failed)
+            channels_processed: channels_processed, channels_failed: channels_failed, progress: 100)
   end
 
   # 실패 종료 — finished_at·에러·쿼터·채널 수를 기록하고 failed 로 전이한다.

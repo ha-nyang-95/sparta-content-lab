@@ -16,6 +16,9 @@ class DailyCollectionJob < ApplicationJob
 
     begin
       client = Youtube::Client.new(ledger: ledger)
+      # 게이지 단계 경계 — 수집 0~25, 스코어링 25~35, 임베딩 35~85, 분석 85~100(가중 진행률).
+      total_channels = Channel.not_excluded.where.not(youtube_channel_id: nil).count
+      run.mark_progress!(phase: "채널 수집", progress: 0)
       Channel.not_excluded.where.not(youtube_channel_id: nil).find_each do |channel|
         # 채널별 rescue — 한 채널 실패가 앞 채널 결과나 런 전체를 버리지 않는다(부분 진행 보존).
         Youtube::FetchChannelVideos.new(client: client).call(channel)
@@ -23,6 +26,9 @@ class DailyCollectionJob < ApplicationJob
       rescue => e
         failed += 1
         Rails.logger.error("[DailyCollectionJob] 채널 수집 실패(스킵): #{channel.name} — #{e.class}: #{e.message}")
+      ensure
+        run.mark_progress!(phase: "채널 수집",
+                           progress: total_channels.zero? ? 25 : (processed + failed).to_f / total_channels * 25)
       end
 
       Snapshot::RecordDailyStats.call
@@ -41,6 +47,9 @@ class DailyCollectionJob < ApplicationJob
       rescue => e
         scoring_failed += 1
         Rails.logger.error("[DailyCollectionJob] 채널 스코어링 실패(스킵): #{channel.name} — #{e.class}: #{e.message}")
+      ensure
+        run.mark_progress!(phase: "스코어링",
+                           progress: 25 + (total_channels.zero? ? 10 : scoring_attempted.to_f / total_channels * 10))
       end
 
       # 전 채널 스코어링 실패는 체계적 문제 — 수집 정직성 패턴대로 succeeded 로 위장하지 않고 failed 로 기록한다(finalize 와 동일하게 raise 없이).
@@ -49,7 +58,7 @@ class DailyCollectionJob < ApplicationJob
                   quota_used: ledger.spent(:shared),
                   channels_processed: processed, channels_failed: failed)
       else
-        run_similarity_stages # 스코어링 정상 시 Epic 4 전역 스테이지를 에버그린 뒤 append.
+        run_similarity_stages(run) # 스코어링 정상 시 Epic 4 전역 스테이지를 에버그린 뒤 append.
         finalize(run, processed, failed, ledger.spent(:shared))
       end
     rescue => e
@@ -63,16 +72,26 @@ class DailyCollectionJob < ApplicationJob
   private
 
   # Epic 4 유사도 + Epic 5 추천 스테이지 — 전역 배치, 에버그린 뒤. 임베딩→OwnVideoMatch→콘텐츠 갭→주제 클러스터→기회 점수→추천(AD-11). 스테이지별 rescue.
-  def run_similarity_stages
-    stages = {
-      "임베딩" => -> { Embedding::UpsertVectors.new.call },
+  # 임베딩은 가장 길어 영상별 하위 진행(35→85)을 콜백으로 받고, 나머지 5스테이지는 분석(85→100)으로 스테이지 경계마다 마크.
+  def run_similarity_stages(run)
+    run.mark_progress!(phase: "임베딩", progress: 35)
+    begin
+      Embedding::UpsertVectors.new.call(progress: lambda do |done, total|
+        run.mark_progress!(phase: "임베딩", progress: 35 + (total.zero? ? 50 : done.to_f / total * 50))
+      end)
+    rescue => e
+      Rails.logger.error("[DailyCollectionJob] 유사도 스테이지 실패(스킵): 임베딩 — #{e.class}: #{e.message}")
+    end
+
+    analyze_stages = {
       "OwnVideoMatch" => -> { Similarity::MatchOwnVideos.new.call },
       "콘텐츠 갭" => -> { Similarity::ClassifyContentGap.new.call },
       "주제 클러스터" => -> { Similarity::BuildTopicClusters.new.call },
       "기회 점수" => -> { Scoring::CalculateOpportunityScore.new.call },
       "추천" => -> { Scoring::GenerateRecommendations.new.call },
     }
-    stages.each do |name, stage|
+    analyze_stages.each_with_index do |(name, stage), i|
+      run.mark_progress!(phase: "분석: #{name}", progress: 85 + i.to_f / analyze_stages.size * 15)
       stage.call
     rescue => e
       Rails.logger.error("[DailyCollectionJob] 유사도 스테이지 실패(스킵): #{name} — #{e.class}: #{e.message}")

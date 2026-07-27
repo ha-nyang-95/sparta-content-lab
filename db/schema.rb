@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_014619) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_020539) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -57,6 +57,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_014619) do
     t.text "error"
     t.datetime "finished_at"
     t.string "job_name", null: false
+    t.string "phase"
+    t.integer "progress", default: 0, null: false
     t.integer "quota_used"
     t.integer "retries", default: 0, null: false
     t.datetime "started_at"

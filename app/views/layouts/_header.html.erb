@@ -33,18 +33,37 @@
              class="w-64 rounded-control border border-border bg-surface py-2 pl-9 pr-3 text-body text-ink-body placeholder:text-ink-subtle">
     </div>
 
-    <%# 오늘 업데이트 — outline 버튼(§4.8): 투명 배경·border-default·primary-600 텍스트. %>
-    <button type="button"
-            class="hidden shrink-0 items-center gap-2 rounded-control border border-border bg-transparent px-3.5 py-2 text-body text-primary-600 hover:bg-primary-50 sm:inline-flex">
-      <%= tag.svg viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
-            "stroke-width": "1.7", "stroke-linecap": "round", "stroke-linejoin": "round", class: "h-4 w-4" do %>
-        <path d="M4 12a8 8 0 0 1 14-5l2 2"></path>
-        <path d="M20 4v5h-5"></path>
-        <path d="M20 12a8 8 0 0 1-14 5l-2-2"></path>
-        <path d="M4 20v-5h5"></path>
-      <% end %>
-      오늘 업데이트
-    </button>
+    <%# 오늘 업데이트 — 수집 트리거 + 진행 게이지(3초 폴링). 유휴엔 버튼+마지막 수집, 진행 중엔 단계 게이지. %>
+    <div class="hidden shrink-0 sm:block" data-controller="collection"
+         data-collection-status-url-value="<%= collection_status_path %>">
+      <%# 유휴 상태 — 트리거 버튼 + 마지막 수집 시각(§4.8 outline 버튼). %>
+      <div data-collection-target="idle" class="flex items-center gap-2">
+        <%= button_to collections_path, method: :post, form_class: "shrink-0",
+              class: "inline-flex items-center gap-2 rounded-control border border-border bg-transparent px-3.5 py-2 text-body text-primary-600 hover:bg-primary-50",
+              data: { "collection-target": "button" } do %>
+          <%= tag.svg viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+                "stroke-width": "1.7", "stroke-linecap": "round", "stroke-linejoin": "round", class: "h-4 w-4" do %>
+            <path d="M4 12a8 8 0 0 1 14-5l2 2"></path>
+            <path d="M20 4v5h-5"></path>
+            <path d="M20 12a8 8 0 0 1-14 5l-2-2"></path>
+            <path d="M4 20v-5h5"></path>
+          <% end %>
+          오늘 업데이트
+        <% end %>
+        <span data-collection-target="lastRun" class="hidden whitespace-nowrap text-caption text-ink-muted"></span>
+      </div>
+
+      <%# 진행 중 상태 — 단계 라벨 + 가중 진행률 게이지 바. %>
+      <div data-collection-target="running" class="hidden w-56">
+        <div class="flex items-center justify-between text-caption text-ink-muted">
+          <span data-collection-target="phase">수집 중…</span>
+          <span data-collection-target="percent" class="tabular-nums">0%</span>
+        </div>
+        <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-border-subtle">
+          <div data-collection-target="bar" class="h-full rounded-full bg-primary-600 transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
 
     <%# 아바타 2인 — 실사진 없음, 원형 이니셜 플레이스홀더(§4.5). %>
     <div class="flex items-center -space-x-2">

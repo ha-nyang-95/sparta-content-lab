@@ -24,6 +24,10 @@ Rails.application.routes.draw do
   delete "saved_videos", to: "saved_videos#destroy", as: :destroy_saved_video
   get "settings", to: "settings#index"
 
+  # '오늘 업데이트' — 수집 트리거(POST)·진행 상태 폴링(GET status). 게이지 UI 가 소비한다.
+  post "collections", to: "collections#create"
+  get "collections/status", to: "collections#status", as: :collection_status
+
   # Defines the root path route ("/")
   root "dashboard#index"
 end

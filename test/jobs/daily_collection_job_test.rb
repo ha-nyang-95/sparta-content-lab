@@ -15,6 +15,7 @@ class DailyCollectionJobTest < ActiveSupport::TestCase
     run = JobRun.last
     assert_equal "DailyCollectionJob", run.job_name
     assert_equal "succeeded", run.status
+    assert_equal 100, run.progress, "성공 종료 시 진행 게이지는 100%"
     assert_not_nil run.started_at
     assert_not_nil run.finished_at
     assert_kind_of Integer, run.quota_used
