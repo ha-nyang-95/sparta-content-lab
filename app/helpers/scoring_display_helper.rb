@@ -90,4 +90,14 @@ module ScoringDisplayHelper
   def youtube_watch_url(video)
     "https://www.youtube.com/watch?v=#{CGI.escape(video.youtube_video_id.to_s)}"
   end
+
+  # 채널 클릭 시 이동할 유튜브 채널 URL — UC id 우선, 없으면 @핸들, 둘 다 없으면 nil(링크 미생성).
+  def youtube_channel_url(channel)
+    if channel.youtube_channel_id.present?
+      "https://www.youtube.com/channel/#{CGI.escape(channel.youtube_channel_id)}"
+    elsif channel.handle.present?
+      handle = channel.handle.start_with?("@") ? channel.handle : "@#{channel.handle}"
+      "https://www.youtube.com/#{handle}"
+    end
+  end
 end

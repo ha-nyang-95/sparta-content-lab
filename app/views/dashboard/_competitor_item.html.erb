@@ -2,7 +2,14 @@
 <div class="flex items-center gap-3 py-2">
   <%= render "shared/channel_avatar", channel: channel, size: "h-8 w-8" %>
   <div class="min-w-0 flex-1">
-    <span class="block min-w-0 truncate break-keep text-body text-ink-body" title="<%= channel.name %>"><%= channel.name %></span>
+    <%# 채널명 클릭 → 유튜브 채널로(UC id/핸들 있을 때만 링크, 없으면 일반 텍스트). %>
+    <% url = youtube_channel_url(channel) %>
+    <% if url %>
+      <a href="<%= url %>" target="_blank" rel="noopener"
+         class="block min-w-0 truncate break-keep text-body text-ink-body hover:text-primary-600 hover:underline" title="<%= channel.name %>"><%= channel.name %></a>
+    <% else %>
+      <span class="block min-w-0 truncate break-keep text-body text-ink-body" title="<%= channel.name %>"><%= channel.name %></span>
+    <% end %>
     <span class="block text-label tabular-nums text-ink-muted">
       구독자 <%= format_subscriber_count(channel.subscriber_count) %>
     </span>

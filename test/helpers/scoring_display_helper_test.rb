@@ -182,4 +182,21 @@ class ScoringDisplayHelperTest < ActionView::TestCase
     end
     video
   end
+
+  # --- youtube_channel_url — UC id/핸들/없음 ---
+
+  test "youtube_channel_url 은 UC id 를 channel URL 로" do
+    ch = Channel.create!(name: "채널A", category: "직접경쟁", source: "seed", youtube_channel_id: "UCabc123")
+    assert_equal "https://www.youtube.com/channel/UCabc123", youtube_channel_url(ch)
+  end
+
+  test "youtube_channel_url 은 UC id 없으면 @핸들로(앞의 @ 보정)" do
+    ch = Channel.create!(name: "채널B", category: "직접경쟁", source: "seed", handle: "myhandle")
+    assert_equal "https://www.youtube.com/@myhandle", youtube_channel_url(ch)
+  end
+
+  test "youtube_channel_url 은 id·핸들 모두 없으면 nil(링크 미생성)" do
+    ch = Channel.create!(name: "채널C", category: "직접경쟁", source: "seed")
+    assert_nil youtube_channel_url(ch)
+  end
 end
