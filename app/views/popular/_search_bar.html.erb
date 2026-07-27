@@ -1,9 +1,8 @@
-<%# 인기 콘텐츠 검색바(§4.8) + 추가 필터/정렬 드롭다운(7.1). 로컬: q, channel, min_multiple, band, sort, period, category, type, layout, channels. GET 폼은 다른 활성 필터를 hidden 으로 보존(검색이 리셋하지 않음). %>
+<%# 인기 콘텐츠 검색바(§4.8) + 규모 필터. 정렬은 표 칼럼 헤더, 채널·배수 필터는 제거(운영자 요청). 로컬: q, band, period, category, type. %>
 <div class="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-  <%# 키워드 검색 — 좌측 돋보기, placeholder text-subtle. 다른 필터는 hidden 으로 보존. %>
+  <%# 키워드 검색 — 좌측 돋보기. 다른 활성 필터는 hidden 으로 보존(검색이 리셋하지 않음). %>
   <%= form_with url: popular_path, method: :get, class: "flex w-full max-w-md items-center gap-2" do %>
-    <% { "period" => period, "category" => category, "type" => type, "layout" => layout,
-         "sort" => sort, "channel" => channel, "min_multiple" => min_multiple, "band" => band }.each do |name, value| %>
+    <% { "period" => period, "category" => category, "type" => type, "band" => band }.each do |name, value| %>
       <%= hidden_field_tag name, value %>
     <% end %>
     <div class="relative flex-1">
@@ -20,31 +19,26 @@
           class: "rounded-control bg-primary-600 px-3.5 py-1.5 text-body font-medium text-white transition hover:bg-primary-700" %>
   <% end %>
 
-  <%# 추가 필터·정렬 — 채널/배수/밴드/정렬. string 키 병합(6.2 규약)으로 다른 필터 보존. %>
+  <%# 규모 필터만 — 채널 구독자 규모대로 슬라이스. data-controller=dropdown 로 바깥 클릭 자동 닫힘. %>
   <div class="flex flex-wrap items-center gap-2">
-    <% channel_options = [["", "전체"]] + channels.map { |c| [c.id.to_s, c.name] } %>
-    <% [["channel", "채널", channel_options, channel], ["min_multiple", "배수", multiple_options, min_multiple],
-        ["band", "규모", band_options, band], ["sort", "정렬", sort_options, sort]].each do |param, dim_label, options, current| %>
-      <% current_label = options.find { |k, _| k == current }&.last %>
-      <%# data-controller=dropdown — 바깥 클릭·다른 드롭다운 열 때 자동 닫힘. %>
-      <details class="group relative" data-controller="dropdown">
-        <summary class="flex cursor-pointer list-none items-center gap-1.5 rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body">
-          <span class="text-label text-ink-muted"><%= dim_label %></span>
-          <span class="min-w-0 max-w-[9rem] truncate font-medium" title="<%= current_label %>"><%= current_label %></span>
-          <%= tag.svg viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round", "stroke-linejoin": "round", class: "h-4 w-4 shrink-0 text-ink-subtle" do %>
-            <polyline points="6 8 10 12 14 8"></polyline>
-          <% end %>
-        </summary>
-        <ul class="absolute right-0 z-10 mt-1 min-w-[10rem] max-w-[16rem] rounded-control border border-border bg-surface py-1 shadow-dropdown">
-          <% options.each do |key, label| %>
-            <li>
-              <%= link_to "#{popular_path}?#{request.query_parameters.merge(param => key).to_query}",
-                    title: label,
-                    class: "block truncate px-3 py-1.5 text-body #{key == current ? 'text-primary-600' : 'text-ink-body hover:bg-primary-50'}" do %><%= label %><% end %>
-            </li>
-          <% end %>
-        </ul>
-      </details>
-    <% end %>
+    <% current_label = band_options.find { |k, _| k == band }&.last %>
+    <details class="group relative" data-controller="dropdown">
+      <summary class="flex cursor-pointer list-none items-center gap-1.5 rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body">
+        <span class="text-label text-ink-muted">규모</span>
+        <span class="min-w-0 max-w-[9rem] truncate font-medium" title="<%= current_label %>"><%= current_label %></span>
+        <%= tag.svg viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round", "stroke-linejoin": "round", class: "h-4 w-4 shrink-0 text-ink-subtle" do %>
+          <polyline points="6 8 10 12 14 8"></polyline>
+        <% end %>
+      </summary>
+      <ul class="absolute right-0 z-10 mt-1 min-w-[10rem] max-w-[16rem] rounded-control border border-border bg-surface py-1 shadow-dropdown">
+        <% band_options.each do |key, label| %>
+          <li>
+            <%= link_to "#{popular_path}?#{request.query_parameters.merge("band" => key).to_query}",
+                  title: label,
+                  class: "block truncate px-3 py-1.5 text-body #{key == band ? 'text-primary-600' : 'text-ink-body hover:bg-primary-50'}" do %><%= label %><% end %>
+          </li>
+        <% end %>
+      </ul>
+    </details>
   </div>
 </div>

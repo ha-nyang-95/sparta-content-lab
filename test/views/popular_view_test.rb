@@ -13,32 +13,32 @@ class PopularViewTest < ActionView::TestCase
     video.reload
   end
 
-  def render_index(scores:, grouped:, layout:)
+  def render_index(scores:)
     # ActionView::TestCase 는 테스트 인스턴스 변수를 뷰로 복사한다.
     @scores = scores
-    @grouped = grouped
     @period = "1w"
     @category = "all"
     @type = "all"
-    @layout = layout
     render template: "popular/index", layout: false
   end
 
-  test "평면 레이아웃은 행을 순번과 함께 렌더한다" do
+  test "평면 리스트로 행을 렌더한다" do
     v = make_scored(title: "평면 영상")
     scores = VideoScore.where(video: v).to_a
-    render_index(scores: scores, grouped: nil, layout: "flat")
+    render_index(scores: scores)
     assert_includes rendered, "평면 영상"
     assert_includes rendered, "인기 콘텐츠"
   end
 
-  test "밴드 레이아웃은 밴드 그룹 헤더와 행을 렌더한다" do
-    v = make_scored(title: "밴드 영상", subscriber_count: 50_000)
+  test "표 헤더에 정렬 가능한 칼럼(업로드일·조회수·성과 배수) 링크가 있다" do
+    v = make_scored(title: "정렬 헤더 영상")
     scores = VideoScore.where(video: v).to_a
-    grouped = scores.group_by { |s| s.video.channel.subscriber_band }.sort_by { |b, _| b.nil? ? 4 : b }
-    render_index(scores: scores, grouped: grouped, layout: "band")
-    assert_includes rendered, "밴드 영상"
-    assert_includes rendered, "1만~10만" # 밴드 그룹 헤더 라벨
+    render_index(scores: scores)
+    # 각 헤더 링크가 해당 정렬 파라미터 + dir=desc(첫 클릭)를 담는다(쿼리 순서·이스케이프 무관).
+    assert_includes rendered, "sort=uploaded"
+    assert_includes rendered, "sort=views"
+    assert_includes rendered, "sort=multiple"
+    assert_includes rendered, "dir=desc"
   end
 
   test "스파크라인 스냅샷 부족 시 데이터 수집 중 자리 유지" do

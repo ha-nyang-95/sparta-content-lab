@@ -125,23 +125,6 @@ class PopularControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes @response.body, "숫자 1000 영상"
   end
 
-  test "?channel 은 그 채널 영상만" do
-    other = Channel.create!(name: "채널B", category: "한국어교육일반", source: "seed", subscriber_count: 40_000)
-    make_scored("채널B 영상", multiple: 7.0, is_short: false, own_match_count: 0, channel: other, published_at: 1.day.ago)
-    get popular_path(channel: other.id.to_s)
-    assert_response :success
-    assert_includes @response.body, "채널B 영상"
-    assert_not_includes @response.body, "높은 배수 롱폼"
-  end
-
-  test "?min_multiple=5 는 5배 이상만" do
-    get popular_path(min_multiple: "5")
-    assert_response :success
-    assert_includes @response.body, "높은 배수 롱폼"   # 9.0
-    assert_not_includes @response.body, "낮은 배수 롱폼" # 2.5
-    assert_not_includes @response.body, "쇼츠 영상"      # 4.0
-  end
-
   test "?band 는 해당 구독자 밴드 채널만" do
     band1 = Channel.create!(name: "밴드1 채널", category: "한국어교육일반", source: "seed", subscriber_count: 50_000)
     make_scored("밴드1 영상", multiple: 7.0, is_short: false, own_match_count: 0, channel: band1, published_at: 1.day.ago)
@@ -151,35 +134,43 @@ class PopularControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes @response.body, "높은 배수 롱폼" # @channel 은 밴드3(186만)
   end
 
-  test "?sort=views 는 조회수 desc" do
+  test "칼럼 정렬 ?sort=views&dir=desc 는 조회수 내림차순" do
     make_scored("조회수 최상위", multiple: 6.0, is_short: false, own_match_count: 0, published_at: 1.day.ago, view_count: 9_000_000)
     make_scored("조회수 최하위", multiple: 6.0, is_short: false, own_match_count: 0, published_at: 1.day.ago, view_count: 1)
-    get popular_path(sort: "views", layout: "flat")
+    get popular_path(sort: "views", dir: "desc")
     assert_response :success
     body = @response.body
     assert_operator body.index("조회수 최상위"), :<, body.index("조회수 최하위")
   end
 
-  test "?sort=recent 는 업로드일 desc" do
+  test "칼럼 정렬 ?sort=views&dir=asc 는 조회수 오름차순(역전)" do
+    make_scored("조회수 최상위", multiple: 6.0, is_short: false, own_match_count: 0, published_at: 1.day.ago, view_count: 9_000_000)
+    make_scored("조회수 최하위", multiple: 6.0, is_short: false, own_match_count: 0, published_at: 1.day.ago, view_count: 1)
+    get popular_path(sort: "views", dir: "asc")
+    assert_response :success
+    body = @response.body
+    assert_operator body.index("조회수 최하위"), :<, body.index("조회수 최상위")
+  end
+
+  test "칼럼 정렬 ?sort=uploaded&dir=desc 는 업로드일 내림차순" do
     make_scored("가장 최신", multiple: 6.0, is_short: false, own_match_count: 0, published_at: 1.hour.ago)
     make_scored("가장 오래된", multiple: 6.0, is_short: false, own_match_count: 0, published_at: 6.days.ago)
-    get popular_path(sort: "recent", layout: "flat")
+    get popular_path(sort: "uploaded", dir: "desc")
     assert_response :success
     body = @response.body
     assert_operator body.index("가장 최신"), :<, body.index("가장 오래된")
   end
 
-  test "?sort=multiple(기본) 은 성과 배수 desc" do
-    get popular_path(sort: "multiple", layout: "flat")
+  test "정렬 파라미터 없으면 기본 성과 배수 desc" do
+    get popular_path
     assert_response :success
     body = @response.body
     assert_operator body.index("높은 배수 롱폼"), :<, body.index("낮은 배수 롱폼")
   end
 
-  test "잘못된 7.1 파라미터는 안전 폴백(200)" do
-    get popular_path(sort: "xxx", min_multiple: "99", band: "9", channel: "99999")
+  test "잘못된 정렬/규모 파라미터는 안전 폴백(200, 기본 정렬)" do
+    get popular_path(sort: "xxx", dir: "sideways", band: "9")
     assert_response :success
-    # 오입력 채널은 전체로 폴백 — 기존 영상이 보인다.
     assert_includes @response.body, "높은 배수 롱폼"
   end
 
@@ -198,18 +189,10 @@ class PopularControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "데이터 수집 중"
   end
 
-  test "잘못된 channel 파라미터는 전체로 정규화(라벨 공백·값 영속 방지)" do
-    get popular_path(channel: "999999")
-    assert_response :success
-    # 드롭다운 라벨이 공백이 아니라 "전체"로, hidden 필드도 빈 값.
-    assert_includes @response.body, "전체"
-    assert_no_match(/name="channel"[^>]*value="999999"/, @response.body)
-  end
-
-  test "검색 폼은 다른 필터를 hidden 으로 보존한다" do
-    get popular_path(type: "short", sort: "views")
+  test "검색 폼은 다른 필터(기간·카테고리·유형·규모)를 hidden 으로 보존한다" do
+    get popular_path(type: "short", band: "1")
     assert_response :success
     assert_match(/name="type"[^>]*value="short"/, @response.body)
-    assert_match(/name="sort"[^>]*value="views"/, @response.body)
+    assert_match(/name="band"[^>]*value="1"/, @response.body)
   end
 end

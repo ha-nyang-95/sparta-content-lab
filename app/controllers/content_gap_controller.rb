@@ -12,11 +12,8 @@ class ContentGapController < ApplicationController
     # 화이트리스트 검증한 선택 구간(기본 not_made).
     @bucket = helpers.permitted_content_gap_bucket(params)
 
-    # 선택 구간 영상 — 성과 배수 desc(nulls last)·video_id 타이브레이크, N+1 프리로드.
-    @scores = base.where(content_gap_bucket: @bucket)
-                  .includes(video: [:channel, :daily_stats])
-                  .order(Arel.sql("performance_multiple DESC NULLS LAST"))
-                  .order(video_id: :asc)
-                  .to_a
+    # 선택 구간 영상 — 기본 성과 배수 desc, 표 칼럼 헤더로 정렬 변경(SortableHelper). N+1 프리로드.
+    scope = base.where(content_gap_bucket: @bucket).includes(video: [:channel, :daily_stats])
+    @scores = helpers.apply_video_sort(scope, params, "video_scores.performance_multiple DESC NULLS LAST").to_a
   end
 end

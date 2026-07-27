@@ -4,14 +4,14 @@
 <h2 class="text-h2 text-ink-strong">인기 콘텐츠</h2>
 <p class="mt-1 text-caption text-ink-muted">성과 배수 상위 급상승 영상입니다.</p>
 
-<%# 검색바 + 추가 필터/정렬(7.1) — 채널·배수·밴드·정렬. 검색 폼은 다른 필터를 hidden 으로 보존. %>
-<%= render "popular/search_bar", q: @q, channel: @channel, min_multiple: @min_multiple, band: @band, sort: @sort,
-      period: @period, category: @category, type: @type, layout: @layout, channels: (@channels || Channel.none) %>
+<%# 검색바 + 규모 필터. 정렬은 표 칼럼 헤더로, 채널·배수 필터는 제거(운영자 요청). %>
+<%= render "popular/search_bar", q: @q, band: @band,
+      period: @period, category: @category, type: @type %>
 
-<%# 필터 행 — 기간 탭(좌) + 카테고리/유형/레이아웃(우). base_path 로 popular 재사용. %>
+<%# 필터 행 — 기간 탭(좌) + 카테고리/유형(우). base_path 로 popular 재사용. %>
 <div class="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
   <%= render "dashboard/period_tabs", current: @period, base_path: popular_path %>
-  <%= render "dashboard/filter_bar", category: @category, type: @type, layout: @layout, base_path: popular_path %>
+  <%= render "dashboard/filter_bar", category: @category, type: @type, base_path: popular_path %>
 </div>
 
 <% if @scores.any? %>
@@ -22,32 +22,18 @@
         <tr class="border-b border-border-subtle bg-surface-sunken text-left text-label text-ink-muted">
           <th class="p-2 font-medium">영상</th>
           <th class="p-2 font-medium">채널</th>
-          <th class="p-2 font-medium">업로드일</th>
-          <th class="p-2 font-medium">조회수</th>
-          <th class="p-2 font-medium">성과 배수</th>
+          <%= sortable_th "업로드일", "uploaded", popular_path %>
+          <%= sortable_th "조회수", "views", popular_path %>
+          <%= sortable_th "성과 배수", "multiple", popular_path %>
           <th class="p-2 font-medium">트렌드</th>
           <th class="p-2 font-medium">자사 유사영상</th>
           <th class="p-2 font-medium">저장</th>
         </tr>
       </thead>
       <tbody>
-        <% if @grouped %>
-          <%# 밴드 모드에선 순번을 밴드마다 1부터 리셋 — 각 밴드가 자기 리더보드다(전역 카운터는 밴드 간 순번이 성과 순위처럼 오독됨). %>
-          <% @grouped.each do |band, scores| %>
-            <tr class="bg-surface-sunken">
-              <td colspan="8" class="px-2 py-1.5 text-label text-ink-muted">
-                <%= (scores.first && subscriber_band_label(scores.first.video.channel)) || "구독자 미상" %>
-              </td>
-            </tr>
-            <% scores.each do |score| %>
-              <%= render "shared/video_row", video: score.video, sparkline: true, evergreen: (@period == "evergreen"), saved_ids: @saved_ids %>
-            <% end %>
-          <% end %>
-        <% else %>
-          <%# 평면 모드 — 성과 배수 desc 전역 순위. %>
-          <% @scores.each do |score| %>
-            <%= render "shared/video_row", video: score.video, sparkline: true, evergreen: (@period == "evergreen"), saved_ids: @saved_ids %>
-          <% end %>
+        <%# 평면 리스트 — 정렬은 칼럼 헤더로. 기본 성과 배수 desc. %>
+        <% @scores.each do |score| %>
+          <%= render "shared/video_row", video: score.video, sparkline: true, evergreen: (@period == "evergreen"), saved_ids: @saved_ids %>
         <% end %>
       </tbody>
     </table>

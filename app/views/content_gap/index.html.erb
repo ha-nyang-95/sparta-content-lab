@@ -24,9 +24,9 @@
         <tr class="border-b border-border-subtle bg-surface-sunken text-left text-label text-ink-muted">
           <th class="p-2 font-medium">영상</th>
           <th class="p-2 font-medium">채널</th>
-          <th class="p-2 font-medium">업로드일</th>
-          <th class="p-2 font-medium">조회수</th>
-          <th class="p-2 font-medium">성과 배수</th>
+          <%= sortable_th "업로드일", "uploaded", content_gap_path %>
+          <%= sortable_th "조회수", "views", content_gap_path %>
+          <%= sortable_th "성과 배수", "multiple", content_gap_path %>
           <th class="p-2 font-medium">자사 유사영상</th>
         </tr>
       </thead>
