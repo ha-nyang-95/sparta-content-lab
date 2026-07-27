@@ -27,8 +27,8 @@
   <body class="min-h-screen overflow-x-hidden bg-app text-ink-body">
     <% if authenticated? %>
       <%# 인증된 화면에만 앱 셸(좌측 내비 + 헤더)을 렌더. 로그인/비밀번호 화면은 bare yield. %>
-      <div class="flex min-h-screen" data-controller="sidebar"
-           data-action="keydown.esc@window->sidebar#closeOnEsc">
+      <div class="flex min-h-screen" data-controller="sidebar video-analysis"
+           data-action="keydown.esc@window->sidebar#closeOnEsc keydown.esc@window->video-analysis#closeOnEsc">
         <%= render "layouts/sidebar" %>
         <div class="flex min-w-0 flex-1 flex-col">
           <%= render "layouts/header" %>
@@ -36,6 +36,8 @@
             <%= yield %>
           </main>
         </div>
+        <%# 영상 클릭 시 열리는 공유 기획 분석 모달(앱 셸에 1개). %>
+        <%= render "shared/video_analysis_modal" %>
       </div>
     <% else %>
       <%= yield %>

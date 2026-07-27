@@ -1,0 +1,52 @@
+<%# 영상 기획 분석 공유 모달 — 앱 셸에 1개. 영상 클릭 시 video-analysis 컨트롤러가 열고 채운다. 기본 hidden. %>
+<div data-video-analysis-target="modal" class="hidden">
+  <div class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div class="fixed inset-0 bg-ink-strong/50" data-action="click->video-analysis#backdrop"></div>
+    <div class="relative z-10 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-card bg-surface shadow-cardHover"
+         role="dialog" aria-modal="true" aria-label="영상 기획 분석">
+      <%# 헤더 — 영상 제목 + 닫기. %>
+      <div class="flex items-start justify-between gap-3 border-b border-border-subtle p-5">
+        <h4 class="min-w-0 break-keep line-clamp-2 text-h3 text-ink-strong" data-video-analysis-target="title">영상 분석</h4>
+        <button type="button" data-action="video-analysis#close" aria-label="닫기"
+                class="shrink-0 rounded-control p-1 text-ink-muted hover:bg-surface-sunken hover:text-ink-strong">
+          <%= tag.svg viewBox: "0 0 20 20", fill: "none", stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round", class: "h-5 w-5" do %>
+            <line x1="5" y1="5" x2="15" y2="15"></line><line x1="15" y1="5" x2="5" y2="15"></line>
+          <% end %>
+        </button>
+      </div>
+
+      <div class="overflow-y-auto p-5">
+        <%# 로딩 — 자막 읽고 Gemini 분석(수 초~수십 초). %>
+        <div data-video-analysis-target="loading" class="hidden py-12 text-center text-body text-ink-muted">
+          <span class="inline-block h-6 w-6 animate-spin rounded-full border-2 border-border border-t-primary-600 align-middle"></span>
+          <span class="ml-2 align-middle">스크립트를 읽고 기획을 분석하는 중…</span>
+        </div>
+
+        <%# 콘텐츠 — 확정 2블록(도입부 / 전체). %>
+        <div data-video-analysis-target="content" class="hidden flex-col gap-6">
+          <section>
+            <h5 class="text-label font-semibold text-ink-muted">도입부 스크립트</h5>
+            <p data-video-analysis-target="introExcerpt" class="mt-1 whitespace-pre-line rounded-control bg-surface-sunken p-3 text-body text-ink-body"></p>
+            <h5 class="mt-4 text-label font-semibold text-ink-muted">도입부 기획 분석</h5>
+            <p data-video-analysis-target="introAnalysis" class="mt-1 whitespace-pre-line break-keep text-body text-ink-body"></p>
+          </section>
+          <section class="border-t border-border-subtle pt-5">
+            <h5 class="text-label font-semibold text-ink-muted">전체 스크립트 요약</h5>
+            <p data-video-analysis-target="summary" class="mt-1 whitespace-pre-line break-keep text-body text-ink-body"></p>
+            <h5 class="mt-4 text-label font-semibold text-ink-muted">전체 기획 분석</h5>
+            <p data-video-analysis-target="overallAnalysis" class="mt-1 whitespace-pre-line break-keep text-body text-ink-body"></p>
+          </section>
+        </div>
+
+        <%# 무자막·실패 — 정직 안내(§4.7). %>
+        <div data-video-analysis-target="error" class="hidden py-10 text-center text-body text-ink-muted"></div>
+      </div>
+
+      <%# 푸터 — 영상 링크(항상). %>
+      <div class="border-t border-border-subtle p-4">
+        <a data-video-analysis-target="link" href="#" target="_blank" rel="noopener"
+           class="inline-flex items-center gap-1 text-body text-primary-600 hover:underline">유튜브에서 영상 보기 <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </div>
+</div>

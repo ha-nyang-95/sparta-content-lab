@@ -10,7 +10,12 @@
     <td class="p-2 text-ink-muted tabular-nums"><%= rank %></td>
   <% end %>
   <td class="p-2">
-    <a href="<%= youtube_watch_url(video) %>" target="_blank" rel="noopener" class="flex min-w-0 items-start gap-3">
+    <%# 클릭 → 영상 기획 분석 모달(유튜브 이동 아님, 링크는 모달 안에). %>
+    <button type="button" data-action="video-analysis#open"
+            data-video-analysis-title-param="<%= video.title %>"
+            data-video-analysis-youtube-param="<%= youtube_watch_url(video) %>"
+            data-video-analysis-analysis-param="<%= video_analysis_path(video) %>"
+            class="flex min-w-0 items-start gap-3 text-left">
       <%= render "shared/video_thumb", video: video %>
       <div class="min-w-0">
         <%# lang 하드코딩 안 함 — 한·일 혼재라 단일 lang 은 절반을 오표시. §7 방어는 폰트 폴백·break-keep·truncate·min-w-0·title 툴팁. %>
@@ -36,7 +41,7 @@
           <% end %>
         </div>
       </div>
-    </a>
+    </button>
   </td>
   <td class="p-2">
     <span class="block min-w-0 max-w-[12rem] truncate text-ink-muted" title="<%= video.channel&.name %>"><%= video.channel&.name.presence || "미상" %></span>

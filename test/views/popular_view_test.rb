@@ -64,10 +64,11 @@ class PopularViewTest < ActionView::TestCase
     assert_includes rendered, "bg-badge-dangerBg"
   end
 
-  test "영상 셀은 youtube watch 링크를 담는다" do
+  test "영상 셀은 클릭 시 기획 분석 모달을 여는 버튼이다(유튜브 URL·분석 엔드포인트 param 포함)" do
     video = make_scored(title: "링크 영상")
     render partial: "shared/video_row", locals: { video: video }
-    assert_includes rendered, "https://www.youtube.com/watch?v=#{video.youtube_video_id}"
-    assert_includes rendered, "target=\"_blank\""
+    assert_includes rendered, "video-analysis#open"
+    assert_includes rendered, "https://www.youtube.com/watch?v=#{video.youtube_video_id}" # 모달 안 유튜브 링크용 param
+    assert_includes rendered, "/videos/#{video.id}/analysis"                              # 분석 엔드포인트 param
   end
 end

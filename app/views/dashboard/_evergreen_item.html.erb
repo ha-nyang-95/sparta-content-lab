@@ -1,14 +1,21 @@
 <%# 대시보드 에버그린 컴팩트 행(6.6) — 제목 truncate + 후보/검증 뱃지 + 성과 배수 pill. 로컬: score. 읽기 전용·nil 방어(AD-9)·다국어(§7). %>
 <% video = score.video %>
 <div class="flex items-center gap-3 py-2">
-  <%= render "shared/video_thumb", video: video %>
-  <div class="min-w-0 flex-1">
-    <%# lang 하드코딩 안 함 — 한·일 혼재라 §7 방어(폰트 폴백·break-keep·truncate·min-w-0·title 툴팁). %>
-    <span class="block min-w-0 truncate break-keep text-body text-ink-strong" title="<%= video.title %>"><%= video.title.presence || "제목 없음" %></span>
-    <div class="mt-1">
-      <%= render "shared/honesty_status", status: evergreen_badge_status(score, video) %>
+  <%# 클릭 → 영상 기획 분석 모달. %>
+  <button type="button" data-action="video-analysis#open"
+          data-video-analysis-title-param="<%= video.title %>"
+          data-video-analysis-youtube-param="<%= youtube_watch_url(video) %>"
+          data-video-analysis-analysis-param="<%= video_analysis_path(video) %>"
+          class="flex min-w-0 flex-1 items-center gap-3 text-left hover:text-primary-600">
+    <%= render "shared/video_thumb", video: video %>
+    <div class="min-w-0 flex-1">
+      <%# lang 하드코딩 안 함 — 한·일 혼재라 §7 방어(폰트 폴백·break-keep·truncate·min-w-0·title 툴팁). %>
+      <span class="block min-w-0 truncate break-keep text-body text-ink-strong" title="<%= video.title %>"><%= video.title.presence || "제목 없음" %></span>
+      <div class="mt-1">
+        <%= render "shared/honesty_status", status: evergreen_badge_status(score, video) %>
+      </div>
     </div>
-  </div>
+  </button>
   <div class="shrink-0">
     <%= render "shared/performance_cell",
                multiple: score.performance_multiple,

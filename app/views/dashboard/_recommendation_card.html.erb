@@ -68,11 +68,18 @@
               <% present_video_ids.each do |id| %>
                 <% video = videos_by_rec[id] %>
                 <li class="flex items-center gap-3">
-                  <%= render "shared/video_thumb", video: video %>
-                  <div class="min-w-0 flex-1">
-                    <span class="block min-w-0 break-keep truncate text-body text-ink-strong" title="<%= video&.title %>"><%= video&.title.presence || "영상 #{id}" %></span>
-                    <span class="block truncate text-caption text-ink-muted" title="<%= video&.channel&.name %>"><%= video&.channel&.name.presence || "미상" %></span>
-                  </div>
+                  <%# 근거 영상도 클릭 → 기획 분석 모달(같은 공유 모달). %>
+                  <button type="button" data-action="video-analysis#open"
+                          data-video-analysis-title-param="<%= video&.title %>"
+                          data-video-analysis-youtube-param="<%= youtube_watch_url(video) %>"
+                          data-video-analysis-analysis-param="<%= video_analysis_path(video) %>"
+                          class="flex min-w-0 flex-1 items-center gap-3 text-left hover:text-primary-600">
+                    <%= render "shared/video_thumb", video: video %>
+                    <div class="min-w-0 flex-1">
+                      <span class="block min-w-0 break-keep truncate text-body text-ink-strong" title="<%= video&.title %>"><%= video&.title.presence || "영상 #{id}" %></span>
+                      <span class="block truncate text-caption text-ink-muted" title="<%= video&.channel&.name %>"><%= video&.channel&.name.presence || "미상" %></span>
+                    </div>
+                  </button>
                   <div class="shrink-0">
                     <%= render "shared/performance_cell",
                           multiple: video&.video_score&.performance_multiple,

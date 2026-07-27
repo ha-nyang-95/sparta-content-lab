@@ -1,12 +1,17 @@
 <%# 대시보드 급상승 요약 행 — 썸네일+시간 + 제목 + 성과 배수 pill. local: score. 다국어 §7·nil 방어 AD-9. %>
 <% video = score.video %>
 <div class="flex items-center gap-3 py-2">
-  <a href="<%= youtube_watch_url(video) %>" target="_blank" rel="noopener" class="flex min-w-0 flex-1 items-center gap-3 hover:text-primary-600">
+  <%# 클릭 → 영상 기획 분석 모달(유튜브 이동 아님, 링크는 모달 안에). %>
+  <button type="button" data-action="video-analysis#open"
+          data-video-analysis-title-param="<%= video.title %>"
+          data-video-analysis-youtube-param="<%= youtube_watch_url(video) %>"
+          data-video-analysis-analysis-param="<%= video_analysis_path(video) %>"
+          class="flex min-w-0 flex-1 items-center gap-3 text-left hover:text-primary-600">
     <%= render "shared/video_thumb", video: video %>
     <span class="min-w-0 flex-1 truncate break-keep text-body text-ink-body" title="<%= video.title %>">
       <%= video.title.presence || "제목 없음" %>
     </span>
-  </a>
+  </button>
   <div class="shrink-0">
     <%= render "shared/performance_cell", multiple: score.performance_multiple, view_count: nil, needs_verification: score.needs_verification %>
   </div>
