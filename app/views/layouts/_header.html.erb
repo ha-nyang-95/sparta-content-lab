@@ -19,18 +19,30 @@
   </div>
 
   <div class="ml-auto flex items-center gap-3">
-    <%# 검색바 — 시각 자리만(비동작). readonly 로 입력 방지, 폼 래핑 없음. %>
-    <div class="relative hidden lg:block">
-      <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink-subtle">
-        <%= tag.svg viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
-              "stroke-width": "1.7", "stroke-linecap": "round", class: "h-4 w-4" do %>
-          <circle cx="11" cy="11" r="7"></circle>
-          <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
-        <% end %>
-      </span>
-      <input type="text" readonly tabindex="-1"
-             placeholder="주제, 키워드, 채널 검색"
-             class="w-64 rounded-control border border-border bg-surface py-2 pl-9 pr-3 text-body text-ink-body placeholder:text-ink-subtle">
+    <%# 실시간 검색(타입어헤드) — 입력 시 아래로 상위 5건, 초과분은 '모두 보기'로 인기 페이지 전체 검색. 엔터도 전체 검색. %>
+    <div class="relative hidden lg:block" data-controller="search"
+         data-search-url-value="<%= search_path %>" data-search-all-url-value="<%= popular_path %>">
+      <%= form_with url: popular_path, method: :get, role: "search", data: { turbo: false } do %>
+        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink-subtle">
+          <%= tag.svg viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+                "stroke-width": "1.7", "stroke-linecap": "round", class: "h-4 w-4" do %>
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+          <% end %>
+        </span>
+        <input type="text" name="q" autocomplete="off"
+               placeholder="주제, 키워드, 채널 검색"
+               data-search-target="input" data-action="input->search#query"
+               class="w-64 rounded-control border border-border bg-surface py-2 pl-9 pr-3 text-body text-ink-body placeholder:text-ink-subtle">
+      <% end %>
+
+      <%# 결과 드롭다운 — 최대 5행 고정(더 커지지 않음). 초과분은 '모두 보기'. 기본 숨김. %>
+      <div data-search-target="results"
+           class="absolute left-0 right-0 z-50 mt-1 hidden overflow-hidden rounded-card border border-border bg-surface shadow-card">
+        <div data-search-target="list"></div>
+        <a data-search-target="more" href="#"
+           class="hidden block border-t border-border-subtle px-3 py-2 text-caption font-medium text-primary-600 hover:bg-primary-50">모두 보기</a>
+      </div>
     </div>
 
     <%# 오늘 업데이트 — 수집 트리거 + 진행 게이지(3초 폴링). 유휴엔 버튼+마지막 수집, 진행 중엔 단계 게이지. %>

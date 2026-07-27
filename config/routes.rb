@@ -23,6 +23,8 @@ Rails.application.routes.draw do
   resources :saved_videos, only: [:create]
   delete "saved_videos", to: "saved_videos#destroy", as: :destroy_saved_video
   get "settings", to: "settings#index"
+  # 헤더 실시간 검색(타입어헤드) — 제목 부분일치 상위 5건 JSON. '모두 보기'는 popular?q= 로.
+  get "search", to: "search#index", as: :search
 
   # '오늘 업데이트' — 수집 트리거(POST)·진행 상태 폴링(GET status). 게이지 UI 가 소비한다.
   post "collections", to: "collections#create"
