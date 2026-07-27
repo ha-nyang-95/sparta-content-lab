@@ -34,6 +34,8 @@ module Embedding
         begin
           vector = @client.embed(video.title)
           video.update!(embedding: vector.pack("f*"), embedding_source_hash: source_hash)
+        rescue Embedding::QuotaExhausted
+          raise # 크레딧 소진은 배치 전체가 실패할 신호 — 계속 호출하지 않고 즉시 전파(상위가 빌링 경보).
         rescue => e
           Rails.logger.warn("[Embedding] 임베딩 실패(스킵): video##{video.id} — #{e.class}: #{e.message}")
         end

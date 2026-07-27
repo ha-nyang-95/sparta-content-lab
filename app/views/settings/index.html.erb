@@ -3,6 +3,18 @@
 
 <h2 class="text-h2 text-ink-strong">설정</h2>
 
+<%# 빌링 소진 경보 — 임베딩 크레딧이 떨어지면 추천 갱신이 멈추므로 행동 지침과 함께 상단에 노출(§4.7 danger). %>
+<% if @billing_alert %>
+  <div class="mt-6 flex items-start gap-3 rounded-card border border-badge-dangerFg/25 bg-badge-dangerBg p-4">
+    <span class="mt-0.5 shrink-0 text-badge-dangerFg" aria-hidden="true">⚠</span>
+    <div class="min-w-0">
+      <p class="text-body font-medium text-badge-dangerFg">Gemini 임베딩 크레딧 소진</p>
+      <p class="mt-1 break-keep text-caption text-ink-body"><%= @billing_alert.error %></p>
+      <p class="mt-1 break-keep text-caption text-ink-muted">빌링을 충전한 뒤 헤더의 ‘오늘 업데이트’로 재수집하면 추천이 다시 갱신됩니다.</p>
+    </div>
+  </div>
+<% end %>
+
 <%# (1) 수집 상태 — 신선도 + 최근 JobRun 표(§4.3). %>
 <section class="mt-6 rounded-card border border-border bg-surface p-6 shadow-card">
   <h3 class="text-h3 text-ink-strong">수집 상태</h3>

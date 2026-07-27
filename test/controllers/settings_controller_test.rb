@@ -84,6 +84,22 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "임베딩 크레딧 소진으로 실패한 최근 잡이 있으면 빌링 경보 배너를 띄운다" do
+    JobRun.create!(job_name: "DailyCollectionJob", status: "failed", started_at: 1.hour.ago, finished_at: 1.hour.ago,
+                   error: "Gemini 임베딩 크레딧/쿼터 소진(HTTP 429) — 빌링 충전 후 재수집 필요")
+    get settings_path
+    assert_response :success
+    assert_includes @response.body, "Gemini 임베딩 크레딧 소진"
+  end
+
+  test "빌링 경보는 크레딧 소진이 아닌 실패에는 뜨지 않는다" do
+    JobRun.create!(job_name: "DailyCollectionJob", status: "failed", started_at: 1.hour.ago, finished_at: 1.hour.ago,
+                   error: "네트워크 오류")
+    get settings_path
+    assert_response :success
+    assert_not_includes @response.body, "Gemini 임베딩 크레딧 소진"
+  end
+
   test "금지 라벨 '구독자 대비 조회수' 가 없다" do
     get settings_path
     assert_response :success

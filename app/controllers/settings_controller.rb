@@ -5,6 +5,9 @@ class SettingsController < ApplicationController
     @job_runs = JobRun.order(created_at: :desc).limit(20)
     # 데이터 신선도 = 마지막 성공 DailyCollectionJob 의 종료 시각.
     @last_success = JobRun.where(job_name: "DailyCollectionJob", status: "succeeded").order(finished_at: :desc).first
+    # 임베딩 빌링 소진 경보 — 가장 최근 DailyCollectionJob 이 크레딧 소진(QuotaExhausted)으로 실패했으면 배너 노출.
+    latest = JobRun.where(job_name: "DailyCollectionJob").order(created_at: :desc).first
+    @billing_alert = latest if latest&.status == "failed" && latest.error.to_s.include?("크레딧")
     # 추적 채널 수(전체/경쟁/자사).
     @channel_counts = { total: Channel.count, competitor: Channel.competitor.count, own: Channel.own.count }
     # API 상태 — 경계의 mode·키 유무만(값 노출 금지, AD-1). 키 유무는 경계 술어로 읽는다.

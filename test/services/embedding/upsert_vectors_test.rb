@@ -82,6 +82,19 @@ class Embedding::UpsertVectorsTest < ActiveSupport::TestCase
     assert Video.find_by(youtube_video_id: "v_fine").embedding.present?, "나머지는 계속 임베딩"
   end
 
+  test "크레딧 소진(QuotaExhausted)은 삼키지 않고 즉시 전파한다(빌링 경보 신호)" do
+    make_video(title: "소진 유발 제목", youtube_video_id: "v_quota")
+
+    quota_client = Object.new
+    def quota_client.embed(_text)
+      raise Embedding::QuotaExhausted, "크레딧 소진"
+    end
+
+    assert_raises(Embedding::QuotaExhausted) do
+      Embedding::UpsertVectors.new(client: quota_client).call
+    end
+  end
+
   test "제목이 그대로면 재실행 시 재호출하지 않는다(idempotent)" do
     make_video(title: "변경 없는 제목", youtube_video_id: "v_same")
 

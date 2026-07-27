@@ -58,8 +58,14 @@ class DailyCollectionJob < ApplicationJob
                   quota_used: ledger.spent(:shared),
                   channels_processed: processed, channels_failed: failed)
       else
-        run_similarity_stages(run) # 스코어링 정상 시 Epic 4 전역 스테이지를 에버그린 뒤 append.
-        finalize(run, processed, failed, ledger.spent(:shared))
+        # 유사도 스테이지 실행 — 임베딩 크레딧 소진(빌링)이면 메시지를 돌려받아 런을 failed 로 정직하게 기록한다.
+        billing_error = run_similarity_stages(run)
+        if billing_error
+          run.fail!(error: billing_error, quota_used: ledger.spent(:shared),
+                    channels_processed: processed, channels_failed: failed)
+        else
+          finalize(run, processed, failed, ledger.spent(:shared))
+        end
       end
     rescue => e
       # 체계적 실패(스냅샷 단계 raise 등)만 여기 도달 — 채널 실패는 위에서 이미 삼켰다.
@@ -73,12 +79,17 @@ class DailyCollectionJob < ApplicationJob
 
   # Epic 4 유사도 + Epic 5 추천 스테이지 — 전역 배치, 에버그린 뒤. 임베딩→OwnVideoMatch→콘텐츠 갭→주제 클러스터→기회 점수→추천(AD-11). 스테이지별 rescue.
   # 임베딩은 가장 길어 영상별 하위 진행(35→85)을 콜백으로 받고, 나머지 5스테이지는 분석(85→100)으로 스테이지 경계마다 마크.
+  # 임베딩 크레딧 소진(빌링) 시 그 메시지를 반환한다(그 외엔 nil). 호출부가 런을 failed 로 기록하는 신호.
   def run_similarity_stages(run)
+    billing_error = nil
     run.mark_progress!(phase: "임베딩", progress: 35)
     begin
       Embedding::UpsertVectors.new.call(progress: lambda do |done, total|
         run.mark_progress!(phase: "임베딩", progress: 35 + (total.zero? ? 50 : done.to_f / total * 50))
       end)
+    rescue Embedding::QuotaExhausted => e
+      billing_error = e.message # 빌링 소진 — 아래 스테이지는 기존 임베딩으로 진행하되 런은 failed 로 기록.
+      Rails.logger.error("[DailyCollectionJob] 임베딩 크레딧 소진 — #{e.message}")
     rescue => e
       Rails.logger.error("[DailyCollectionJob] 유사도 스테이지 실패(스킵): 임베딩 — #{e.class}: #{e.message}")
     end
@@ -96,6 +107,8 @@ class DailyCollectionJob < ApplicationJob
     rescue => e
       Rails.logger.error("[DailyCollectionJob] 유사도 스테이지 실패(스킵): #{name} — #{e.class}: #{e.message}")
     end
+
+    billing_error
   end
 
   # 전 채널이 실패하면 체계적 문제로 보고 succeeded 로 위장하지 않는다(정직성). 부분 실패는 succeeded + 실패 수 기록.

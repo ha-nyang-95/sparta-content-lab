@@ -54,6 +54,9 @@ module Embedding
           end
 
           normalize(values) # Stub 과 동일 계약(단위 벡터) — 차원<3072 gemini 는 미정규화라 여기서 L2 정규화.
+        when Net::HTTPTooManyRequests # 429 RESOURCE_EXHAUSTED — 크레딧/쿼터 소진. 전용 예외로 분리(빌링 경보).
+          raise Embedding::QuotaExhausted,
+            "Gemini 임베딩 크레딧/쿼터 소진(HTTP 429) — 빌링 충전 후 재수집 필요"
         else
           raise Embedding::Error, "HTTP #{response.code} (embedContent): #{response.message}"
         end
