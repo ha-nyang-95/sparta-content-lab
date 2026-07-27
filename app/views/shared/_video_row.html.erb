@@ -17,7 +17,8 @@
             data-video-analysis-analysis-param="<%= video_analysis_path(video) %>"
             class="flex min-w-0 items-start gap-3 text-left">
       <%= render "shared/video_thumb", video: video %>
-      <div class="min-w-0">
+      <%# 제목 폭 상한 — 영상 칼럼이 표를 화면 밖으로 밀지 않게(약 60%로 축소). truncate 가 상한에서 말줄임. %>
+      <div class="min-w-0 max-w-[22rem]">
         <%# lang 하드코딩 안 함 — 한·일 혼재라 단일 lang 은 절반을 오표시. §7 방어는 폰트 폴백·break-keep·truncate·min-w-0·title 툴팁. %>
         <% if video.title.present? %>
           <span class="block min-w-0 truncate break-keep text-body text-ink-strong" title="<%= video.title %>"><%= video.title %></span>
