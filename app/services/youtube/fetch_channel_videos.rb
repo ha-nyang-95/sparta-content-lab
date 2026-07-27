@@ -7,18 +7,19 @@ module Youtube
 
     # channels.list→playlistItems.list→videos.list 체인으로 Video 물질화. 수집한 영상 수 반환.
     # 채널별로 트랜잭션 — 한 채널의 물질화는 all-or-nothing(부분 저장 방지, 앞 채널은 보존).
-    def call(channel)
+    # limit: 최근 N개만 수집(uploads 재생목록은 최신순 → lazy 페이지네이션이 일찍 멈춰 쿼터 절약). nil=전체.
+    def call(channel, limit: nil)
       if channel.youtube_channel_id.blank?
         Rails.logger.info("[Youtube] handle-only 채널 스킵(채널ID 미해결): #{channel.name}")
         return 0
       end
 
-      ActiveRecord::Base.transaction { materialize(channel) }
+      ActiveRecord::Base.transaction { materialize(channel, limit) }
     end
 
     private
 
-    def materialize(channel)
+    def materialize(channel, limit = nil)
       # 응답에서 이 채널 항목을 id로 정확히 찾는다(배치/스텁이 여러 채널을 반환해도 오배정 방지).
       ch_item = @client.list_channels([channel.youtube_channel_id])
                        .find { |it| it["id"] == channel.youtube_channel_id }
@@ -45,9 +46,10 @@ module Youtube
         return 0
       end
 
-      ids = @client.each_playlist_item(uploads_id)
-                   .map { |it| it.dig("contentDetails", "videoId") }
-                   .compact.uniq
+      # limit 있으면 최신순 재생목록에서 앞 N개만 lazy 취득(페이지네이션 조기 종료 → 쿼터 절약).
+      enum = @client.each_playlist_item(uploads_id)
+      page = limit ? enum.first(limit) : enum.to_a
+      ids = page.map { |it| it.dig("contentDetails", "videoId") }.compact.uniq
       items = @client.list_videos(ids)
 
       items.each { |item| upsert_video(channel, item) }
