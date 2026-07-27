@@ -1,7 +1,11 @@
 # 대시보드 홈(root) — 물질화된 추천·참고 영상·필터 파라미터만 읽는 얇은 컨트롤러(AD-3, 재계산 금지)
 class DashboardController < ApplicationController
   def index
-    @recommendations = Recommendation.order(:rank)
+    # 롱폼/숏폼 토글 — 추천·급상승을 타입별로 전환(경쟁·갭은 공통). 기본 롱폼, 미지의 값은 롱폼으로 폴백.
+    @video_type = params[:type].to_s.in?(%w[long short]) ? params[:type] : "long"
+    is_short_values = Similarity::BuildTopicClusters::TYPE_SCOPES[@video_type]
+
+    @recommendations = Recommendation.where(video_type: @video_type).order(:rank)
     reference_ids = @recommendations.flat_map(&:reference_video_ids).uniq
     @videos_by_rec = Video.where(id: reference_ids)
                           .includes(:video_score, :channel)
@@ -23,6 +27,7 @@ class DashboardController < ApplicationController
     # 급상승: 경쟁 상위 성과 배수(배수 자체는 스냅샷 없이도 물질화됨). 옆 박스 높이를 채우도록 넉넉히 로드.
     @top_scores = VideoScore.ranked.joins(video: :channel)
                             .where(channels: { excluded: false, is_own: false })
+                            .where(videos: { is_short: is_short_values }) # 급상승도 선택 타입만.
                             .includes(video: [:channel, :video_score])
                             .limit(10).to_a
     # 경쟁 채널 동향: 구독자 상위(증감은 콜드여도 채널·구독자는 표시).

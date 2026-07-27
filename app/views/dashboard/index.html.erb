@@ -3,6 +3,15 @@
 
 <%# 추천 섹션 헤더. %>
 <section class="mt-8">
+  <%# 롱폼/숏폼 토글 — 추천·급상승을 타입별로 전환(경쟁·갭은 공통). 활성 탭은 primary-600(DESIGN §10). %>
+  <div class="mb-4 inline-flex rounded-control border border-border bg-surface p-0.5" role="tablist" aria-label="콘텐츠 유형">
+    <% [["long", "롱폼"], ["short", "숏폼"]].each do |value, label| %>
+      <% active = @video_type == value %>
+      <%= link_to label, root_path(type: value), role: "tab", "aria-selected": active.to_s,
+            class: "rounded-chip px-4 py-1.5 text-body #{active ? "bg-primary-600 text-white" : "text-ink-muted hover:text-ink-body"}" %>
+    <% end %>
+  </div>
+
   <div class="flex flex-wrap items-baseline gap-2">
     <h2 class="flex items-center gap-2 text-h2 text-ink-strong">
       <span class="text-primary-600" aria-hidden="true">★</span>

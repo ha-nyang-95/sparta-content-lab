@@ -16,22 +16,24 @@ module Scoring
       all_member_ids = clusters.flat_map { |c| c.videos.map(&:id) }
       scores_by_video = VideoScore.where(video_id: all_member_ids).index_by(&:video_id)
 
-      # 결정적 정렬: 기회 점수 desc → 경쟁 성과 배수 desc → 최신성(경과일 asc = 최근 먼저) → 클러스터 id asc.
-      sorted = clusters.sort_by do |cluster|
-        [-cluster.opportunity_score, -tie_perf(cluster, scores_by_video), tie_min_age(cluster, today), cluster.id]
-      end
-      selected = sorted.first(max_count)
-
-      # 매 배치 delete_all 후 현재 상위로 재구축 — 스냅샷이라 자체 완결·FK 없음.
+      # 매 배치 delete_all 후 타입(롱폼/숏폼)별로 상위 max_count 개를 재구축 — 스냅샷이라 자체 완결·FK 없음.
+      # 랭크는 타입 내부에서 1..max_count. 대시보드 토글이 video_type 으로 골라 읽는다(같은 공식·풀만 분리).
       Recommendation.transaction do
         Recommendation.delete_all
-        selected.each_with_index do |cluster, i|
-          Recommendation.create!(
-            topic_label: topic_label_for(cluster, scores_by_video),
-            opportunity_score: cluster.opportunity_score,
-            reference_video_ids: reference_video_ids_for(cluster),
-            rank: i + 1
-          )
+        clusters.group_by(&:video_type).each do |video_type, type_clusters|
+          # 결정적 정렬: 기회 점수 desc → 경쟁 성과 배수 desc → 최신성(경과일 asc = 최근 먼저) → 클러스터 id asc.
+          sorted = type_clusters.sort_by do |cluster|
+            [-cluster.opportunity_score, -tie_perf(cluster, scores_by_video), tie_min_age(cluster, today), cluster.id]
+          end
+          sorted.first(max_count).each_with_index do |cluster, i|
+            Recommendation.create!(
+              video_type: video_type,
+              topic_label: topic_label_for(cluster, scores_by_video),
+              opportunity_score: cluster.opportunity_score,
+              reference_video_ids: reference_video_ids_for(cluster),
+              rank: i + 1
+            )
+          end
         end
       end
     end

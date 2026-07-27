@@ -7,7 +7,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     @channel = Channel.create!(name: "韓国語の森 with Aki", category: "직접경쟁", source: "seed", subscriber_count: 1_860_000)
     @video = @channel.videos.create!(youtube_video_id: "vid_#{SecureRandom.hex(4)}", title: "日本人がよく間違える 助詞", view_count: 182_563, is_short: false, published_at: 5.days.ago)
     VideoScore.create!(video: @video, performance_multiple: 2.9, own_match_count: 0, needs_verification: false, rank_eligible: true)
-    @rec = Recommendation.create!(topic_label: "일본인이 자주 틀리는 한국어 조사 5가지", opportunity_score: 89.0, rank: 1, reference_video_ids: [@video.id])
+    @rec = Recommendation.create!(video_type: "long", topic_label: "일본인이 자주 틀리는 한국어 조사 5가지", opportunity_score: 89.0, rank: 1, reference_video_ids: [@video.id])
   end
 
   test "GET root 200" do

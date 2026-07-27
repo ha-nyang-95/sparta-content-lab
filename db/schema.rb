@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_25_062541) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_014619) do
   create_table "baselines", force: :cascade do |t|
     t.integer "channel_id", null: false
     t.datetime "created_at", null: false
@@ -83,6 +83,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_062541) do
     t.text "reference_video_ids"
     t.string "topic_label"
     t.datetime "updated_at", null: false
+    t.string "video_type"
   end
 
   create_table "saved_videos", force: :cascade do |t|
@@ -109,6 +110,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_062541) do
     t.float "opportunity_score"
     t.integer "size"
     t.datetime "updated_at", null: false
+    t.string "video_type"
   end
 
   create_table "users", force: :cascade do |t|

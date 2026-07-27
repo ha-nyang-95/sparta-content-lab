@@ -8,7 +8,7 @@ class DashboardViewTest < ActionDispatch::IntegrationTest
     channel = Channel.create!(name: "채널 #{rank}", category: "직접경쟁", source: "seed", subscriber_count: 50_000)
     video = channel.videos.create!(youtube_video_id: "v_#{SecureRandom.hex(4)}", title: "영상 #{rank}", view_count: 12_345, is_short: false, published_at: 3.days.ago)
     VideoScore.create!(video: video, performance_multiple: 3.0, own_match_count: 1, needs_verification: false, rank_eligible: true)
-    Recommendation.create!(topic_label: label, opportunity_score: score, rank: rank, reference_video_ids: [video.id])
+    Recommendation.create!(video_type: "long", topic_label: label, opportunity_score: score, rank: rank, reference_video_ids: [video.id])
   end
 
   test "추천 3개면 카드 3개를 렌더한다" do
