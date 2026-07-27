@@ -78,8 +78,9 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
   test "로그아웃 링크(DELETE session_path)가 있다" do
     get settings_path
     assert_response :success
+    # 헤더 계정 메뉴에도 로그아웃이 생겨 설정 페이지엔 로그아웃 폼이 2개(헤더+본문) — 최소 1개 이상이면 통과.
     assert_select "form[action=?][method=post]", session_path do
-      assert_select "input[name=_method][value=delete]", 1
+      assert_select "input[name=_method][value=delete]"
     end
   end
 

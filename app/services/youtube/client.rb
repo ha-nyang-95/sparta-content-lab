@@ -30,6 +30,15 @@ module Youtube
       batched_items(ids, :videos_list, part: "snippet,statistics,contentDetails", hl: DISPLAY_LOCALE)
     end
 
+    # channels.list?forHandle — @핸들(앞의 @ 제거)로 채널 1건 조회. 1 unit(:shared). item Hash 또는 nil.
+    # 수동 등록(6.4)에서 UC id 대신 핸들로 채널을 해석할 때 쓴다.
+    def find_channel_by_handle(handle)
+      response = fetch_with_quota(:channels_list,
+        { part: "snippet,contentDetails,statistics", forHandle: handle.to_s.sub(/\A@/, ""), hl: DISPLAY_LOCALE },
+        units: 1, bucket: :shared)
+      Array(response["items"]).first
+    end
+
     # playlistItems.list — 단일 페이지(1 unit :shared)를 그대로 반환(items + nextPageToken).
     # 페이지네이션 루프는 호출부(2.3)가 each_playlist_item 또는 page_token 재호출로 수행한다.
     def list_playlist_items(playlist_id, page_token: nil)

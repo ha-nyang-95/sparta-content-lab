@@ -17,8 +17,8 @@
   <h3 class="text-h3 text-ink-strong">경쟁 채널 등록</h3>
   <%= form_with url: competitors_path, method: :post, class: "mt-4 flex flex-col gap-3 lg:flex-row lg:items-end" do |f| %>
     <div class="flex min-w-0 flex-1 flex-col gap-1">
-      <%= f.label :channel_url, "채널 URL / ID", class: "text-label text-ink-muted" %>
-      <%= f.text_field :channel_url, placeholder: "https://youtube.com/channel/UC…",
+      <%= f.label :channel_url, "채널 URL / ID / @핸들", class: "text-label text-ink-muted" %>
+      <%= f.text_field :channel_url, placeholder: "youtube.com/channel/UC… · @핸들 · UC…",
             class: "rounded-control border border-border bg-surface px-3 py-1.5 text-body text-ink-body" %>
     </div>
     <div class="flex min-w-0 flex-1 flex-col gap-1">

@@ -49,6 +49,16 @@ class CompetitorsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil created.subscriber_count, "스텁 statistics.subscriberCount 로 채워짐"
   end
 
+  test "POST create 는 @핸들도 해석해 채널을 생성한다" do
+    assert_difference "Channel.count", 1 do
+      post competitors_path, params: { channel_url: "@TrilingualTomi", channel_name: "핸들 등록", category: "직접경쟁" }
+    end
+    assert_redirected_to competitors_path
+    created = Channel.find_by(youtube_channel_id: "UC_stub_trilingual_tomi") # 스텁 forHandle 이 반환하는 채널.
+    assert_not_nil created, "@핸들로 채널이 생성돼야 한다"
+    assert_equal "manual", created.source
+  end
+
   test "POST create 중복 youtube_channel_id 는 생성하지 않고 flash 로 안내한다" do
     Channel.create!(name: "기존 채널", category: "직접경쟁", source: "manual", is_own: false, youtube_channel_id: STUB_ID)
     assert_no_difference "Channel.count" do
