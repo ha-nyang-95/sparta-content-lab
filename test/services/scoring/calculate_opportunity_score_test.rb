@@ -88,11 +88,11 @@ class Scoring::CalculateOpportunityScoreTest < ActiveSupport::TestCase
     assert_in_delta expected, cluster.reload.opportunity_score, 1e-6
   end
 
-  test "최신성 하한 — 경과일 > decay → recency 0.0(max 0)" do
-    age = NORM[:recency_full_decay_days] + 10 # 100 > 90
+  test "최신성 하한 — 경과일 > decay → recency 는 recency_floor 로 바닥친다" do
+    age = NORM[:recency_full_decay_days] + 10 # decay 초과
     cluster = make_cluster([{ channel: @competitor, age_days: age }])
     Scoring::CalculateOpportunityScore.new.call
-    expected = expected_score(perf: 0.0, commonality: 1.0 / NORM[:commonality_cap], gap: 0.0, recency: 0.0)
+    expected = expected_score(perf: 0.0, commonality: 1.0 / NORM[:commonality_cap], gap: 0.0, recency: NORM[:recency_floor])
     assert_in_delta expected, cluster.reload.opportunity_score, 1e-6
   end
 

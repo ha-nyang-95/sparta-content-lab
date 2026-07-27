@@ -19,15 +19,16 @@ similarity:
 content_gap:
   saturation_min: 3          # OwnVideoMatch 이 수 이상이면 '포화'. 2~(this-1)=유사영상 2개+, 1=유사영상 1개, 0=미제작 (본개발 실측 튜닝)
 opportunity_score:
-  weights:                   # 4입력 가중합(투명). 초기 등가, 피드백으로 조정 (본개발 실측 튜닝)
-    performance_signal: 0.25
-    competitor_commonality: 0.25
-    content_gap: 0.25
-    recency: 0.25
-  normalization:             # 각 입력 [0,1] 정규화 매핑 (FR-21 구조 고정, 값은 본개발 실측 확정)
-    performance_divisor: 10  # 성과 배수 → min(배수/divisor, 1) (본개발 실측 튜닝)
-    commonality_cap: 5       # 경쟁 공통성 → min(경쟁 채널 수/cap, 1) (본개발 실측 튜닝)
-    recency_full_decay_days: 90  # 최신성 선형 감쇠 → 경과일 이 값 이상이면 0 (본개발 실측 튜닝)
+  weights:                   # 4입력 가중합(투명). 실측 재보정 — 기획 도구라 성과·갭을 무겁게, 공통성은 낮게(롱폼은 채널 수가 적어 과패널티).
+    performance_signal: 0.35
+    competitor_commonality: 0.15
+    content_gap: 0.30
+    recency: 0.20
+  normalization:             # 각 입력 [0,1] 정규화 매핑 (FR-21 구조 고정, 값은 실측 재보정)
+    performance_divisor: 8   # 성과 배수 → min(배수/divisor, 1). 8배면 만점 (실측 재보정)
+    commonality_cap: 2       # 경쟁 공통성 → min(경쟁 채널 수/cap, 1). 2채널이면 만점 — 실데이터(주제당 1~2채널)에 맞춤 (실측 재보정)
+    recency_full_decay_days: 180  # 최신성 선형 감쇠 → 경과일 이 값 이상이면 하한까지 (실측 재보정)
+    recency_floor: 0.3       # 최신성 하한 — 오래된(에버그린) 주제를 0으로 죽이지 않게 최소 신뢰 (실측 재보정)
     content_gap_values:      # 콘텐츠 갭 버킷 → [0,1] (미제작=최대 기회) (본개발 실측 튜닝)
       not_made: 1.0
       one: 0.66

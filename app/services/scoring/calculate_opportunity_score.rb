@@ -63,16 +63,18 @@ module Scoring
       values.sum / values.size
     end
 
-    # 최신성 = 경쟁 멤버 중 최근 발행(최소 경과일) → (1 - 경과일/decay) 를 [0,1] clamp.
+    # 최신성 = 경쟁 멤버 중 최근 발행(최소 경과일) → (1 - 경과일/decay) 를 [0,1] clamp, 단 recency_floor 하한 적용.
+    # 하한: 검증된 오래된(에버그린) 주제를 0으로 죽이지 않게 최소 신뢰를 준다(설정 없으면 0 = 하위호환).
     # 경쟁 스코프(perf 와 동일 이유). 미래 발행(음수 경과일)도 상한 1.0 으로 clamp 해 점수 100 초과를 막는다.
     def recency_norm(members, today, norm)
       ages = members.reject { |v| v.channel.is_own }.filter_map do |v|
         (today - v.published_at.in_time_zone.to_date).to_i if v.published_at
       end
       min_age = ages.min
-      return 0.0 if min_age.nil?
+      return 0.0 if min_age.nil? # 발행일 정보 없음 = 최신성 신뢰 0(하한 미적용).
 
-      (1.0 - (min_age.to_f / norm[:recency_full_decay_days])).clamp(0.0, 1.0)
+      decayed = (1.0 - (min_age.to_f / norm[:recency_full_decay_days])).clamp(0.0, 1.0)
+      [decayed, norm[:recency_floor].to_f].max
     end
   end
 end
