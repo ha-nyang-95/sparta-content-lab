@@ -8,6 +8,7 @@ export default class extends Controller {
   connect() {
     this.wasRunning = false
     this.fetchStatus()
+    this.startPolling() // 유휴에도 계속 폴링해 외부로 시작된 잡(스케줄러 4시·다른 탭)도 게이지로 잡는다.
   }
 
   disconnect() {
@@ -37,10 +38,10 @@ export default class extends Controller {
       return
     }
 
-    this.stopPolling()
     // 방금 완료됐으면(진행 중 → 종료) 새 추천·게이지 데이터 반영 위해 한 번 새로고침.
     if (this.wasRunning) {
       this.wasRunning = false
+      this.stopPolling()
       window.location.reload()
       return
     }
