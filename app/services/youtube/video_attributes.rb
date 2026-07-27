@@ -5,8 +5,8 @@ module Youtube
     def self.from(item)
       {
         youtube_video_id: item["id"],
-        # 한국어 현지화 제목 우선, 없으면 기본 제목(브라우저 한국어 로케일과 일치).
-        title: item.dig("snippet", "localized", "title").presence || item.dig("snippet", "title"),
+        # 영상 제목은 '원본(기본 언어)' 그대로 — snippet.title. localized(hl=ko 번역본)를 쓰면 영어 원제가 한국어로 바뀌어 원제와 어긋난다(운영자 요청).
+        title: item.dig("snippet", "title"),
         view_count: item.dig("statistics", "viewCount")&.to_i,
         like_count: item.dig("statistics", "likeCount")&.to_i,
         comment_count: item.dig("statistics", "commentCount")&.to_i,

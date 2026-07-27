@@ -25,9 +25,9 @@
         <span><%= performance_multiple_label %> <span class="tabular-nums"><%= mult.nil? ? "—" : format("%.1f×", mult) %></span></span>
       </li>
       <li class="flex items-center gap-1.5">
-        <%# 자사 유사 영상 — 있음(초록)·없음(회색)로 색 구분. %>
-        <span class="<%= has_own ? "text-success-600" : "text-ink-subtle" %>" aria-hidden="true">◎</span>
-        <span>자사 유사 영상 <span class="font-medium <%= has_own ? "text-success-700" : "text-ink-muted" %>"><%= has_own ? "있음" : "없음" %></span></span>
+        <%# 자사 유사 영상 — 있음(초록)·없음(빨강)로 색 구분. %>
+        <span class="<%= has_own ? "text-success-600" : "text-badge-dangerFg" %>" aria-hidden="true">◎</span>
+        <span>자사 유사 영상 <span class="font-medium <%= has_own ? "text-success-700" : "text-badge-dangerFg" %>"><%= has_own ? "있음" : "없음" %></span></span>
       </li>
     </ul>
     <div class="shrink-0 text-right">
