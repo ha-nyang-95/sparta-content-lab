@@ -53,14 +53,15 @@
         <span data-collection-target="lastRun" class="hidden whitespace-nowrap text-caption text-ink-muted"></span>
       </div>
 
-      <%# 진행 중 상태 — 단계 라벨 + 가중 진행률 게이지 바. %>
-      <div data-collection-target="running" class="hidden w-56">
-        <div class="flex items-center justify-between text-caption text-ink-muted">
-          <span data-collection-target="phase">수집 중…</span>
-          <span data-collection-target="percent" class="tabular-nums">0%</span>
-        </div>
-        <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-border-subtle">
-          <div data-collection-target="bar" class="h-full rounded-full bg-primary-600 transition-all duration-500" style="width: 0%"></div>
+      <%# 진행 중 상태 — '오늘 업데이트' 박스를 그대로 유지하고 그 안에서 게이지가 반투명하게 차오른다.
+          단계 문구는 박스 중앙에, 진행률 수치는 우측에 흐리게. 레이아웃이 흔들리지 않게 버튼과 같은 형태·크기. %>
+      <div data-collection-target="running" class="relative hidden w-44 overflow-hidden rounded-control border border-border bg-surface">
+        <%# 반투명 진행 fill — 좌→우로 width 증가(primary 20% 불투명도). %>
+        <div data-collection-target="bar" class="absolute inset-y-0 left-0 bg-primary-600/20 transition-all duration-500" style="width: 0%"></div>
+        <%# 중앙: 현재 단계(진하게) · 우측: 진행률 수치(흐리게) — fill 위에 얹힌다. %>
+        <div class="relative flex items-center justify-center px-3.5 py-2">
+          <span data-collection-target="phase" class="text-body font-medium text-primary-700">수집 중</span>
+          <span data-collection-target="percent" class="absolute right-3 text-caption tabular-nums text-primary-600/60">0%</span>
         </div>
       </div>
     </div>
