@@ -185,4 +185,19 @@ class Similarity::BuildTopicClustersTest < ActiveSupport::TestCase
     assert_equal 1, TopicCluster.count, "임베딩 전량 부재 시 기존 클러스터를 보존해야 한다(스테일 방지)"
   end
 
+  test "확정 쇼츠(is_short=true)는 동일 임베딩이어도 클러스터에서 제외된다" do
+    a = make_video(@comp_channel, [1.0, 0.0, 0.0, 0.0])
+    b = make_video(@comp_channel, [1.0, 0.0, 0.0, 0.0])
+    short = make_video(@comp_channel, [1.0, 0.0, 0.0, 0.0])
+    short.update!(is_short: true) # 롱폼 a·b 와 벡터 동일하지만 쇼츠라 편입 금지.
+
+    Similarity::BuildTopicClusters.new.call
+
+    cid = a.reload.topic_cluster_id
+    assert_not_nil cid
+    assert_equal cid, b.reload.topic_cluster_id
+    assert_nil short.reload.topic_cluster_id, "확정 쇼츠는 클러스터에 편입되면 안 된다"
+    assert_equal 2, TopicCluster.find(cid).size, "쇼츠를 뺀 롱폼 2개만 클러스터 크기"
+  end
+
 end

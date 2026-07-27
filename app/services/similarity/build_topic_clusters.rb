@@ -6,8 +6,11 @@ module Similarity
       tau = Scoring::Config.fetch(:similarity, :cluster_tau)
 
       # 대상 = 임베딩 있는 not_excluded 영상(자사+경쟁, 일·한 교차). 영상당 1회만 정규화.
+      # 확정 쇼츠(is_short=true)는 제외 — 바이럴 쇼츠(노래·예능)의 폭발적 성과배수가 추천을 오염시킨다(실측).
+      # nil(유형 미확정 라이브·프리미어)·false(롱폼)는 유지. 추천은 '제작할 롱폼 주제'가 목적(AD-8 유형 분리).
       videos = Video.joins(:channel)
         .where(channels: { excluded: false })
+        .where(is_short: [ false, nil ])
         .where.not(embedding: nil)
         .order(:id)
         .to_a
