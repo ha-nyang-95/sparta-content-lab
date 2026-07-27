@@ -48,7 +48,7 @@
     <h3 class="text-h3 text-ink-strong">급상승 영상</h3>
     <% if @top_scores.any? %>
       <div class="mt-4 flex-1 divide-y divide-border-subtle">
-        <%= render partial: "dashboard/top_score_item", collection: @top_scores, as: :score %>
+        <%= render partial: "dashboard/top_score_item", collection: @top_scores, as: :score, locals: { saved_ids: @saved_ids } %>
       </div>
       <%# mt-auto — 리스트가 짧아도 footer 를 박스 맨 아래로 민다. %>
       <div class="mt-auto border-t border-border-subtle pt-3">
@@ -96,7 +96,7 @@
     <div class="mt-4">
       <% if @evergreen_scores.any? %>
         <div class="divide-y divide-border-subtle">
-          <%= render partial: "dashboard/evergreen_item", collection: @evergreen_scores, as: :score %>
+          <%= render partial: "dashboard/evergreen_item", collection: @evergreen_scores, as: :score, locals: { saved_ids: @saved_ids } %>
         </div>
         <%# 대시보드는 상위 요약(최대 5) — 전체는 인기 콘텐츠 에버그린 탭에서(무언의 절단 방지). %>
         <%= link_to "전체 보기 →", popular_path(period: "evergreen"),

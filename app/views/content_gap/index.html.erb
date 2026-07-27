@@ -28,11 +28,12 @@
           <%= sortable_th "조회수", "views", content_gap_path %>
           <%= sortable_th "성과 배수", "multiple", content_gap_path %>
           <th class="p-2 font-medium">자사 유사영상</th>
+          <th class="p-2 font-medium">저장</th>
         </tr>
       </thead>
       <tbody>
         <% @scores.each do |score| %>
-          <%= render "shared/video_row", video: score.video %>
+          <%= render "shared/video_row", video: score.video, saved_ids: @saved_ids %>
         <% end %>
       </tbody>
     </table>

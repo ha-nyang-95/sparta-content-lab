@@ -15,5 +15,8 @@ class ContentGapController < ApplicationController
     # 선택 구간 영상 — 기본 성과 배수 desc, 표 칼럼 헤더로 정렬 변경(SortableHelper). N+1 프리로드.
     scope = base.where(content_gap_bucket: @bucket).includes(video: [:channel, :daily_stats])
     @scores = helpers.apply_video_sort(scope, params, "video_scores.performance_multiple DESC NULLS LAST").to_a
+
+    # 저장 상태 — 저장 버튼 게이트(N+1 방지).
+    @saved_ids = Current.user ? Current.user.saved_videos.pluck(:video_id).to_set : Set.new
   end
 end

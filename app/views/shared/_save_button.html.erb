@@ -1,0 +1,8 @@
+<%# 영상 저장 토글 버튼(공유) — 저장됨(해제 DELETE)/저장(POST). 로컬: video, saved_ids. 중첩 인터랙티브 금지라 항상 링크/버튼 밖 별도 요소로. %>
+<% if saved_ids.include?(video.id) %>
+  <%= button_to "저장됨", destroy_saved_video_path(video_id: video.id), method: :delete,
+        class: "rounded-control bg-primary-600 px-3 py-1.5 text-label font-medium text-white hover:bg-primary-700" %>
+<% else %>
+  <%= button_to "저장", saved_videos_path(video_id: video.id), method: :post,
+        class: "rounded-control border border-border bg-surface px-3 py-1.5 text-label text-primary-600 hover:bg-primary-50" %>
+<% end %>

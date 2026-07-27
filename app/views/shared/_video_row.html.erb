@@ -81,13 +81,7 @@
   <%# 저장 토글(옵션 게이트) — saved_ids 전달 시에만 후행 셀. anchor 밖 별도 셀(중첩 인터랙티브 금지). %>
   <% unless saved_ids.nil? %>
     <td class="p-2">
-      <% if saved_ids.include?(video.id) %>
-        <%= button_to "저장됨", destroy_saved_video_path(video_id: video.id), method: :delete,
-              class: "rounded-control bg-primary-600 px-3 py-1.5 text-label font-medium text-white hover:bg-primary-700" %>
-      <% else %>
-        <%= button_to "저장", saved_videos_path(video_id: video.id), method: :post,
-              class: "rounded-control border border-border bg-surface px-3 py-1.5 text-label text-primary-600 hover:bg-primary-50" %>
-      <% end %>
+      <%= render "shared/save_button", video: video, saved_ids: saved_ids %>
     </td>
   <% end %>
 </tr>

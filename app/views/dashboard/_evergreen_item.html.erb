@@ -22,4 +22,8 @@
                view_count: nil,
                needs_verification: score.needs_verification %>
   </div>
+  <%# 저장 버튼(우측 끝) — saved_ids 전달 시. %>
+  <% if (saved_ids = local_assigns[:saved_ids]) %>
+    <div class="shrink-0"><%= render "shared/save_button", video: video, saved_ids: saved_ids %></div>
+  <% end %>
 </div>

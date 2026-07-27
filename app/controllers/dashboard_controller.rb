@@ -30,6 +30,9 @@ class DashboardController < ApplicationController
                             .where(videos: { is_short: is_short_values }) # 급상승도 선택 타입만.
                             .includes(video: [:channel, :video_score])
                             .limit(10).to_a
+
+    # 저장 상태 — 현재 사용자의 저장 video_id Set(급상승·에버그린 저장 버튼 게이트, N+1 방지).
+    @saved_ids = Current.user ? Current.user.saved_videos.pluck(:video_id).to_set : Set.new
     # 경쟁 채널 동향: 구독자 상위(증감은 콜드여도 채널·구독자는 표시).
     @top_competitors = Channel.competitor.not_excluded
                               .includes(:daily_stats)
