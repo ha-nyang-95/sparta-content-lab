@@ -36,13 +36,15 @@ class AppShellTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "헤더에 제목·부제·오늘 업데이트·아바타 2인이 있다" do
+  test "헤더에 제목·부제·오늘 업데이트·계정 메뉴·채널 추가가 있다" do
     sign_in_as users(:one)
     get "/"
     assert_includes @response.body, "YouTube 콘텐츠 리서치"
     assert_includes @response.body, "다음 주 제작할 주제를 10분 안에 결정하세요"
     assert_includes @response.body, "오늘 업데이트"
-    assert_select "[data-avatar]", 2
+    assert_includes @response.body, "로그아웃" # 계정 메뉴에 로그아웃.
+    assert_select "summary[aria-label='계정 메뉴']"
+    assert_select "a[aria-label='채널 추가']" # + 버튼이 채널 등록으로.
   end
 
   test "데이터 범위 안내가 내비 하단에 있다" do

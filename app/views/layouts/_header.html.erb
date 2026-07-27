@@ -66,22 +66,32 @@
       </div>
     </div>
 
-    <%# 아바타 2인 — 실사진 없음, 원형 이니셜 플레이스홀더(§4.5). %>
-    <div class="flex items-center -space-x-2">
-      <span data-avatar
-            class="flex h-9 w-9 items-center justify-center rounded-full border-2 border-surface bg-primary-100 text-label font-semibold text-primary-600">S</span>
-      <span data-avatar
-            class="flex h-9 w-9 items-center justify-center rounded-full border-2 border-surface bg-success-100 text-label font-semibold text-success-700">H</span>
-    </div>
-
-    <%# + 원형 버튼(§4.8): primary-600 배경·흰 +. %>
-    <button type="button" aria-label="추가"
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-600 text-white hover:bg-primary-700">
+    <%# + 채널 추가 — 경쟁 채널 등록 화면으로 이동(§4.8 원형 버튼 스타일 유지). %>
+    <%= link_to competitors_path, aria: { label: "채널 추가" }, title: "채널 추가",
+          class: "flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-600 text-white hover:bg-primary-700" do %>
       <%= tag.svg viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
             "stroke-width": "2", "stroke-linecap": "round", class: "h-5 w-5" do %>
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       <% end %>
-    </button>
+    <% end %>
+
+    <%# 계정 메뉴 — 아바타 클릭 시 로그인 이메일 + 로그아웃(외부 클릭 시 자동 닫힘 dropdown). %>
+    <details class="relative shrink-0" data-controller="dropdown">
+      <summary class="flex cursor-pointer list-none items-center [&::-webkit-details-marker]:hidden"
+               aria-label="계정 메뉴">
+        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-label font-semibold text-primary-600">
+          <%= Current.user&.email_address.to_s.first&.upcase.presence || "?" %>
+        </span>
+      </summary>
+      <div class="absolute right-0 z-50 mt-2 w-60 rounded-card border border-border bg-surface p-2 shadow-card">
+        <p class="truncate px-2 py-1.5 text-caption text-ink-muted" title="<%= Current.user&.email_address %>">
+          <%= Current.user&.email_address %>
+        </p>
+        <div class="my-1 border-t border-border-subtle"></div>
+        <%= button_to "로그아웃", session_path, method: :delete, form_class: "w-full",
+              class: "w-full rounded-control px-2 py-1.5 text-left text-body text-ink-body hover:bg-primary-50" %>
+      </div>
+    </details>
   </div>
 </header>
