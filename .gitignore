@@ -29,3 +29,6 @@ _bmad/custom/*.user.toml
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# 계약서·법무 문서 — 코드 저장소에 커밋 금지(고객 납품 노출 방지)
+/Contract/
